@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор премии МПП</title>
+    
+    <!-- Base href для корректной работы на GitHub Pages -->
+    <base href="/mpp-premium-calculator/">
+    
+    <!-- Подключение Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Подключение Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Подключение Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f8f9fa;
+            --border-color: #ddd;
+        }
+
+        [data-theme="dark"] {
+            --primary: #3498db;
+            --secondary: #2980b9;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #2c3e50;
+            --dark: #ecf0f1;
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            min-height: 100vh;
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            display: none;
+            max-width: 100%;
+            margin: 0 auto;
+            background: var(--bg-color);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            padding-bottom: 70px;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .calculator-container {
+            padding: 15px 10px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            background: var(--card-bg);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .plan-fact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .credit-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: end;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 14px 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-remove {
+            background: var(--accent);
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--success);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .result-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .final-result {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            color: white;
+            padding: 20px 12px;
+            text-align: center;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .final-amount {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 8px 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .calculation-steps {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .step {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        /* Навигация */
+        .nav-tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            display: none;
+            justify-content: space-around;
+            padding: 10px 5px;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.3s;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .nav-tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .nav-tab i {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        /* Стили для разделов */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .theme-toggle:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-width: 360px) {
+            body {
+                font-size: 14px;
+                padding: 5px;
+            }
+            
+            .calculator-container {
+                padding: 10px 5px;
+            }
+            
+            .section {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            input, select {
+                padding: 10px;
+                font-size: 16px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .final-amount {
+                font-size: 24px;
+            }
+        }
+
+        .report-item {
+            background: var(--card-bg);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .report-date {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .report-stats {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .week-selector {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .week-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .week-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--card-bg);
+            margin-bottom: 5px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .rank {
+            font-weight: bold;
+            width: 30px;
+        }
+
+        .name {
+            flex: 1;
+        }
+
+        .value {
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .badge {
+            background: var(--card-bg);
+            padding: 15px 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+
+        .badge-name {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .badge-desc {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        .badge.locked {
+            opacity: 0.5;
+        }
+
+        .badge.unlocked {
+            border-color: var(--success);
+        }
+
+        .monthly-report-section {
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .week-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .week-option {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .week-option:hover {
+            border-color: var(--secondary);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .week-option.selected {
+            border-color: var(--secondary);
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .week-range {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .week-days {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: var(--warning);
+            color: white;
+        }
+
+        .alert i {
+            margin-right: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-label {
+            color: var(--text-color);
+        }
+
+        .detail-value {
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .strata-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--secondary);
+            color: white;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .multiplier-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--success);
+            color: white;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .points-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--warning);
+            color: white;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .final-strata-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            background: var(--primary);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator" id="headerIcon"></i> <span id="headerTitle">Калькулятор премии МПП</span></h1>
+            <p id="headerSubtitle">Рассчитайте вашу премию по новым правилам</p>
+            
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">Загрузка...</span>
+                <span id="userRole" style="margin-left: 10px; font-size: 12px; opacity: 0.8;">МПП</span>
+            </div>
+        </header>
+       
+        <!-- Раздел калькулятора для МПП -->
+        <div class="tab-content active" id="calculator-tab">
+            <div class="calculator-container" id="mpp-calculator">
+                <!-- Секция 1: Коэффициент и должность -->
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-user-tie"></i> Основные настройки</h2>
+                   
+                    <div class="form-group">
+                        <label for="moscow_coef">Региональный коэффициент:</label>
+                        <select id="moscow_coef">
+                            <option value="1">Стандартный (×1.0)</option>
+                            <option value="1.3" selected>Москва (×1.3)</option>
+                        </select>
+                    </div>
+                   
+                    <div class="form-group">
+                        <label for="position">Должность:</label>
+                        <select id="position">
+                            <option value="0" selected>МПП</option>
+                            <option value="3000">Старший МПП (+3,000₽)</option>
+                            <option value="5000">Ведущий МПП (+5,000₽)</option>
+                            <option value="10000">Главный МПП (+10,000₽)</option>
+                            <option value="20000">Эксперт МПП (+20,000₽)</option>
+                        </select>
+                    </div>
+                </div>
+               
+                <!-- Секция 2: План/Факт по основным показателям -->
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Основные показатели</h2>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="krh_plan">КРХ (план, шт.):</label>
+                            <input type="number" id="krh_plan" min="0" value="15">
+                        </div>
+                        <div>
+                            <label for="krh_fact">КРХ (факт, шт.):</label>
+                            <input type="number" id="krh_fact" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="vklad_volume_plan">Вклад объем (план, руб.):</label>
+                            <input type="number" id="vklad_volume_plan" min="0" value="1920000">
+                        </div>
+                        <div>
+                            <label for="vklad_volume_fact">Вклад объем (факт, руб.):</label>
+                            <input type="number" id="vklad_volume_fact" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="dk_volume_plan">ДК объем (план, руб.):</label>
+                            <input type="number" id="dk_volume_plan" min="0" value="960000">
+                        </div>
+                        <div>
+                            <label for="dk_volume_fact">ДК объем (факт, руб.):</label>
+                            <input type="number" id="dk_volume_fact" min="0" value="0" readonly style="background-color: #f0f8ff;">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="kvc_plan">КВЦ (план, клиенты):</label>
+                            <input type="number" id="kvc_plan" min="0" value="30">
+                        </div>
+                        <div>
+                            <label for="kvc_fact">КВЦ (факт, клиенты):</label>
+                            <input type="number" id="kvc_fact" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- Секция 3: Кредиты -->
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-credit-card"></i> Кредитные продукты</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Добавьте все оформленные кредиты с указанием типа, пакета защиты и ФЗ</p>
+                   
+                    <div id="credits-container">
+                        <!-- Кредиты будут добавляться динамически -->
+                    </div>
+                   
+                    <button class="btn" id="add-credit-btn">
+                        <i class="fas fa-plus"></i> Добавить кредит
+                    </button>
+                </div>
+               
+                <!-- Секция 4: Дополнительные продукты -->
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-cube"></i> Дополнительные продукты</h2>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="vklad_count_fact">Вклады (шт.):</label>
+                            <input type="number" id="vklad_count_fact" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="sticker_count">Стикеры:</label>
+                            <input type="number" id="sticker_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="year_sub_count">Подписки годовые:</label>
+                            <input type="number" id="year_sub_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="month_sub_count">Подписки ежемесячные:</label>
+                            <input type="number" id="month_sub_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="krh_limit_count">КРХ Лимит:</label>
+                            <input type="number" id="krh_limit_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="zp_card_count">ЗП карты:</label>
+                            <input type="number" id="zp_card_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="omp_count">ОМП (шт.):</label>
+                            <input type="number" id="omp_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="zp_nerez_count">ЗП нерез (шт.):</label>
+                            <input type="number" id="zp_nerez_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="card_turnover">Оборот по картам (руб.):</label>
+                            <input type="number" id="card_turnover" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- Секция 5: Чемпионат профессионалов -->
+                <div class="section">
+                    <h2 class="section-title"><i class="fas fa-trophy"></i> Чемпионат профессионалов</h2>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="skb_count">СКБ (дебетовые с 2%):</label>
+                            <input type="number" id="skb_count" min="0" value="0">
+                        </div>
+                    </div>
+                   
+                    <div class="plan-fact-container">
+                        <div>
+                            <label for="crm_calls">Дозвоны CRM:</label>
+                            <input type="number" id="crm_calls" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Кнопка расчета -->
+                <div style="text-align: center; margin: 25px 0;">
+                    <button class="btn" id="calculate-btn">
+                        <i class="fas fa-calculator"></i> Рассчитать премию
+                    </button>
+                </div>
+               
+                <!-- Результаты -->
+                <div id="results" style="display: none;">
+                    <div class="result-card">
+                        <div class="result-title">Выполнение плана и страты:</div>
+                        <div id="plan_results"></div>
+                    </div>
+                   
+                    <div class="result-card">
+                        <div class="result-title">Расчет выплат по продуктам:</div>
+                        <div id="payments_results"></div>
+                    </div>
+                   
+                    <div class="result-card">
+                        <div class="result-title">Чемпионат профессионалов:</div>
+                        <div id="championship_results"></div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-title">Расчет итоговой страты:</div>
+                        <div id="final_strata_calculation"></div>
+                    </div>
+
+                    <!-- Детализация расчета -->
+                    <div class="result-card">
+                        <div class="result-title">Детализация расчета:</div>
+                        <div class="detailed-calculation" id="detailed_calculation"></div>
+                    </div>
+                   
+                    <div class="final-result">
+                        <div>Ваша премия составит:</div>
+                        <div class="final-amount" id="final_premium">0 ₽</div>
+                        <div>до вычета налогов</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Раздел отчетов -->
+        <div class="tab-content" id="reports-tab">
+            <div class="calculator-container">
+                <div class="section reports-section">
+                    <h2 class="section-title"><i class="fas fa-chart-bar"></i> Еженедельные отчеты</h2>
+                    
+                    <div id="monthly-report-alert" class="alert" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="alert-message"></span>
+                    </div>
+                    
+                    <div class="reports-form">
+                        <h3>Добавить отчет за неделю</h3>
+                        
+                        <div class="form-group">
+                            <label>Выберите неделю:</label>
+                            <div class="week-options" id="week-options">
+                                <!-- Недели будут заполнены динамически -->
+                            </div>
+                        </div>
+                        
+                        <h4>Основные показатели</h4>
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>КВЦ клиенты:</label>
+                                <input type="number" id="report-kvc" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>КРХ стартовало:</label>
+                                <input type="number" id="report-krh" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>ДК объем (руб.):</label>
+                                <input type="number" id="report-dk-volume" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Вклад объем (руб.):</label>
+                                <input type="number" id="report-vklad-volume" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>ДК кол-во (шт.):</label>
+                                <input type="number" id="report-dk-count" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Вклад кол-во (шт.):</label>
+                                <input type="number" id="report-vklad-count" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <!-- Кредиты в отчетах -->
+                        <h4>Кредитные продукты</h4>
+                        <div id="report-credits-container">
+                            <!-- Кредиты будут добавляться динамически -->
+                        </div>
+                        <button class="btn" id="report-add-credit-btn">
+                            <i class="fas fa-plus"></i> Добавить кредит в отчет
+                        </button>
+                        
+                        <h4>Дополнительные продукты</h4>
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>Стикеры:</label>
+                                <input type="number" id="report-sticker-count" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Подписки годовые:</label>
+                                <input type="number" id="report-year-sub-count" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>Подписки ежемесячные:</label>
+                                <input type="number" id="report-month-sub-count" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>КРХ Лимит:</label>
+                                <input type="number" id="report-krh-limit-count" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>ЗП карты:</label>
+                                <input type="number" id="report-zp-card-count" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>ОМП (шт.):</label>
+                                <input type="number" id="report-omp-count" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>ЗП нерез (шт.):</label>
+                                <input type="number" id="report-zp-nerez-count" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Оборот по картам (руб.):</label>
+                                <input type="number" id="report-card-turnover" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <h4>Чемпионат профессионалов</h4>
+                        <div class="plan-fact-container">
+                            <div>
+                                <label>СКБ (дебетовые с 2%):</label>
+                                <input type="number" id="report-skb-count" min="0" value="0">
+                            </div>
+                            <div>
+                                <label>Дозвоны CRM:</label>
+                                <input type="number" id="report-crm-calls" min="0" value="0">
+                            </div>
+                        </div>
+                        
+                        <button class="btn" id="save-report-btn">
+                            <i class="fas fa-save"></i> Сохранить отчет
+                        </button>
+                    </div>
+                    
+                    <div class="reports-history">
+                        <h3>История отчетов</h3>
+                        <div id="reports-history-list">
+                            <!-- История будет загружаться динамически -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Раздел топа сотрудников -->
+        <div class="tab-content" id="leaderboard-tab">
+            <div class="calculator-container">
+                <div class="section leaderboard-section">
+                    <h2 class="section-title"><i class="fas fa-crown"></i> Топ сотрудников</h2>
+                    
+                    <div class="week-selector">
+                        <button class="week-btn active" data-week="current">Текущая неделя</button>
+                        <button class="week-btn" data-week="month">Текущий месяц</button>
+                    </div>
+                    
+                    <h3>🏆 Топ по премии</h3>
+                    <div id="premium-leaderboard">
+                        <!-- Топ по премии будет здесь -->
+                    </div>
+                    
+                    <h3>📊 Топ по кредитам</h3>
+                    <div id="credits-leaderboard">
+                        <!-- Топ по кредитам будет здесь -->
+                    </div>
+                    
+                    <h3>💰 Топ по вкладам</h3>
+                    <div id="deposits-leaderboard">
+                        <!-- Топ по вкладам будет здесь -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Раздел достижений -->
+        <div class="tab-content" id="achievements-tab">
+            <div class="calculator-container">
+                <div class="section achievements-section">
+                    <h2 class="section-title"><i class="fas fa-trophy"></i> Мои достижения</h2>
+                    
+                    <div id="average-premium-section">
+                        <div class="result-card">
+                            <div class="result-title">Средняя премия за последние месяцы</div>
+                            <div class="result-value" id="average-premium">0 ₽</div>
+                        </div>
+                    </div>
+                    
+                    <div class="badge-grid" id="badge-grid">
+                        <!-- Бейджи будут добавляться динамически -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка переключения темы -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Навигация -->
+    <div class="nav-tabs">
+        <a href="#" class="nav-tab active" data-tab="calculator-tab">
+            <i class="fas fa-calculator"></i>
+            <span id="nav-calculator">Калькулятор</span>
+        </a>
+        <a href="#" class="nav-tab" id="reports-nav" data-tab="reports-tab">
+            <i class="fas fa-chart-bar"></i>
+            <span>Отчеты</span>
+        </a>
+        <a href="#" class="nav-tab" data-tab="leaderboard-tab">
+            <i class="fas fa-crown"></i>
+            <span>Топ</span>
+        </a>
+        <a href="#" class="nav-tab" data-tab="achievements-tab">
+            <i class="fas fa-trophy"></i>
+            <span>Достижения</span>
+        </a>
+    </div>
+
+    <script>
+        // 🔧 КОНФИГУРАЦИЯ FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdQ8_gViAkfeHvabiHI5n9C9EP7hQW_j4",
+            authDomain: "mpp-premium-calculator.firebaseapp.com",
+            projectId: "mpp-premium-calculator",
+            storageBucket: "mpp-premium-calculator.firebasestorage.app",
+            messagingSenderId: "310897873427",
+            appId: "1:310897873427:web:f2b65971191ca4359aa5e6"
+        };
+
+        // Инициализация Firebase
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log("Firebase инициализирован успешно");
+        } catch (error) {
+            console.error("Ошибка инициализации Firebase:", error);
+        }
+
+        // НОВАЯ СИСТЕМА СТРАТ ДЛЯ ОСНОВНЫХ ПОКАЗАТЕЛЕЙ
+        const STRATA_RULES = [
+            { min: 120, strata: 1, multiplier: 1.15, points: 1 },
+            { min: 110, strata: 2, multiplier: 1.10, points: 2 },
+            { min: 100, strata: 3, multiplier: 1.00, points: 3 },
+            { min: 90, strata: 4, multiplier: 0.90, points: 4 },
+            { min: 80, strata: 5, multiplier: 0.80, points: 5 },
+            { min: 70, strata: 6, multiplier: 0.70, points: 6 },
+            { min: 60, strata: 7, multiplier: 0.00, points: 7 },
+            { min: 50, strata: 8, multiplier: 0.00, points: 8 },
+            { min: 40, strata: 9, multiplier: 0.00, points: 9 },
+            { min: 30, strata: 10, multiplier: 0.00, points: 10 },
+            { min: 0, strata: 20, multiplier: 0.00, points: 20 }
+        ];
+
+        // СИСТЕМА ИТОГОВЫХ СТРАТ
+        const FINAL_STRATA_RULES = [
+            { min: 49, strata: 20 },
+            { min: 39, strata: 10 },
+            { min: 35, strata: 9 },
+            { min: 31, strata: 8 },
+            { min: 27, strata: 7 },
+            { min: 23, strata: 6 },
+            { min: 19, strata: 5 },
+            { min: 15, strata: 4 },
+            { min: 11, strata: 3 },
+            { min: 6, strata: 2 },
+            { min: 1, strata: 1 }
+        ];
+
+        // Типы кредитов и их стоимости
+        const CREDIT_TYPES = {
+            'zp': { name: 'Зарплатный', base: 0, packageMultiplier: 1, fzRequired: true },
+            'prime': { name: 'Прайм', base: 0, packageMultiplier: 0.5, fzRequired: true },
+            'autocredit': { name: 'Автокредит/ДКПЗА', base: 1250, packageMultiplier: 1, fzRequired: true },
+            'ipoteka': { name: 'Ипотека', base: 7000, packageMultiplier: 0, fzRequired: false },
+            'dkpzn': { name: 'ДКПЗН', base: 2000, packageMultiplier: 1, fzRequired: true },
+            'mkk_no_fz': { name: 'МКК без ФЗ', base: 1000, packageMultiplier: 0, fzRequired: false },
+            'mkk_with_fz': { name: 'МКК с ФЗ', base: 1500, packageMultiplier: 0, fzRequired: true },
+            'halva_refinance': { name: 'Рефинансирование Халвой', base: 0, packageMultiplier: 0, fzRequired: false }
+        };
+
+        // Пакеты защиты
+        const PACKAGES = [
+            { value: 0, name: 'Без пакета' },
+            { value: 500, name: 'Пакет 1 (500₽)' },
+            { value: 1400, name: 'Пакет 2 (1,400₽)' },
+            { value: 1500, name: 'Пакет 3 (1,500₽)' },
+            { value: 2000, name: 'Пакет 4 (2,000₽)' },
+            { value: 3400, name: 'Пакет 5 (3,400₽)' },
+            { value: 4000, name: 'Пакет 6 (4,000₽)' },
+            { value: 5000, name: 'Пакет 7 (5,000₽)' },
+            { value: 6000, name: 'Пакет 8 (6,000₽)' },
+            { value: 7000, name: 'Пакет 9 (7,000₽)' },
+            { value: 8000, name: 'Пакет 10 (8,000₽)' }
+        ];
+
+        // Месяцы в родительном падеже
+        const MONTHS_GENITIVE = [
+            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ];
+
+        // 🔧 ТЕЛЕГРАМ ИНИЦИАЛИЗАЦИЯ
+        let tg = null;
+        let currentUser = null;
+        let userData = {
+            role: 'mpp',
+            history: [],
+            settings: {},
+            monthlyReports: []
+        };
+        let creditIds = []; // Массив для хранения ID кредитов
+        let reportCreditIds = []; // Массив для хранения ID кредитов в отчетах
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let selectedWeek = null;
+
+        // Инициализация Telegram Web App
+        function initTelegram() {
+            try {
+                tg = window.Telegram.WebApp;
+                
+                // Расширяем на весь экран
+                tg.expand();
+                
+                console.log("Telegram Web App инициализирован");
+                
+                // Получаем данные пользователя
+                const user = tg.initDataUnsafe.user;
+                if (user) {
+                    currentUser = {
+                        id: user.id,
+                        firstName: user.first_name,
+                        lastName: user.last_name || '',
+                        username: user.username
+                    };
+                    
+                    showUserInfo();
+                    loadUserData();
+                } else {
+                    // Если пользователь не авторизован, используем демо-режим
+                    currentUser = {
+                        id: 'demo',
+                        firstName: 'Демо',
+                        lastName: 'Пользователь'
+                    };
+                    showUserInfo();
+                    initializeApp();
+                }
+                
+                // Устанавливаем тему Telegram
+                if (tg.colorScheme === 'dark') {
+                    currentTheme = 'dark';
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    currentTheme = 'light';
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+                
+                updateThemeIcon();
+                
+            } catch (error) {
+                console.error("Ошибка инициализации Telegram:", error);
+                // Резервный режим
+                currentUser = {
+                    id: 'demo',
+                    firstName: 'Демо',
+                    lastName: 'Пользователь'
+                };
+                showUserInfo();
+                initializeApp();
+            }
+        }
+
+        // Показать информацию пользователя
+        function showUserInfo() {
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            const displayName = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
+            const firstLetter = currentUser.firstName ? currentUser.firstName.charAt(0).toUpperCase() : 'U';
+            
+            userAvatar.textContent = firstLetter;
+            userName.textContent = displayName;
+        }
+
+        // Инициализация приложения
+        function initializeApp() {
+            document.querySelector('.container').style.display = 'block';
+            document.querySelector('.nav-tabs').style.display = 'flex';
+            document.querySelector('.theme-toggle').style.display = 'flex';
+            
+            // Инициализируем калькулятор для МПП
+            initializeMPPCalculator();
+            initializeReports();
+            loadReportsHistory();
+            loadAchievements();
+            loadWeekOptions();
+            loadLeaderboard('current');
+            
+            // Добавляем один кредит по умолчанию
+            addCredit();
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            if (!currentUser || currentUser.id === 'demo' || !db) {
+                initializeApp();
+                return;
+            }
+
+            try {
+                const userDoc = await db.collection('users').doc(String(currentUser.id)).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    // Обновляем последний логин
+                    await db.collection('users').doc(String(currentUser.id)).set({
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                } else {
+                    // Создаем запись пользователя
+                    await db.collection('users').doc(String(currentUser.id)).set({
+                        telegramUserId: currentUser.id,
+                        firstName: currentUser.firstName,
+                        lastName: currentUser.lastName,
+                        username: currentUser.username,
+                        role: 'mpp',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+                
+                initializeApp();
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                initializeApp();
+            }
+        }
+
+        // Получение рабочих недель месяца
+        function getWorkWeeks(year, month) {
+            const weeks = [];
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // Находим первый понедельник месяца
+            let currentDate = new Date(firstDay);
+            while (currentDate.getDay() !== 1 && currentDate <= lastDay) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            // Если понедельник не найден в текущем месяце, значит месяц начинается с воскресенья
+            if (currentDate > lastDay) {
+                currentDate = new Date(firstDay);
+            }
+            
+            // Создаем недели
+            while (currentDate <= lastDay) {
+                const weekStart = new Date(currentDate);
+                let weekEnd = new Date(currentDate);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                
+                // Если неделя выходит за пределы месяца, обрезаем ее
+                if (weekEnd > lastDay) {
+                    weekEnd = new Date(lastDay);
+                }
+                
+                weeks.push({
+                    start: new Date(weekStart),
+                    end: new Date(weekEnd)
+                });
+                
+                // Переходим к следующей неделе
+                currentDate.setDate(currentDate.getDate() + 7);
+            }
+            
+            return weeks;
+        }
+
+        // Загрузка опций недель для выбора
+        function loadWeekOptions() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            const weeks = getWorkWeeks(currentYear, currentMonth);
+            const weekOptions = document.getElementById('week-options');
+            weekOptions.innerHTML = '';
+            
+            weeks.forEach((week, index) => {
+                const weekElement = document.createElement('div');
+                weekElement.className = 'week-option';
+                weekElement.innerHTML = `
+                    <div class="week-range">Неделя ${index + 1}: ${formatDate(week.start)} - ${formatDate(week.end)}</div>
+                    <div class="week-days">${getWeekDays(week.start, week.end)}</div>
+                `;
+                
+                weekElement.addEventListener('click', () => {
+                    document.querySelectorAll('.week-option').forEach(opt => opt.classList.remove('selected'));
+                    weekElement.classList.add('selected');
+                    selectedWeek = week;
+                });
+                
+                weekOptions.appendChild(weekElement);
+            });
+            
+            // Выбираем первую неделю по умолчанию
+            if (weeks.length > 0) {
+                weekOptions.firstChild.click();
+            }
+        }
+
+        // Форматирование даты
+        function formatDate(date) {
+            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
+        }
+
+        // Получение дней недели
+        function getWeekDays(start, end) {
+            const days = [];
+            const current = new Date(start);
+            
+            while (current <= end) {
+                days.push(current.toLocaleDateString('ru-RU', { weekday: 'short' }));
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return days.join(', ');
+        }
+
+        // Инициализация калькулятора для МПП
+        function initializeMPPCalculator() {
+            // Добавляем обработчики событий
+            document.getElementById('add-credit-btn').addEventListener('click', addCredit);
+            document.getElementById('calculate-btn').addEventListener('click', calculatePremium);
+        }
+
+        // Инициализация отчетов
+        function initializeReports() {
+            document.getElementById('save-report-btn').addEventListener('click', saveWeeklyReport);
+            document.getElementById('report-add-credit-btn').addEventListener('click', addReportCredit);
+        }
+
+        // 🔧 ОСНОВНЫЕ ФУНКЦИИ
+
+        // Инициализация темы
+        function initTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+        }
+
+        // Обновление иконки темы
+        function updateThemeIcon() {
+            const themeIcon = document.querySelector('#themeToggle i');
+            if (themeIcon) {
+                themeIcon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        }
+
+        // Переключение темы
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            initTheme();
+        }
+
+        // 🔧 ФУНКЦИИ ДЛЯ РАБОТЫ С КРЕДИТАМИ (МПП)
+
+        // Добавление кредита
+        function addCredit() {
+            const creditId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            creditIds.push(creditId);
+            const container = document.getElementById('credits-container');
+           
+            const creditRow = document.createElement('div');
+            creditRow.className = 'credit-row';
+            creditRow.id = `credit-${creditId}`;
+           
+            creditRow.innerHTML = `
+                <div>
+                    <label>Тип кредита:</label>
+                    <select id="credit-type-${creditId}" class="credit-type">
+                        <option value="zp">Зарплатный</option>
+                        <option value="prime">Прайм</option>
+                        <option value="autocredit">Автокредит/ДКПЗА</option>
+                        <option value="ipoteka">Ипотека</option>
+                        <option value="dkpzn">ДКПЗН</option>
+                        <option value="mkk_no_fz">МКК без ФЗ</option>
+                        <option value="mkk_with_fz">МКК с ФЗ</option>
+                        <option value="halva_refinance">Рефинансирование Халвой</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Пакет защиты:</label>
+                    <select id="credit-package-${creditId}" class="credit-package">
+                        ${PACKAGES.map(pkg => `<option value="${pkg.value}">${pkg.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label>ФЗ:</label>
+                    <select id="credit-fz-${creditId}" class="credit-fz">
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Сумма кредита (₽):</label>
+                    <input type="number" id="credit-amount-${creditId}" min="0" value="0" class="credit-amount">
+                </div>
+                <div>
+                    <label>Премия:</label>
+                    <input type="text" id="credit-premium-${creditId}" readonly>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button class="btn btn-remove remove-credit" data-id="${creditId}">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            `;
+           
+            container.appendChild(creditRow);
+            
+            // Добавление обработчиков событий
+            const typeSelect = document.getElementById(`credit-type-${creditId}`);
+            const packageSelect = document.getElementById(`credit-package-${creditId}`);
+            const fzSelect = document.getElementById(`credit-fz-${creditId}`);
+            const amountInput = document.getElementById(`credit-amount-${creditId}`);
+            const removeBtn = document.querySelector(`.remove-credit[data-id="${creditId}"]`);
+            
+            typeSelect.addEventListener('change', () => updateCreditPremium(creditId));
+            packageSelect.addEventListener('change', () => updateCreditPremium(creditId));
+            fzSelect.addEventListener('change', () => updateCreditPremium(creditId));
+            amountInput.addEventListener('input', () => {
+                updateCreditPremium(creditId);
+                updateDKIndicators();
+            });
+            
+            // Исправленный обработчик удаления кредита
+            removeBtn.addEventListener('click', function() {
+                const creditIdToRemove = this.getAttribute('data-id');
+                removeCredit(creditIdToRemove);
+            });
+            
+            updateCreditPremium(creditId);
+            updateDKIndicators();
+        }
+
+        // Добавление кредита в отчет
+        function addReportCredit() {
+            const creditId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            reportCreditIds.push(creditId);
+            const container = document.getElementById('report-credits-container');
+           
+            const creditRow = document.createElement('div');
+            creditRow.className = 'credit-row';
+            creditRow.id = `report-credit-${creditId}`;
+           
+            creditRow.innerHTML = `
+                <div>
+                    <label>Тип кредита:</label>
+                    <select id="report-credit-type-${creditId}" class="report-credit-type">
+                        <option value="zp">Зарплатный</option>
+                        <option value="prime">Прайм</option>
+                        <option value="autocredit">Автокредит/ДКПЗА</option>
+                        <option value="ipoteka">Ипотека</option>
+                        <option value="dkpzn">ДКПЗН</option>
+                        <option value="mkk_no_fz">МКК без ФЗ</option>
+                        <option value="mkk_with_fz">МКК с ФЗ</option>
+                        <option value="halva_refinance">Рефинансирование Халвой</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Пакет защиты:</label>
+                    <select id="report-credit-package-${creditId}" class="report-credit-package">
+                        ${PACKAGES.map(pkg => `<option value="${pkg.value}">${pkg.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label>ФЗ:</label>
+                    <select id="report-credit-fz-${creditId}" class="report-credit-fz">
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Сумма кредита (₽):</label>
+                    <input type="number" id="report-credit-amount-${creditId}" min="0" value="0" class="report-credit-amount">
+                </div>
+                <div>
+                    <label>Премия:</label>
+                    <input type="text" id="report-credit-premium-${creditId}" readonly>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button class="btn btn-remove remove-report-credit" data-id="${creditId}">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            `;
+           
+            container.appendChild(creditRow);
+            
+            // Добавление обработчиков событий
+            const typeSelect = document.getElementById(`report-credit-type-${creditId}`);
+            const packageSelect = document.getElementById(`report-credit-package-${creditId}`);
+            const fzSelect = document.getElementById(`report-credit-fz-${creditId}`);
+            const amountInput = document.getElementById(`report-credit-amount-${creditId}`);
+            const removeBtn = document.querySelector(`.remove-report-credit[data-id="${creditId}"]`);
+            
+            typeSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
+            packageSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
+            fzSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
+            amountInput.addEventListener('input', () => {
+                updateReportCreditPremium(creditId);
+            });
+            
+            removeBtn.addEventListener('click', function() {
+                const creditIdToRemove = this.getAttribute('data-id');
+                removeReportCredit(creditIdToRemove);
+            });
+            
+            updateReportCreditPremium(creditId);
+        }
+
+        // Обновление премии за кредит
+        function updateCreditPremium(id) {
+            const typeSelect = document.getElementById(`credit-type-${id}`);
+            const packageSelect = document.getElementById(`credit-package-${id}`);
+            const fzSelect = document.getElementById(`credit-fz-${id}`);
+            const amountInput = document.getElementById(`credit-amount-${id}`);
+            const premiumInput = document.getElementById(`credit-premium-${id}`);
+           
+            if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+                const creditType = typeSelect.value;
+                const packageValue = parseInt(packageSelect.value) || 0;
+                const hasFZ = fzSelect.value === 'true';
+                const creditAmount = parseInt(amountInput.value) || 0;
+               
+                const creditConfig = CREDIT_TYPES[creditType];
+                let creditSum = creditConfig.base;
+               
+                if (creditType === 'prime') {
+                    creditSum += Math.min(creditAmount * 0.005, 5000);
+                }
+               
+                if (creditType === 'halva_refinance') {
+                    creditSum = Math.min(creditAmount * 0.03, 600);
+                }
+               
+                creditSum += packageValue * creditConfig.packageMultiplier;
+               
+                if (!hasFZ && creditConfig.fzRequired) {
+                    creditSum = 0;
+                }
+               
+                premiumInput.value = creditSum.toLocaleString() + ' ₽';
+            }
+        }
+
+        // Обновление премии за кредит в отчете
+        function updateReportCreditPremium(id) {
+            const typeSelect = document.getElementById(`report-credit-type-${id}`);
+            const packageSelect = document.getElementById(`report-credit-package-${id}`);
+            const fzSelect = document.getElementById(`report-credit-fz-${id}`);
+            const amountInput = document.getElementById(`report-credit-amount-${id}`);
+            const premiumInput = document.getElementById(`report-credit-premium-${id}`);
+           
+            if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+                const creditType = typeSelect.value;
+                const packageValue = parseInt(packageSelect.value) || 0;
+                const hasFZ = fzSelect.value === 'true';
+                const creditAmount = parseInt(amountInput.value) || 0;
+               
+                const creditConfig = CREDIT_TYPES[creditType];
+                let creditSum = creditConfig.base;
+               
+                if (creditType === 'prime') {
+                    creditSum += Math.min(creditAmount * 0.005, 5000);
+                }
+               
+                if (creditType === 'halva_refinance') {
+                    creditSum = Math.min(creditAmount * 0.03, 600);
+                }
+               
+                creditSum += packageValue * creditConfig.packageMultiplier;
+               
+                if (!hasFZ && creditConfig.fzRequired) {
+                    creditSum = 0;
+                }
+               
+                premiumInput.value = creditSum.toLocaleString() + ' ₽';
+            }
+        }
+
+        // Удаление кредита
+        function removeCredit(id) {
+            const creditRow = document.getElementById(`credit-${id}`);
+            if (creditRow) {
+                creditRow.remove();
+                // Удаляем ID из массива
+                creditIds = creditIds.filter(creditId => creditId !== id);
+                updateDKIndicators();
+            }
+        }
+
+        // Удаление кредита из отчета
+        function removeReportCredit(id) {
+            const creditRow = document.getElementById(`report-credit-${id}`);
+            if (creditRow) {
+                creditRow.remove();
+                // Удаляем ID из массива
+                reportCreditIds = reportCreditIds.filter(creditId => creditId !== id);
+            }
+        }
+
+        // Обновление индикаторов ДК
+        function updateDKIndicators() {
+            let totalCreditAmount = 0;
+           
+            // Используем querySelectorAll для поиска всех полей ввода суммы кредита
+            const creditAmountInputs = document.querySelectorAll('.credit-amount');
+            creditAmountInputs.forEach(input => {
+                const creditAmount = parseInt(input.value) || 0;
+                if (creditAmount > 0) {
+                    totalCreditAmount += creditAmount;
+                }
+            });
+           
+            document.getElementById('dk_volume_fact').value = totalCreditAmount;
+        }
+
+        // 🔧 ФУНКЦИИ ДЛЯ РАСЧЕТА ПРЕМИИ (МПП)
+
+        // Получение страты и множителя по проценту выполнения
+        function getStrataByPercent(percent) {
+            for (let rule of STRATA_RULES) {
+                if (percent >= rule.min) {
+                    return rule;
+                }
+            }
+            return STRATA_RULES[STRATA_RULES.length - 1];
+        }
+
+        // Получение итоговой страты по баллам
+        function getFinalStrata(points) {
+            for (let rule of FINAL_STRATA_RULES) {
+                if (points >= rule.min) {
+                    return rule.strata;
+                }
+            }
+            return 20;
+        }
+
+        // Основная функция расчета премии
+        async function calculatePremium() {
+            // Сбор данных выполнения плана
+            const krhPlan = parseInt(document.getElementById('krh_plan').value) || 0;
+            const krhFact = parseInt(document.getElementById('krh_fact').value) || 0;
+            const krhPercent = krhPlan > 0 ? Math.round((krhFact / krhPlan) * 100) : 0;
+
+            const vkladVolumePlan = parseInt(document.getElementById('vklad_volume_plan').value) || 0;
+            const vkladVolumeFact = parseInt(document.getElementById('vklad_volume_fact').value) || 0;
+            const vkladVolumePercent = vkladVolumePlan > 0 ? Math.round((vkladVolumeFact / vkladVolumePlan) * 100) : 0;
+
+            const dkVolumePlan = parseInt(document.getElementById('dk_volume_plan').value) || 0;
+            const dkVolumeFact = parseInt(document.getElementById('dk_volume_fact').value) || 0;
+            const dkVolumePercent = dkVolumePlan > 0 ? Math.round((dkVolumeFact / dkVolumePlan) * 100) : 0;
+
+            const kvcPlan = parseInt(document.getElementById('kvc_plan').value) || 0;
+            const kvcFact = parseInt(document.getElementById('kvc_fact').value) || 0;
+            const kvcPercent = kvcPlan > 0 ? Math.round((kvcFact / kvcPlan) * 100) : 0;
+
+            // Расчет страт по показателям
+            const krhStrata = getStrataByPercent(krhPercent);
+            const vkladStrata = getStrataByPercent(vkladVolumePercent);
+            const dkStrata = getStrataByPercent(dkVolumePercent);
+            const kvcStrata = getStrataByPercent(kvcPercent);
+
+            // Отображение выполнения плана и страт
+            document.getElementById('plan_results').innerHTML = `
+                КРХ: ${krhFact}/${krhPlan} = ${krhPercent}% <span class="strata-badge">Страта ${krhStrata.strata}</span> <span class="multiplier-badge">×${krhStrata.multiplier}</span> <span class="points-badge">${krhStrata.points} баллов</span><br>
+                Вклад объем: ${vkladVolumeFact.toLocaleString()}/${vkladVolumePlan.toLocaleString()} = ${vkladVolumePercent}% <span class="strata-badge">Страта ${vkladStrata.strata}</span> <span class="multiplier-badge">×${vkladStrata.multiplier}</span> <span class="points-badge">${vkladStrata.points} баллов</span><br>
+                ДК объем: ${dkVolumeFact.toLocaleString()}/${dkVolumePlan.toLocaleString()} = ${dkVolumePercent}% <span class="strata-badge">Страта ${dkStrata.strata}</span> <span class="multiplier-badge">×${dkStrata.multiplier}</span> <span class="points-badge">${dkStrata.points} баллов</span><br>
+                КВЦ: ${kvcFact}/${kvcPlan} = ${kvcPercent}% <span class="strata-badge">Страта ${kvcStrata.strata}</span> <span class="multiplier-badge">×${kvcStrata.multiplier}</span> <span class="points-badge">${kvcStrata.points} баллов</span>
+            `;
+
+            // Расчет выплат за кредитные продукты (ДК)
+            let dkSum = 0;
+            let eligibleCreditsCount = 0;
+           
+            // Используем querySelectorAll для поиска всех полей премии кредитов
+            const creditPremiumInputs = document.querySelectorAll('input[id^="credit-premium-"]');
+            creditPremiumInputs.forEach(premiumInput => {
+                const creditPremiumText = premiumInput.value;
+                const creditPremium = parseInt(creditPremiumText.replace(/\s/g, '').replace('₽', '')) || 0;
+               
+                // Учитываем пакеты защиты только если ДК выполнен на 70% и более
+                if (dkVolumePercent >= 70) {
+                    dkSum += creditPremium;
+                } else {
+                    // Если ДК менее 70%, не учитываем пакеты защиты
+                    const creditRow = premiumInput.closest('.credit-row');
+                    const typeSelect = creditRow.querySelector('.credit-type');
+                    if (typeSelect) {
+                        const creditType = typeSelect.value;
+                        const creditConfig = CREDIT_TYPES[creditType];
+                        // Базовую выплату оставляем, пакеты защиты не учитываем
+                        dkSum += creditConfig.base;
+                    }
+                }
+               
+                if (creditPremium > 0) {
+                    eligibleCreditsCount++;
+                }
+            });
+            
+            // Применяем множитель ДК к сумме выплат за кредиты
+            const dkSumAfterMultiplier = dkSum * dkStrata.multiplier;
+
+            // Вклады (выплата за штуку)
+            const vkladCountFact = parseInt(document.getElementById('vklad_count_fact').value) || 0;
+            const vkladySum = vkladCountFact * 200;
+            const vkladySumAfterMultiplier = vkladySum * vkladStrata.multiplier;
+
+            // Стартовавшие КРХ
+            const startedKrhSum = krhFact * 600;
+            const startedKrhSumAfterMultiplier = startedKrhSum * krhStrata.multiplier;
+
+            // Сумма основных продуктов
+            const mainProductsSum = dkSumAfterMultiplier + vkladySumAfterMultiplier + startedKrhSumAfterMultiplier;
+
+            // Дополнительные продукты (без множителей)
+            let otherProductsSum = 0;
+            
+            const stickerCount = parseInt(document.getElementById('sticker_count').value) || 0;
+            const stickerSum = stickerCount * 50;
+
+            const yearSubCount = parseInt(document.getElementById('year_sub_count').value) || 0;
+            const yearSubSum = yearSubCount * 500;
+
+            const monthSubCount = parseInt(document.getElementById('month_sub_count').value) || 0;
+            const monthSubSum = monthSubCount * 200;
+
+            const krhLimitCount = parseInt(document.getElementById('krh_limit_count').value) || 0;
+            const krhLimitSum = krhLimitCount * 100;
+
+            const zpCardCount = parseInt(document.getElementById('zp_card_count').value) || 0;
+            const zpCardSum = zpCardCount * 100;
+
+            // Новые продукты
+            const ompCount = parseInt(document.getElementById('omp_count').value) || 0;
+            const ompSum = ompCount * 50;
+
+            const zpNerezCount = parseInt(document.getElementById('zp_nerez_count').value) || 0;
+            const zpNerezSum = zpNerezCount * 200;
+
+            const cardTurnover = parseInt(document.getElementById('card_turnover').value) || 0;
+            const cardTurnoverSum = Math.min(cardTurnover * 0.03, 100000);
+
+            // Чемпионат профессионалов
+            const skbCount = parseInt(document.getElementById('skb_count').value) || 0;
+            const crmCalls = parseInt(document.getElementById('crm_calls').value) || 0;
+
+            // Сумма дополнительных продуктов
+            otherProductsSum = stickerSum + yearSubSum + monthSubSum + krhLimitSum + zpCardSum + ompSum + zpNerezSum + cardTurnoverSum;
+
+            // Отображение выплат по продуктам
+            document.getElementById('payments_results').innerHTML = `
+                Кредиты: ${dkSum.toLocaleString()}₽ × ${dkStrata.multiplier} = ${dkSumAfterMultiplier.toLocaleString()}₽<br>
+                Вклады: ${vkladySum.toLocaleString()}₽ × ${vkladStrata.multiplier} = ${vkladySumAfterMultiplier.toLocaleString()}₽<br>
+                КРХ: ${startedKrhSum.toLocaleString()}₽ × ${krhStrata.multiplier} = ${startedKrhSumAfterMultiplier.toLocaleString()}₽<br>
+                Доп. продукты: ${otherProductsSum.toLocaleString()}₽
+            `;
+
+            // Чемпионат профессионалов
+            let skbPoints = 0;
+            let crmPoints = 0;
+            
+            skbPoints = skbCount < 3 ? 1 : -1;
+            
+            if (crmCalls <= 50) {
+                crmPoints = 2;
+            } else if (crmCalls > 50 && crmCalls < 60) {
+                crmPoints = 0;
+            } else {
+                crmPoints = -2;
+            }
+
+            document.getElementById('championship_results').innerHTML = `
+                СКБ: ${skbCount} шт. → ${skbPoints > 0 ? '+' : ''}${skbPoints} балл<br>
+                Дозвоны: ${crmCalls} → ${crmPoints > 0 ? '+' : ''}${crmPoints} баллов<br>
+                Итого ЧП: ${skbPoints + crmPoints} баллов
+            `;
+
+            // Расчет итоговой страты
+            const totalPoints = krhStrata.points + vkladStrata.points + dkStrata.points + kvcStrata.points;
+            const championshipPoints = skbPoints + crmPoints;
+            const finalPoints = totalPoints + championshipPoints;
+            const finalStrata = getFinalStrata(finalPoints);
+
+            // Отображение расчета итоговой страты
+            document.getElementById('final_strata_calculation').innerHTML = `
+                Сумма баллов по показателям: ${krhStrata.points} + ${vkladStrata.points} + ${dkStrata.points} + ${kvcStrata.points} = ${totalPoints} баллов<br>
+                Корректировка ЧП: ${championshipPoints} баллов<br>
+                Итоговые баллы: ${totalPoints} + ${championshipPoints} = ${finalPoints} баллов<br>
+                <strong>Итоговая страта: <span class="final-strata-badge">${finalStrata}</span></strong>
+            `;
+
+            // Дополнительные условия
+            const positionBonus = parseInt(document.getElementById('position').value) || 0;
+            const moscowCoef = parseFloat(document.getElementById('moscow_coef').value) || 1;
+
+            // Экстрабонус за 3 кредита
+            const extraBonus = eligibleCreditsCount >= 3 ? 5000 : 0;
+
+            // Финальный расчет
+            const sumBeforeMoscow = mainProductsSum + otherProductsSum;
+            const sumAfterMoscow = sumBeforeMoscow * moscowCoef;
+            const finalPremium = sumAfterMoscow + extraBonus + positionBonus;
+
+            // Детализация расчета
+            let detailedHTML = '';
+            
+            detailedHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Основные продукты:</span>
+                    <span class="detail-value">${mainProductsSum.toLocaleString()}₽</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Доп. продукты:</span>
+                    <span class="detail-value">${otherProductsSum.toLocaleString()}₽</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Сумма до регион. коэф.:</span>
+                    <span class="detail-value">${sumBeforeMoscow.toLocaleString()}₽</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Регион. коэффициент (${moscowCoef}):</span>
+                    <span class="detail-value">${sumAfterMoscow.toLocaleString()}₽</span>
+                </div>
+            `;
+            
+            if (extraBonus > 0) {
+                detailedHTML += `
+                <div class="detail-item">
+                    <span class="detail-label">Экстрабонус за 3+ кредита:</span>
+                    <span class="detail-value">+${extraBonus.toLocaleString()}₽</span>
+                </div>
+                `;
+            }
+            
+            detailedHTML += `
+                <div class="detail-item">
+                    <span class="detail-label">Надбавка за должность:</span>
+                    <span class="detail-value">+${positionBonus.toLocaleString()}₽</span>
+                </div>
+            `;
+            
+            document.getElementById('detailed_calculation').innerHTML = detailedHTML;
+
+            // Итоговая премия
+            document.getElementById('final_premium').textContent = Math.round(finalPremium).toLocaleString() + ' ₽';
+           
+            // Показываем результаты
+            document.getElementById('results').style.display = 'block';
+            
+            // Прокручиваем к результатам
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 🔧 ФУНКЦИИ ДЛЯ ОТЧЕТОВ (МПП)
+
+        // Загрузка истории отчетов
+        async function loadReportsHistory() {
+            if (!currentUser || currentUser.id === 'demo' || !db) {
+                // В демо-режиме показываем демо-отчеты
+                const reportsList = document.getElementById('reports-history-list');
+                reportsList.innerHTML = `
+                    <div class="report-item">
+                        <div class="report-date">01.04 - 07.04</div>
+                        <div class="report-stats">
+                            КВЦ: 5, КРХ: 3, ДК: 2 (500,000₽), Вклады: 1 (100,000₽)
+                            <br>Кредиты: 2 шт. (5,000₽)
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-date">08.04 - 14.04</div>
+                        <div class="report-stats">
+                            КВЦ: 7, КРХ: 5, ДК: 3 (750,000₽), Вклады: 2 (250,000₽)
+                            <br>Кредиты: 3 шт. (7,500₽)
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const reportsSnapshot = await db.collection('weeklyReports')
+                    .where('userId', '==', String(currentUser.id))
+                    .orderBy('createdAt', 'desc')
+                    .limit(10)
+                    .get();
+
+                const reportsList = document.getElementById('reports-history-list');
+                reportsList.innerHTML = '';
+
+                if (reportsSnapshot.empty) {
+                    reportsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-color); opacity: 0.7;">Нет сохраненных отчетов</div>';
+                    return;
+                }
+
+                reportsSnapshot.forEach(doc => {
+                    const report = doc.data();
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    
+                    let creditsText = '';
+                    if (report.credits && report.credits.length > 0) {
+                        const creditsPremium = report.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
+                        creditsText = `Кредиты: ${report.credits.length} шт. (${creditsPremium.toLocaleString()}₽)`;
+                    }
+                    
+                    let additionalText = '';
+                    if (report.ompCount > 0 || report.zpNerezCount > 0) {
+                        additionalText = `ОМП: ${report.ompCount || 0}, ЗП нерез: ${report.zpNerezCount || 0}`;
+                    }
+                    
+                    item.innerHTML = `
+                        <div class="report-date">${report.startDate} - ${report.endDate}</div>
+                        <div class="report-stats">
+                            КВЦ: ${report.kvc}, КРХ: ${report.krh}, ДК: ${report.dkCount} (${report.dkVolume.toLocaleString()}₽), Вклады: ${report.vkladCount} (${report.vkladVolume.toLocaleString()}₽)
+                            ${additionalText ? `, ${additionalText}` : ''}
+                            ${creditsText ? `<br>${creditsText}` : ''}
+                        </div>
+                    `;
+                    reportsList.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки отчетов:', error);
+                const reportsList = document.getElementById('reports-history-list');
+                reportsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--accent);">Ошибка загрузки отчетов</div>';
+            }
+        }
+
+        // Сохранение еженедельного отчета
+        async function saveWeeklyReport() {
+            if (!selectedWeek) {
+                alert('Выберите неделю для отчета');
+                return;
+            }
+
+            const kvc = parseInt(document.getElementById('report-kvc').value) || 0;
+            const krh = parseInt(document.getElementById('report-krh').value) || 0;
+            const dkVolume = parseInt(document.getElementById('report-dk-volume').value) || 0;
+            const vkladVolume = parseInt(document.getElementById('report-vklad-volume').value) || 0;
+            const dkCount = parseInt(document.getElementById('report-dk-count').value) || 0;
+            const vkladCount = parseInt(document.getElementById('report-vklad-count').value) || 0;
+            
+            // Дополнительные продукты
+            const stickerCount = parseInt(document.getElementById('report-sticker-count').value) || 0;
+            const yearSubCount = parseInt(document.getElementById('report-year-sub-count').value) || 0;
+            const monthSubCount = parseInt(document.getElementById('report-month-sub-count').value) || 0;
+            const krhLimitCount = parseInt(document.getElementById('report-krh-limit-count').value) || 0;
+            const zpCardCount = parseInt(document.getElementById('report-zp-card-count').value) || 0;
+            const ompCount = parseInt(document.getElementById('report-omp-count').value) || 0;
+            const zpNerezCount = parseInt(document.getElementById('report-zp-nerez-count').value) || 0;
+            const cardTurnover = parseInt(document.getElementById('report-card-turnover').value) || 0;
+            
+            // Чемпионат профессионалов
+            const skbCount = parseInt(document.getElementById('report-skb-count').value) || 0;
+            const crmCalls = parseInt(document.getElementById('report-crm-calls').value) || 0;
+
+            // Собираем данные о кредитах
+            const credits = [];
+            reportCreditIds.forEach(id => {
+                const typeSelect = document.getElementById(`report-credit-type-${id}`);
+                const packageSelect = document.getElementById(`report-credit-package-${id}`);
+                const fzSelect = document.getElementById(`report-credit-fz-${id}`);
+                const amountInput = document.getElementById(`report-credit-amount-${id}`);
+                const premiumInput = document.getElementById(`report-credit-premium-${id}`);
+
+                if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+                    const creditType = typeSelect.value;
+                    const packageValue = packageSelect.value;
+                    const hasFZ = fzSelect.value === 'true';
+                    const creditAmount = parseInt(amountInput.value) || 0;
+                    const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
+                    
+                    credits.push({
+                        type: creditType,
+                        package: packageValue,
+                        fz: hasFZ,
+                        amount: creditAmount,
+                        premium: creditPremium
+                    });
+                }
+            });
+
+            if (currentUser && currentUser.id !== 'demo' && db) {
+                try {
+                    // Проверяем существующий отчет за эту неделю
+                    const existingReportQuery = await db.collection('weeklyReports')
+                        .where('userId', '==', String(currentUser.id))
+                        .where('weekStart', '==', firebase.firestore.Timestamp.fromDate(selectedWeek.start))
+                        .get();
+
+                    if (!existingReportQuery.empty) {
+                        alert('Отчет за эту неделю уже существует');
+                        return;
+                    }
+
+                    // Сохраняем новый отчет
+                    await db.collection('weeklyReports').add({
+                        userId: String(currentUser.id),
+                        weekStart: firebase.firestore.Timestamp.fromDate(selectedWeek.start),
+                        weekEnd: firebase.firestore.Timestamp.fromDate(selectedWeek.end),
+                        startDate: formatDate(selectedWeek.start),
+                        endDate: formatDate(selectedWeek.end),
+                        kvc: kvc,
+                        krh: krh,
+                        dkVolume: dkVolume,
+                        vkladVolume: vkladVolume,
+                        dkCount: dkCount,
+                        vkladCount: vkladCount,
+                        credits: credits,
+                        stickerCount: stickerCount,
+                        yearSubCount: yearSubCount,
+                        monthSubCount: monthSubCount,
+                        krhLimitCount: krhLimitCount,
+                        zpCardCount: zpCardCount,
+                        ompCount: ompCount,
+                        zpNerezCount: zpNerezCount,
+                        cardTurnover: cardTurnover,
+                        skbCount: skbCount,
+                        crmCalls: crmCalls,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    alert('Отчет сохранен!');
+                    loadReportsHistory();
+                    
+                    // Очищаем форму
+                    document.getElementById('report-kvc').value = '0';
+                    document.getElementById('report-krh').value = '0';
+                    document.getElementById('report-dk-volume').value = '0';
+                    document.getElementById('report-vklad-volume').value = '0';
+                    document.getElementById('report-dk-count').value = '0';
+                    document.getElementById('report-vklad-count').value = '0';
+                    document.getElementById('report-sticker-count').value = '0';
+                    document.getElementById('report-year-sub-count').value = '0';
+                    document.getElementById('report-month-sub-count').value = '0';
+                    document.getElementById('report-krh-limit-count').value = '0';
+                    document.getElementById('report-zp-card-count').value = '0';
+                    document.getElementById('report-omp-count').value = '0';
+                    document.getElementById('report-zp-nerez-count').value = '0';
+                    document.getElementById('report-card-turnover').value = '0';
+                    document.getElementById('report-skb-count').value = '0';
+                    document.getElementById('report-crm-calls').value = '0';
+                    
+                    // Очищаем кредиты
+                    reportCreditIds.forEach(id => {
+                        const creditRow = document.getElementById(`report-credit-${id}`);
+                        if (creditRow) creditRow.remove();
+                    });
+                    reportCreditIds = [];
+                    
+                } catch (error) {
+                    console.error('Ошибка сохранения отчета:', error);
+                    alert('Ошибка при сохранении отчета: ' + error.message);
+                }
+            } else {
+                alert('Нет подключения к базе данных или вы в демо-режиме');
+            }
+        }
+
+        // 🔧 ФУНКЦИИ ДЛЯ ТОПА СОТРУДНИКОВ
+
+        // Загрузка топа сотрудников
+        async function loadLeaderboard(period = 'current') {
+            if (!db) {
+                // В демо-режиме показываем заглушку
+                showDemoLeaderboard();
+                return;
+            }
+
+            try {
+                console.log("Загрузка топа для периода:", period);
+                
+                // Определяем даты для фильтрации
+                let startDate, endDate;
+                const now = new Date();
+                
+                if (period === 'current') {
+                    // Текущая неделя (с понедельника по воскресенье)
+                    const dayOfWeek = now.getDay();
+                    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() + diffToMonday);
+                    startDate.setHours(0, 0, 0, 0);
+                    
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                    endDate.setHours(23, 59, 59, 999);
+                } else {
+                    // Текущий месяц
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    endDate.setHours(23, 59, 59, 999);
+                }
+
+                console.log("Период с", startDate, "по", endDate);
+
+                // Загружаем всех пользователей с ролью МПП
+                const usersSnapshot = await db.collection('users')
+                    .where('role', '==', 'mpp')
+                    .get();
+                
+                console.log("Найдено пользователей:", usersSnapshot.size);
+
+                if (usersSnapshot.empty) {
+                    showDemoLeaderboard();
+                    return;
+                }
+
+                const leaderboardData = [];
+
+                // Для каждого пользователя загружаем отчеты за указанный период
+                for (const userDoc of usersSnapshot.docs) {
+                    const user = userDoc.data();
+                    
+                    try {
+                        // Загружаем отчеты за указанный период
+                        const reportsQuery = await db.collection('weeklyReports')
+                            .where('userId', '==', String(userDoc.id))
+                            .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(startDate))
+                            .where('createdAt', '<=', firebase.firestore.Timestamp.fromDate(endDate))
+                            .get();
+                        
+                        let totalStats = {
+                            kvc: 0,
+                            dkVolume: 0,
+                            dkCount: 0,
+                            vkladVolume: 0,
+                            vkladCount: 0,
+                            krh: 0,
+                            credits: [],
+                            ompCount: 0,
+                            zpNerezCount: 0,
+                            stickerCount: 0,
+                            yearSubCount: 0,
+                            monthSubCount: 0,
+                            krhLimitCount: 0,
+                            zpCardCount: 0,
+                            cardTurnover: 0
+                        };
+                        
+                        reportsQuery.forEach(doc => {
+                            const report = doc.data();
+                            totalStats.kvc += report.kvc || 0;
+                            totalStats.dkVolume += report.dkVolume || 0;
+                            totalStats.dkCount += report.dkCount || 0;
+                            totalStats.vkladVolume += report.vkladVolume || 0;
+                            totalStats.vkladCount += report.vkladCount || 0;
+                            totalStats.krh += report.krh || 0;
+                            totalStats.ompCount += report.ompCount || 0;
+                            totalStats.zpNerezCount += report.zpNerezCount || 0;
+                            totalStats.stickerCount += report.stickerCount || 0;
+                            totalStats.yearSubCount += report.yearSubCount || 0;
+                            totalStats.monthSubCount += report.monthSubCount || 0;
+                            totalStats.krhLimitCount += report.krhLimitCount || 0;
+                            totalStats.zpCardCount += report.zpCardCount || 0;
+                            totalStats.cardTurnover += report.cardTurnover || 0;
+                            
+                            if (report.credits) {
+                                totalStats.credits = totalStats.credits.concat(report.credits);
+                            }
+                        });
+
+                        leaderboardData.push({
+                            user: user,
+                            stats: totalStats,
+                            userId: userDoc.id
+                        });
+                        
+                    } catch (error) {
+                        console.error(`Ошибка загрузки отчетов для пользователя ${userDoc.id}:`, error);
+                    }
+                }
+
+                console.log("Данные для топа:", leaderboardData);
+
+                // Обновляем топы
+                updatePremiumLeaderboard(leaderboardData);
+                updateCreditsLeaderboard(leaderboardData);
+                updateDepositsLeaderboard(leaderboardData);
+
+            } catch (error) {
+                console.error('Ошибка загрузки топа:', error);
+                showDemoLeaderboard();
+            }
+        }
+
+        // Обновление топа по премии
+        function updatePremiumLeaderboard(leaderboardData) {
+            const premiumSorted = [...leaderboardData].sort((a, b) => {
+                const premiumA = calculateTotalPremium(a.stats);
+                const premiumB = calculateTotalPremium(b.stats);
+                return premiumB - premiumA;
+            });
+            
+            const premiumLeaderboard = document.getElementById('premium-leaderboard');
+            
+            if (premiumSorted.length === 0) {
+                premiumLeaderboard.innerHTML = `
+                    <div class="leaderboard-item">
+                        <span class="rank">1</span>
+                        <span class="name">Иванов Иван</span>
+                        <span class="value">25,000 ₽</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span class="rank">2</span>
+                        <span class="name">Петров Петр</span>
+                        <span class="value">22,500 ₽</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span class="rank">3</span>
+                        <span class="name">Сидоров Алексей</span>
+                        <span class="value">20,000 ₽</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            premiumLeaderboard.innerHTML = premiumSorted.slice(0, 10).map((item, index) => {
+                const premium = calculateTotalPremium(item.stats);
+                const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+                
+                return `
+                    <div class="leaderboard-item">
+                        <span class="rank">${index + 1}</span>
+                        <span class="name">${displayName}</span>
+                        <span class="value">${Math.round(premium).toLocaleString()} ₽</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Расчет общей премии на основе статистики
+        function calculateTotalPremium(stats) {
+            const creditsPremium = stats.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
+            const additionalPremium = 
+                (stats.ompCount * 50) +
+                (stats.zpNerezCount * 200) +
+                (stats.stickerCount * 50) +
+                (stats.yearSubCount * 500) +
+                (stats.monthSubCount * 200) +
+                (stats.krhLimitCount * 100) +
+                (stats.zpCardCount * 100) +
+                Math.min(stats.cardTurnover * 0.03, 100000);
+            
+            return (stats.dkVolume * 0.01) + 
+                   (stats.vkladVolume * 0.005) + 
+                   (stats.kvc * 50) + 
+                   (stats.krh * 600) +
+                   creditsPremium +
+                   additionalPremium;
+        }
+
+        // Обновление топа по кредитам
+        function updateCreditsLeaderboard(leaderboardData) {
+            const creditsSorted = [...leaderboardData].sort((a, b) => 
+                (b.stats.dkCount || 0) - (a.stats.dkCount || 0)
+            );
+            
+            const creditsLeaderboard = document.getElementById('credits-leaderboard');
+            
+            if (creditsSorted.length === 0) {
+                creditsLeaderboard.innerHTML = `
+                    <div class="leaderboard-item">
+                        <span class="rank">1</span>
+                        <span class="name">Иванов Иван</span>
+                        <span class="value">8 шт.</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span class="rank">2</span>
+                        <span class="name">Петров Петр</span>
+                        <span class="value">7 шт.</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span class="rank">3</span>
+                        <span class="name">Сидоров Алексей</span>
+                        <span class="value">6 шт.</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            creditsLeaderboard.innerHTML = creditsSorted.slice(0, 10).map((item, index) => {
+                const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+                
+                return `
+                    <div class="leaderboard-item">
+                        <span class="rank">${index + 1}</span>
+                        <span class="name">${displayName}</span>
+                        <span class="value">${item.stats.dkCount || 0} шт.</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Обновление топа по вкладам
+        function updateDepositsLeaderboard(leaderboardData) {
+            const depositsSorted = [...leaderboardData].sort((a, b) => 
+                (b.stats.vkladCount || 0) - (a.stats.vkladCount || 0)
+            );
+            
+            const depositsLeaderboard = document.getElementById('deposits-leaderboard');
+            
+            if (depositsSorted.length === 0) {
+                depositsLeaderboard.innerHTML = `
+                    <div class="leaderboard-item">
+                        <span class="rank">1</span>
+                        <span class="name">Иванов Иван</span>
+                        <span class="value">12 шт.</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span class="rank">2</span>
+                        <span class="name">Петров Петр</span>
+                        <span class="value">10 шт.</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span class="rank">3</span>
+                        <span class="name">Сидоров Алексей</span>
+                        <span class="value">9 шт.</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            depositsLeaderboard.innerHTML = depositsSorted.slice(0, 10).map((item, index) => {
+                const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+                
+                return `
+                    <div class="leaderboard-item">
+                        <span class="rank">${index + 1}</span>
+                        <span class="name">${displayName}</span>
+                        <span class="value">${item.stats.vkladCount || 0} шт.</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Показать демо-данные для топа
+        function showDemoLeaderboard() {
+            const premiumLeaderboard = document.getElementById('premium-leaderboard');
+            const creditsLeaderboard = document.getElementById('credits-leaderboard');
+            const depositsLeaderboard = document.getElementById('deposits-leaderboard');
+            
+            premiumLeaderboard.innerHTML = `
+                <div class="leaderboard-item">
+                    <span class="rank">1</span>
+                    <span class="name">Иванов Иван</span>
+                    <span class="value">25,000 ₽</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">2</span>
+                    <span class="name">Петров Петр</span>
+                    <span class="value">22,500 ₽</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">3</span>
+                    <span class="name">Сидоров Алексей</span>
+                    <span class="value">20,000 ₽</span>
+                </div>
+            `;
+            
+            creditsLeaderboard.innerHTML = `
+                <div class="leaderboard-item">
+                    <span class="rank">1</span>
+                    <span class="name">Иванов Иван</span>
+                    <span class="value">8 шт.</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">2</span>
+                    <span class="name">Петров Петр</span>
+                    <span class="value">7 шт.</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">3</span>
+                    <span class="name">Сидоров Алексей</span>
+                    <span class="value">6 шт.</span>
+                </div>
+            `;
+            
+            depositsLeaderboard.innerHTML = `
+                <div class="leaderboard-item">
+                    <span class="rank">1</span>
+                    <span class="name">Иванов Иван</span>
+                    <span class="value">12 шт.</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">2</span>
+                    <span class="name">Петров Петр</span>
+                    <span class="value">10 шт.</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span class="rank">3</span>
+                    <span class="name">Сидоров Алексей</span>
+                    <span class="value">9 шт.</span>
+                </div>
+            `;
+        }
+
+        // 🔧 ФУНКЦИИ ДЛЯ ДОСТИЖЕНИЙ
+
+        // Загрузка достижений
+        async function loadAchievements() {
+            const badgeGrid = document.getElementById('badge-grid');
+            
+            // Список достижений
+            const achievements = [
+                { id: 1, name: 'Первый кредит', desc: 'Оформите первый кредит', icon: 'fas fa-award', unlocked: true },
+                { id: 2, name: 'Мастер продаж', desc: 'Выполните план на 100%', icon: 'fas fa-trophy', unlocked: false },
+                { id: 3, name: 'Эксперт по вкладам', desc: 'Оформите 10 вкладов', icon: 'fas fa-coins', unlocked: false },
+                { id: 4, name: 'Золотой стандарт', desc: 'Заработайте 50,000₽ премии', icon: 'fas fa-medal', unlocked: false },
+                { id: 5, name: 'Командный игрок', desc: 'Работайте в команде РГПП', icon: 'fas fa-users', unlocked: false },
+                { id: 6, name: 'Стратег', desc: 'Достигните страты 1', icon: 'fas fa-chess-queen', unlocked: false }
+            ];
+            
+            badgeGrid.innerHTML = achievements.map(achievement => `
+                <div class="badge ${achievement.unlocked ? 'unlocked' : 'locked'}">
+                    <div class="badge-icon">
+                        <i class="${achievement.icon}"></i>
+                    </div>
+                    <div class="badge-name">${achievement.name}</div>
+                    <div class="badge-desc">${achievement.desc}</div>
+                </div>
+            `).join('');
+            
+            // Загружаем среднюю премию для МПП
+            await loadAveragePremium();
+        }
+
+        // Загрузка средней премии
+        async function loadAveragePremium() {
+            if (!currentUser || currentUser.id === 'demo' || !db) {
+                document.getElementById('average-premium').textContent = '25,000 ₽';
+                return;
+            }
+            
+            try {
+                // Загружаем еженедельные отчеты за последние 3 месяца
+                const threeMonthsAgo = new Date();
+                threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+                
+                const weeklyReportsSnapshot = await db.collection('weeklyReports')
+                    .where('userId', '==', String(currentUser.id))
+                    .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(threeMonthsAgo))
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                let totalPremium = 0;
+                let reportCount = 0;
+                
+                weeklyReportsSnapshot.forEach(doc => {
+                    const report = doc.data();
+                    // Упрощенный расчет премии для демонстрации
+                    const premium = (report.dkVolume * 0.01) + (report.vkladVolume * 0.005) + (report.kvc * 50) + (report.krh * 600);
+                    totalPremium += premium;
+                    reportCount++;
+                });
+                
+                const averagePremium = reportCount > 0 ? Math.round(totalPremium / reportCount) : 0;
+                document.getElementById('average-premium').textContent = averagePremium.toLocaleString() + ' ₽';
+                
+            } catch (error) {
+                console.error('Ошибка загрузки средней премии:', error);
+                document.getElementById('average-premium').textContent = '25,000 ₽';
+            }
+        }
+
+        // 🔧 ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM загружен, инициализация...");
+            
+            // Инициализация Telegram Web App
+            initTelegram();
+            
+            // Инициализация темы
+            initTheme();
+
+            // Обработчик для кнопки темы
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Обработчики для навигации
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Убираем активный класс у всех вкладок
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Добавляем активный класс текущей вкладке
+                    this.classList.add('active');
+                    
+                    // Показываем соответствующий контент
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Загружаем данные для активной вкладки
+                    if (tabId === 'leaderboard-tab') {
+                        loadLeaderboard('current');
+                    } else if (tabId === 'reports-tab') {
+                        loadReportsHistory();
+                        loadWeekOptions();
+                    } else if (tabId === 'achievements-tab') {
+                        loadAchievements();
+                    }
+                });
+            });
+
+            // Обработчики для топа
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const period = this.getAttribute('data-week');
+                    loadLeaderboard(period);
+                });
+            });
+
+            console.log("Все обработчики событий установлены");
+        });
+    </script>
+</body>
+</html>
