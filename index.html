@@ -659,6 +659,89 @@
             font-weight: bold;
             margin-left: 10px;
         }
+
+        /* Стили для визуализации структуры премии */
+        .premium-structure {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 15px auto;
+        }
+
+        .premium-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: var(--bg-color);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border: 2px solid var(--border-color);
+        }
+
+        .chart-total {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .chart-percent {
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .chart-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            padding: 5px;
+            border-radius: 5px;
+            background: var(--card-bg);
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        .legend-label {
+            flex: 1;
+        }
+
+        .legend-value {
+            font-weight: bold;
+            color: var(--success);
+        }
     </style>
 </head>
 <body>
@@ -884,6 +967,23 @@
                     <div class="result-card">
                         <div class="result-title">Детализация расчета:</div>
                         <div class="detailed-calculation" id="detailed_calculation"></div>
+                    </div>
+
+                    <!-- Визуализация структуры премии -->
+                    <div class="result-card">
+                        <div class="result-title">Структура премии:</div>
+                        <div class="premium-structure" id="premium_structure">
+                            <div class="chart-container">
+                                <canvas id="premium-chart" class="premium-chart"></canvas>
+                                <div class="chart-center">
+                                    <div class="chart-total" id="chart-total">0 ₽</div>
+                                    <div class="chart-percent">100%</div>
+                                </div>
+                            </div>
+                            <div class="chart-legend" id="chart-legend">
+                                <!-- Легенда будет заполнена динамически -->
+                            </div>
+                        </div>
                     </div>
                    
                     <div class="final-result">
@@ -1188,6 +1288,20 @@
         const MONTHS_GENITIVE = [
             'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
             'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ];
+
+        // Цвета для круговой диаграммы
+        const CHART_COLORS = [
+            '#3498db', // синий - кредиты
+            '#2ecc71', // зеленый - вклады
+            '#e74c3c', // красный - КРХ
+            '#f39c12', // оранжевый - доп. продукты
+            '#9b59b6', // фиолетовый - экстрабонус
+            '#1abc9c', // бирюзовый - надбавка за должность
+            '#34495e', // темно-синий - прочие
+            '#d35400', // темно-оранжевый
+            '#c0392b', // темно-красный
+            '#7f8c8d'  // серый
         ];
 
         // 🔧 ТЕЛЕГРАМ ИНИЦИАЛИЗАЦИЯ
@@ -1741,6 +1855,73 @@
             return 20;
         }
 
+        // Отрисовка круговой диаграммы
+        function drawPremiumPieChart(data) {
+            const canvas = document.getElementById('premium-chart');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            
+            // Очистка canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Если нет данных или сумма равна 0, показываем сообщение
+            if (!data || data.length === 0 || data.reduce((sum, item) => sum + item.value, 0) === 0) {
+                ctx.fillStyle = '#f0f0f0';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#999';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '14px Arial';
+                ctx.fillText('Нет данных', centerX, centerY);
+                return;
+            }
+            
+            // Расчет общей суммы
+            const total = data.reduce((sum, item) => sum + item.value, 0);
+            
+            // Отрисовка сегментов
+            let startAngle = 0;
+            
+            data.forEach((item, index) => {
+                const sliceAngle = (item.value / total) * 2 * Math.PI;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                
+                ctx.fillStyle = item.color;
+                ctx.fill();
+                
+                startAngle += sliceAngle;
+            });
+            
+            // Обновление центрального текста
+            document.getElementById('chart-total').textContent = Math.round(total).toLocaleString() + ' ₽';
+        }
+
+        // Обновление легенды диаграммы
+        function updateChartLegend(data) {
+            const legendContainer = document.getElementById('chart-legend');
+            const total = data.reduce((sum, item) => sum + item.value, 0);
+            
+            legendContainer.innerHTML = data.map((item, index) => {
+                const percentage = total > 0 ? Math.round((item.value / total) * 100) : 0;
+                return `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: ${item.color};"></div>
+                        <div class="legend-label">${item.label}</div>
+                        <div class="legend-value">${Math.round(item.value).toLocaleString()} ₽ (${percentage}%)</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Основная функция расчета премии
         async function calculatePremium() {
             // Сбор данных выполнения плана
@@ -1953,6 +2134,30 @@
            
             // Показываем результаты
             document.getElementById('results').style.display = 'block';
+            
+            // Создаем данные для диаграммы
+            const chartData = [
+                { label: 'Кредиты', value: dkSumAfterMultiplier, color: CHART_COLORS[0] },
+                { label: 'Вклады', value: vkladySumAfterMultiplier, color: CHART_COLORS[1] },
+                { label: 'КРХ', value: startedKrhSumAfterMultiplier, color: CHART_COLORS[2] },
+                { label: 'Доп. продукты', value: otherProductsSum, color: CHART_COLORS[3] }
+            ];
+            
+            // Добавляем экстрабонус и надбавку за должность, если они есть
+            if (extraBonus > 0) {
+                chartData.push({ label: 'Экстрабонус', value: extraBonus, color: CHART_COLORS[4] });
+            }
+            
+            if (positionBonus > 0) {
+                chartData.push({ label: 'Надбавка за должность', value: positionBonus, color: CHART_COLORS[5] });
+            }
+            
+            // Фильтруем данные с нулевыми значениями
+            const filteredData = chartData.filter(item => item.value > 0);
+            
+            // Отрисовываем диаграмму
+            drawPremiumPieChart(filteredData);
+            updateChartLegend(filteredData);
             
             // Прокручиваем к результатам
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
