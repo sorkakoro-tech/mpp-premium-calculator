@@ -1997,7 +1997,7 @@
             const ompSum = ompCount * 50;
 
             const zpNerezCount = parseInt(document.getElementById('zp_nerez_count').value) || 0;
-            const zpNerezSum = zpNerezCount * 200;
+            const zpNerezSum = zpNerezCount * 300; // Изменено с 200 на 300
 
             const cardTurnover = parseInt(document.getElementById('card_turnover').value) || 0;
             const cardTurnoverSum = Math.min(cardTurnover * 0.03, 100000);
@@ -2441,12 +2441,12 @@
             }).join('');
         }
 
-        // Расчет общей премии на основе статистики
+        // Расчет общей премии на основе статистики (ТОЛЬКО ЗА ШТУКИ)
         function calculateTotalPremium(stats) {
             const creditsPremium = stats.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
             const additionalPremium = 
                 (stats.ompCount * 50) +
-                (stats.zpNerezCount * 200) +
+                (stats.zpNerezCount * 300) + // Изменено с 200 на 300
                 (stats.stickerCount * 50) +
                 (stats.yearSubCount * 500) +
                 (stats.monthSubCount * 200) +
@@ -2454,10 +2454,9 @@
                 (stats.zpCardCount * 100) +
                 Math.min(stats.cardTurnover * 0.03, 100000);
             
-            return (stats.dkVolume * 0.01) + 
-                   (stats.vkladVolume * 0.005) + 
-                   (stats.kvc * 50) + 
-                   (stats.krh * 600) +
+            // ТОЛЬКО выплаты за штуки, без процентов от объемов и КВЦ
+            return (stats.krh * 600) +
+                   (stats.vkladCount * 200) +
                    creditsPremium +
                    additionalPremium;
         }
@@ -2660,8 +2659,8 @@
                 
                 weeklyReportsSnapshot.forEach(doc => {
                     const report = doc.data();
-                    // Упрощенный расчет премии для демонстрации
-                    const premium = (report.dkVolume * 0.01) + (report.vkladVolume * 0.005) + (report.kvc * 50) + (report.krh * 600);
+                    // Расчет премии ТОЛЬКО за штуки (без КВЦ и объемов)
+                    const premium = (report.krh * 600) + (report.vkladCount * 200);
                     totalPremium += premium;
                     reportCount++;
                 });
