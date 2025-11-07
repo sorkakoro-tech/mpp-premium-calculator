@@ -403,24 +403,6 @@
             }
         }
 
-        .report-item {
-            background: var(--card-bg);
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .report-date {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .report-stats {
-            font-size: 14px;
-            color: var(--text-color);
-        }
-
         .week-selector {
             display: flex;
             gap: 5px;
@@ -1120,13 +1102,6 @@
                             <i class="fas fa-save"></i> Сохранить отчет
                         </button>
                     </div>
-                    
-                    <div class="reports-history">
-                        <h3>История отчетов</h3>
-                        <div id="reports-history-list">
-                            <!-- История будет загружаться динамически -->
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1396,7 +1371,6 @@
             // Инициализируем калькулятор для МПП
             initializeMPPCalculator();
             initializeReports();
-            loadReportsHistory();
             loadAchievements();
             loadWeekOptions();
             loadLeaderboard('current');
@@ -2165,78 +2139,6 @@
 
         // 🔧 ФУНКЦИИ ДЛЯ ОТЧЕТОВ (МПП)
 
-        // Загрузка истории отчетов
-        async function loadReportsHistory() {
-            if (!currentUser || currentUser.id === 'demo' || !db) {
-                // В демо-режиме показываем демо-отчеты
-                const reportsList = document.getElementById('reports-history-list');
-                reportsList.innerHTML = `
-                    <div class="report-item">
-                        <div class="report-date">01.04 - 07.04</div>
-                        <div class="report-stats">
-                            КВЦ: 5, КРХ: 3, ДК: 2 (500,000₽), Вклады: 1 (100,000₽)
-                            <br>Кредиты: 2 шт. (5,000₽)
-                        </div>
-                    </div>
-                    <div class="report-item">
-                        <div class="report-date">08.04 - 14.04</div>
-                        <div class="report-stats">
-                            КВЦ: 7, КРХ: 5, ДК: 3 (750,000₽), Вклады: 2 (250,000₽)
-                            <br>Кредиты: 3 шт. (7,500₽)
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
-            try {
-                const reportsSnapshot = await db.collection('weeklyReports')
-                    .where('userId', '==', String(currentUser.id))
-                    .orderBy('createdAt', 'desc')
-                    .limit(10)
-                    .get();
-
-                const reportsList = document.getElementById('reports-history-list');
-                reportsList.innerHTML = '';
-
-                if (reportsSnapshot.empty) {
-                    reportsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-color); opacity: 0.7;">Нет сохраненных отчетов</div>';
-                    return;
-                }
-
-                reportsSnapshot.forEach(doc => {
-                    const report = doc.data();
-                    const item = document.createElement('div');
-                    item.className = 'report-item';
-                    
-                    let creditsText = '';
-                    if (report.credits && report.credits.length > 0) {
-                        const creditsPremium = report.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
-                        creditsText = `Кредиты: ${report.credits.length} шт. (${creditsPremium.toLocaleString()}₽)`;
-                    }
-                    
-                    let additionalText = '';
-                    if (report.ompCount > 0 || report.zpNerezCount > 0) {
-                        additionalText = `ОМП: ${report.ompCount || 0}, ЗП нерез: ${report.zpNerezCount || 0}`;
-                    }
-                    
-                    item.innerHTML = `
-                        <div class="report-date">${report.startDate} - ${report.endDate}</div>
-                        <div class="report-stats">
-                            КВЦ: ${report.kvc}, КРХ: ${report.krh}, ДК: ${report.dkCount} (${report.dkVolume.toLocaleString()}₽), Вклады: ${report.vkladCount} (${report.vkladVolume.toLocaleString()}₽)
-                            ${additionalText ? `, ${additionalText}` : ''}
-                            ${creditsText ? `<br>${creditsText}` : ''}
-                        </div>
-                    `;
-                    reportsList.appendChild(item);
-                });
-            } catch (error) {
-                console.error('Ошибка загрузки отчетов:', error);
-                const reportsList = document.getElementById('reports-history-list');
-                reportsList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--accent);">Ошибка загрузки отчетов</div>';
-            }
-        }
-
         // Сохранение еженедельного отчета
         async function saveWeeklyReport() {
             if (!selectedWeek) {
@@ -2332,7 +2234,6 @@
                     });
                     
                     alert('Отчет сохранен!');
-                    loadReportsHistory();
                     
                     // Очищаем форму
                     document.getElementById('report-kvc').value = '0';
@@ -2808,7 +2709,6 @@
                     if (tabId === 'leaderboard-tab') {
                         loadLeaderboard('current');
                     } else if (tabId === 'reports-tab') {
-                        loadReportsHistory();
                         loadWeekOptions();
                     } else if (tabId === 'achievements-tab') {
                         loadAchievements();
