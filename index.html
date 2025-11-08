@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -3966,181 +3967,186 @@ async function generatePDFReport() {
     return;
   }
 
-  // Создаем PDF документ
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  
-  // Устанавливаем шрифт поддерживающий кириллицу
-  doc.setFont('helvetica');
-  
-  // Заголовок
-  doc.setFontSize(20);
-  doc.setTextColor(44, 62, 80);
-  doc.text('Ежемесячный отчет МПП', 105, 20, { align: 'center' });
-  
-  doc.setFontSize(12);
-  doc.setTextColor(127, 140, 141);
-  doc.text(`Период: ${monthlyReportData.monthName}`, 105, 30, { align: 'center' });
-  
-  // Информация о сотруднике и дате
-  doc.setFontSize(10);
-  doc.setTextColor(0, 0, 0);
-  doc.text(`Сотрудник: ${currentUser.firstName} ${currentUser.lastName || ''}`, 20, 45);
-  doc.text(`Дата формирования: ${new Date().toLocaleDateString('ru-RU')}`, 20, 52);
-  
-  let yPosition = 70;
-  
-  // Основные показатели
-  doc.setFontSize(14);
-  doc.setTextColor(44, 62, 80);
-  doc.text('Основные показатели', 20, yPosition);
-  yPosition += 10;
-  
-  doc.setFontSize(10);
-  doc.setTextColor(0, 0, 0);
-  
-  // Таблица основных показателей
-  const mainIndicators = [
-    ['Показатель', 'План', 'Факт', 'Выполнение'],
-    ['КВЦ клиенты', '30', `${monthlyReportData.kvc || 0}`, `${Math.round(((monthlyReportData.kvc || 0) / 30) * 100)}%`],
-    ['КРХ стартовало', '15', `${monthlyReportData.krh || 0}`, `${Math.round(((monthlyReportData.krh || 0) / 15) * 100)}%`],
-    ['ДК объем', '960,000 ₽', `${(monthlyReportData.dkVolume || 0).toLocaleString()} ₽`, `${Math.round(((monthlyReportData.dkVolume || 0) / 960000) * 100)}%`],
-    ['Вклад объем', '1,920,000 ₽', `${(monthlyReportData.vkladVolume || 0).toLocaleString()} ₽`, `${Math.round(((monthlyReportData.vkladVolume || 0) / 1920000) * 100)}%`]
-  ];
-  
-  doc.autoTable({
-    startY: yPosition,
-    head: [mainIndicators[0]],
-    body: mainIndicators.slice(1),
-    theme: 'grid',
-    headStyles: { fillColor: [52, 152, 219] },
-    styles: { fontSize: 9 },
-    margin: { left: 20, right: 20 }
-  });
-  
-  yPosition = doc.lastAutoTable.finalY + 15;
-  
-  // Кредитные продукты
-  if (monthlyReportData.credits && monthlyReportData.credits.length > 0) {
+  try {
+    // Создаем PDF документ
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Устанавливаем шрифт поддерживающий кириллицу
+    doc.setFont('helvetica');
+    
+    // Заголовок
+    doc.setFontSize(20);
+    doc.setTextColor(44, 62, 80);
+    doc.text('Ежемесячный отчет МПП', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(127, 140, 141);
+    doc.text(`Период: ${monthlyReportData.monthName}`, 105, 30, { align: 'center' });
+    
+    // Информация о сотруднике и дате
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Сотрудник: ${currentUser.firstName} ${currentUser.lastName || ''}`, 20, 45);
+    doc.text(`Дата формирования: ${new Date().toLocaleDateString('ru-RU')}`, 20, 52);
+    
+    let yPosition = 70;
+    
+    // Основные показатели
     doc.setFontSize(14);
     doc.setTextColor(44, 62, 80);
-    doc.text('Кредитные продукты', 20, yPosition);
+    doc.text('Основные показатели', 20, yPosition);
     yPosition += 10;
     
-    const creditsData = [['Тип кредита', 'Сумма', 'Пакет защиты', 'ФЗ', 'Премия']];
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
     
-    monthlyReportData.credits.forEach(credit => {
-      const creditTypeName = CREDIT_TYPES[credit.type]?.name || credit.type;
-      const packageName = PACKAGES.find(p => p.value == credit.package)?.name || credit.package;
-      
-      creditsData.push([
-        creditTypeName,
-        `${(credit.amount || 0).toLocaleString()} ₽`,
-        packageName,
-        credit.fz ? 'Да' : 'Нет',
-        `${(credit.premium || 0).toLocaleString()} ₽`
-      ]);
-    });
+    // Таблица основных показателей
+    const mainIndicators = [
+      ['Показатель', 'План', 'Факт', 'Выполнение'],
+      ['КВЦ клиенты', '30', `${monthlyReportData.kvc || 0}`, `${Math.round(((monthlyReportData.kvc || 0) / 30) * 100)}%`],
+      ['КРХ стартовало', '15', `${monthlyReportData.krh || 0}`, `${Math.round(((monthlyReportData.krh || 0) / 15) * 100)}%`],
+      ['ДК объем', '960,000 ₽', `${(monthlyReportData.dkVolume || 0).toLocaleString()} ₽`, `${Math.round(((monthlyReportData.dkVolume || 0) / 960000) * 100)}%`],
+      ['Вклад объем', '1,920,000 ₽', `${(monthlyReportData.vkladVolume || 0).toLocaleString()} ₽`, `${Math.round(((monthlyReportData.vkladVolume || 0) / 1920000) * 100)}%`]
+    ];
     
     doc.autoTable({
       startY: yPosition,
-      head: [creditsData[0]],
-      body: creditsData.slice(1),
+      head: [mainIndicators[0]],
+      body: mainIndicators.slice(1),
       theme: 'grid',
       headStyles: { fillColor: [52, 152, 219] },
-      styles: { fontSize: 8 },
+      styles: { fontSize: 9 },
       margin: { left: 20, right: 20 }
     });
     
     yPosition = doc.lastAutoTable.finalY + 15;
+    
+    // Кредитные продукты
+    if (monthlyReportData.credits && monthlyReportData.credits.length > 0) {
+      doc.setFontSize(14);
+      doc.setTextColor(44, 62, 80);
+      doc.text('Кредитные продукты', 20, yPosition);
+      yPosition += 10;
+      
+      const creditsData = [['Тип кредита', 'Сумма', 'Пакет защиты', 'ФЗ', 'Премия']];
+      
+      monthlyReportData.credits.forEach(credit => {
+        const creditTypeName = CREDIT_TYPES[credit.type]?.name || credit.type;
+        const packageName = PACKAGES.find(p => p.value == credit.package)?.name || credit.package;
+        
+        creditsData.push([
+          creditTypeName,
+          `${(credit.amount || 0).toLocaleString()} ₽`,
+          packageName,
+          credit.fz ? 'Да' : 'Нет',
+          `${(credit.premium || 0).toLocaleString()} ₽`
+        ]);
+      });
+      
+      doc.autoTable({
+        startY: yPosition,
+        head: [creditsData[0]],
+        body: creditsData.slice(1),
+        theme: 'grid',
+        headStyles: { fillColor: [52, 152, 219] },
+        styles: { fontSize: 8 },
+        margin: { left: 20, right: 20 }
+      });
+      
+      yPosition = doc.lastAutoTable.finalY + 15;
+    }
+    
+    // Дополнительные продукты
+    doc.setFontSize(14);
+    doc.setTextColor(44, 62, 80);
+    doc.text('Дополнительные продукты', 20, yPosition);
+    yPosition += 10;
+    
+    const additionalData = [['Продукт', 'Количество', 'Премия']];
+    
+    const additionalProducts = [
+      ['Стикеры', monthlyReportData.stickerCount || 0, (monthlyReportData.stickerCount || 0) * 50],
+      ['Подписки годовые', monthlyReportData.yearSubCount || 0, (monthlyReportData.yearSubCount || 0) * 500],
+      ['Подписки ежемесячные', monthlyReportData.monthSubCount || 0, (monthlyReportData.monthSubCount || 0) * 200],
+      ['КРХ Лимит', monthlyReportData.krhLimitCount || 0, (monthlyReportData.krhLimitCount || 0) * 100],
+      ['ЗП карты', monthlyReportData.zpCardCount || 0, (monthlyReportData.zpCardCount || 0) * 100],
+      ['ОМП', monthlyReportData.ompCount || 0, (monthlyReportData.ompCount || 0) * 50],
+      ['ЗП нерез', monthlyReportData.zpNerezCount || 0, (monthlyReportData.zpNerezCount || 0) * 300],
+      ['Оборот по картам', (monthlyReportData.cardTurnover || 0).toLocaleString() + ' ₽', Math.min((monthlyReportData.cardTurnover || 0) * 0.03, 100000)]
+    ];
+    
+    additionalProducts.forEach(product => {
+      additionalData.push([product[0], product[1], `${product[2].toLocaleString()} ₽`]);
+    });
+    
+    doc.autoTable({
+      startY: yPosition,
+      head: [additionalData[0]],
+      body: additionalData.slice(1),
+      theme: 'grid',
+      headStyles: { fillColor: [52, 152, 219] },
+      styles: { fontSize: 9 },
+      margin: { left: 20, right: 20 }
+    });
+    
+    yPosition = doc.lastAutoTable.finalY + 15;
+    
+    // Чемпионат профессионалов
+    doc.setFontSize(14);
+    doc.setTextColor(44, 62, 80);
+    doc.text('Чемпионат профессионалов', 20, yPosition);
+    yPosition += 10;
+    
+    let skbPoints = (monthlyReportData.skbCount || 0) < 3 ? 1 : -1;
+    let crmPoints = 0;
+    
+    if ((monthlyReportData.crmCalls || 0) <= 50) {
+      crmPoints = 2;
+    } else if ((monthlyReportData.crmCalls || 0) > 50 && (monthlyReportData.crmCalls || 0) < 60) {
+      crmPoints = 0;
+    } else {
+      crmPoints = -2;
+    }
+    
+    const championshipData = [
+      ['Показатель', 'Значение', 'Баллы'],
+      ['СКБ (дебетовые с 2%)', monthlyReportData.skbCount || 0, skbPoints],
+      ['Дозвоны CRM', monthlyReportData.crmCalls || 0, crmPoints]
+    ];
+    
+    doc.autoTable({
+      startY: yPosition,
+      head: [championshipData[0]],
+      body: championshipData.slice(1),
+      theme: 'grid',
+      headStyles: { fillColor: [52, 152, 219] },
+      styles: { fontSize: 9 },
+      margin: { left: 20, right: 20 }
+    });
+    
+    yPosition = doc.lastAutoTable.finalY + 20;
+    
+    // Итоговая премия
+    const totalPremium = calculateTotalPremium(monthlyReportData);
+    
+    doc.setFontSize(16);
+    doc.setTextColor(39, 174, 96);
+    doc.text(`Итоговая премия: ${Math.round(totalPremium).toLocaleString()} ₽`, 105, yPosition, { align: 'center' });
+    
+    yPosition += 10;
+    
+    // Футер
+    doc.setFontSize(10);
+    doc.setTextColor(127, 140, 141);
+    doc.text('Отчет сформирован в системе расчета премии МПП', 105, yPosition, { align: 'center' });
+    
+    // Сохраняем PDF
+    doc.save(`Отчет_МПП_${monthlyReportData.monthName.replace(' ', '_')}.pdf`);
+  } catch (error) {
+    console.error('Ошибка генерации PDF:', error);
+    alert('Ошибка при генерации PDF: ' + error.message);
   }
-  
-  // Дополнительные продукты
-  doc.setFontSize(14);
-  doc.setTextColor(44, 62, 80);
-  doc.text('Дополнительные продукты', 20, yPosition);
-  yPosition += 10;
-  
-  const additionalData = [['Продукт', 'Количество', 'Премия']];
-  
-  const additionalProducts = [
-    ['Стикеры', monthlyReportData.stickerCount || 0, (monthlyReportData.stickerCount || 0) * 50],
-    ['Подписки годовые', monthlyReportData.yearSubCount || 0, (monthlyReportData.yearSubCount || 0) * 500],
-    ['Подписки ежемесячные', monthlyReportData.monthSubCount || 0, (monthlyReportData.monthSubCount || 0) * 200],
-    ['КРХ Лимит', monthlyReportData.krhLimitCount || 0, (monthlyReportData.krhLimitCount || 0) * 100],
-    ['ЗП карты', monthlyReportData.zpCardCount || 0, (monthlyReportData.zpCardCount || 0) * 100],
-    ['ОМП', monthlyReportData.ompCount || 0, (monthlyReportData.ompCount || 0) * 50],
-    ['ЗП нерез', monthlyReportData.zpNerezCount || 0, (monthlyReportData.zpNerezCount || 0) * 300],
-    ['Оборот по картам', (monthlyReportData.cardTurnover || 0).toLocaleString() + ' ₽', Math.min((monthlyReportData.cardTurnover || 0) * 0.03, 100000)]
-  ];
-  
-  additionalProducts.forEach(product => {
-    additionalData.push([product[0], product[1], `${product[2].toLocaleString()} ₽`]);
-  });
-  
-  doc.autoTable({
-    startY: yPosition,
-    head: [additionalData[0]],
-    body: additionalData.slice(1),
-    theme: 'grid',
-    headStyles: { fillColor: [52, 152, 219] },
-    styles: { fontSize: 9 },
-    margin: { left: 20, right: 20 }
-  });
-  
-  yPosition = doc.lastAutoTable.finalY + 15;
-  
-  // Чемпионат профессионалов
-  doc.setFontSize(14);
-  doc.setTextColor(44, 62, 80);
-  doc.text('Чемпионат профессионалов', 20, yPosition);
-  yPosition += 10;
-  
-  let skbPoints = (monthlyReportData.skbCount || 0) < 3 ? 1 : -1;
-  let crmPoints = 0;
-  
-  if ((monthlyReportData.crmCalls || 0) <= 50) {
-    crmPoints = 2;
-  } else if ((monthlyReportData.crmCalls || 0) > 50 && (monthlyReportData.crmCalls || 0) < 60) {
-    crmPoints = 0;
-  } else {
-    crmPoints = -2;
-  }
-  
-  const championshipData = [
-    ['Показатель', 'Значение', 'Баллы'],
-    ['СКБ (дебетовые с 2%)', monthlyReportData.skbCount || 0, skbPoints],
-    ['Дозвоны CRM', monthlyReportData.crmCalls || 0, crmPoints]
-  ];
-  
-  doc.autoTable({
-    startY: yPosition,
-    head: [championshipData[0]],
-    body: championshipData.slice(1),
-    theme: 'grid',
-    headStyles: { fillColor: [52, 152, 219] },
-    styles: { fontSize: 9 },
-    margin: { left: 20, right: 20 }
-  });
-  
-  yPosition = doc.lastAutoTable.finalY + 20;
-  
-  // Итоговая премия
-  const totalPremium = calculateTotalPremium(monthlyReportData);
-  
-  doc.setFontSize(16);
-  doc.setTextColor(39, 174, 96);
-  doc.text(`Итоговая премия: ${Math.round(totalPremium).toLocaleString()} ₽`, 105, yPosition, { align: 'center' });
-  
-  yPosition += 10;
-  
-  // Футер
-  doc.setFontSize(10);
-  doc.setTextColor(127, 140, 141);
-  doc.text('Отчет сформирован в системе расчета премии МПП', 105, yPosition, { align: 'center' });
-  
-  // Сохраняем PDF
-  doc.save(`Отчет_МПП_${monthlyReportData.monthName.replace(' ', '_')}.pdf`);
 }
 
 // 🔧 ФУНКЦИИ АДМИН-ПАНЕЛИ
