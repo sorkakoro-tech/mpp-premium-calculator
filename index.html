@@ -8,9 +8,6 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 /* Стили остаются без изменений */
@@ -954,114 +951,23 @@ input:focus, select:focus {
   border-top: 2px solid var(--border-color);
 }
 
-/* Стили для экспорта PDF */
-.export-section {
-  margin-top: 20px;
+/* Стили для редактирования премии */
+.edit-premium-btn {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 14px;
 }
 
-.export-controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+.edit-premium-btn:hover {
+  color: var(--primary);
 }
 
-.btn-pdf {
-  background: #e74c3c;
-}
-
-.btn-pdf:hover {
-  background: #c0392b;
-}
-
-.pdf-preview {
-  background: white;
-  color: black;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  display: none;
-}
-
-.pdf-header {
-  text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 3px solid #2c3e50;
-}
-
-.pdf-title {
-  font-size: 24px;
-  color: #2c3e50;
-  margin-bottom: 5px;
-}
-
-.pdf-subtitle {
-  font-size: 16px;
-  color: #7f8c8d;
-}
-
-.pdf-user-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.pdf-section {
-  margin-bottom: 20px;
-}
-
-.pdf-section-title {
-  font-size: 18px;
-  color: #2c3e50;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 2px solid #3498db;
-}
-
-.pdf-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 15px;
-}
-
-.pdf-table th {
-  background: #3498db;
-  color: white;
-  padding: 10px;
-  text-align: left;
-}
-
-.pdf-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.pdf-table tr:nth-child(even) {
-  background: #f8f9fa;
-}
-
-.pdf-total {
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: #27ae60;
-  margin-top: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.pdf-footer {
-  text-align: center;
-  margin-top: 30px;
-  padding-top: 15px;
-  border-top: 1px solid #ddd;
-  color: #7f8c8d;
-  font-size: 12px;
+.no-report {
+  color: var(--accent);
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
@@ -1092,10 +998,6 @@ input:focus, select:focus {
   
   .period-btn {
     min-width: auto;
-  }
-  
-  .export-controls {
-    flex-direction: column;
   }
 }
 </style>
@@ -1552,6 +1454,13 @@ input:focus, select:focus {
 <input type="number" id="monthly-report-crm-calls" min="0" value="0">
 </div>
 </div>
+
+<!-- Поле для корректировки премии -->
+<div class="form-group">
+<label for="monthly-adjusted-premium">Фактическая премия (можно скорректировать):</label>
+<input type="number" id="monthly-adjusted-premium" min="0" value="0">
+</div>
+
 <button class="btn" id="save-monthly-report-btn">
 <i class="fas fa-save"></i> Сохранить отчет
 </button>
@@ -1637,111 +1546,6 @@ input:focus, select:focus {
 <h3>Мои достижения</h3>
 <div class="badge-grid" id="badge-grid">
 <!-- Бейджи будут добавляться динамически -->
-</div>
-
-<!-- НОВЫЙ РАЗДЕЛ: Экспорт отчетов в PDF -->
-<div class="section export-section">
-<h2 class="section-title"><i class="fas fa-file-pdf"></i> Экспорт отчетов</h2>
-<p style="margin-bottom: 15px;">Экспортируйте ваши ежемесячные отчеты в красивый PDF-формат для предоставления руководству или для личного архива.</p>
-<div class="form-group">
-<label for="export-month-select">Выберите месяц для экспорта:</label>
-<select id="export-month-select" class="month-select">
-<!-- Месяцы будут заполнены динамически -->
-</select>
-</div>
-<div class="export-controls">
-<button class="btn btn-pdf" id="preview-pdf-btn">
-<i class="fas fa-eye"></i> Предпросмотр отчета
-</button>
-<button class="btn" id="generate-pdf-btn">
-<i class="fas fa-download"></i> Скачать PDF
-</button>
-</div>
-
-<!-- Превью PDF -->
-<div class="pdf-preview" id="pdf-preview">
-<div class="pdf-header">
-<div class="pdf-title">Ежемесячный отчет МПП</div>
-<div class="pdf-subtitle" id="pdf-period">Период: </div>
-</div>
-<div class="pdf-user-info">
-<div>
-<strong>Сотрудник:</strong> <span id="pdf-employee-name"></span>
-</div>
-<div>
-<strong>Дата формирования:</strong> <span id="pdf-generation-date"></span>
-</div>
-</div>
-<div class="pdf-section">
-<div class="pdf-section-title">Основные показатели</div>
-<table class="pdf-table">
-<thead>
-<tr>
-<th>Показатель</th>
-<th>План</th>
-<th>Факт</th>
-<th>Выполнение</th>
-</tr>
-</thead>
-<tbody id="pdf-main-indicators">
-<!-- Данные будут заполнены динамически -->
-</tbody>
-</table>
-</div>
-<div class="pdf-section">
-<div class="pdf-section-title">Кредитные продукты</div>
-<table class="pdf-table" id="pdf-credits-table">
-<thead>
-<tr>
-<th>Тип кредита</th>
-<th>Сумма</th>
-<th>Пакет защиты</th>
-<th>ФЗ</th>
-<th>Премия</th>
-</tr>
-</thead>
-<tbody>
-<!-- Данные будут заполнены динамически -->
-</tbody>
-</table>
-</div>
-<div class="pdf-section">
-<div class="pdf-section-title">Дополнительные продукты</div>
-<table class="pdf-table" id="pdf-additional-products">
-<thead>
-<tr>
-<th>Продукт</th>
-<th>Количество</th>
-<th>Премия</th>
-</tr>
-</thead>
-<tbody>
-<!-- Данные будут заполнены динамически -->
-</tbody>
-</table>
-</div>
-<div class="pdf-section">
-<div class="pdf-section-title">Чемпионат профессионалов</div>
-<table class="pdf-table" id="pdf-championship">
-<thead>
-<tr>
-<th>Показатель</th>
-<th>Значение</th>
-<th>Баллы</th>
-</tr>
-</thead>
-<tbody>
-<!-- Данные будут заполнены динамически -->
-</tbody>
-</table>
-</div>
-<div class="pdf-total" id="pdf-total-premium">
-Итоговая премия: 0 ₽
-</div>
-<div class="pdf-footer">
-Отчет сформирован в системе расчета премии МПП
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -1976,13 +1780,8 @@ function initializeApp() {
   loadWeekOptions();
   loadMonthOptions();
   loadLeaderboard('week');
-  loadExportMonthOptions();
   
   addCredit();
-  
-  // Инициализация обработчиков для экспорта PDF
-  document.getElementById('preview-pdf-btn').addEventListener('click', previewPDFReport);
-  document.getElementById('generate-pdf-btn').addEventListener('click', generatePDFReport);
 }
 
 // Загрузка данных пользователя
@@ -2121,51 +1920,6 @@ function loadMonthOptions() {
     option.value = `${month.getFullYear()}-${month.getMonth() + 1}`;
     option.textContent = `${MONTHS_GENITIVE[month.getMonth()]} ${month.getFullYear()}`;
     monthSelect.appendChild(option);
-  }
-}
-
-// Загрузка опций месяцев для экспорта
-async function loadExportMonthOptions() {
-  if (!currentUser || currentUser.id === 'demo' || !db) {
-    return;
-  }
-
-  try {
-    const monthlyReportsSnapshot = await db.collection('monthlyReports')
-      .where('userId', '==', String(currentUser.id))
-      .get();
-
-    const exportMonthSelect = document.getElementById('export-month-select');
-    exportMonthSelect.innerHTML = '';
-
-    if (monthlyReportsSnapshot.empty) {
-      exportMonthSelect.innerHTML = '<option value="">Нет доступных отчетов</option>';
-      return;
-    }
-
-    const reports = [];
-    monthlyReportsSnapshot.forEach(doc => {
-      const data = doc.data();
-      reports.push(data);
-    });
-
-    // Сортируем по убыванию даты создания (новые первые)
-    reports.sort((a, b) => {
-      const aTime = a.createdAt ? a.createdAt.toDate().getTime() : 0;
-      const bTime = b.createdAt ? b.createdAt.toDate().getTime() : 0;
-      return bTime - aTime;
-    });
-
-    reports.forEach(report => {
-      const option = document.createElement('option');
-      option.value = report.monthKey;
-      option.textContent = report.monthName;
-      exportMonthSelect.appendChild(option);
-    });
-  } catch (error) {
-    console.error('Ошибка загрузки месяцев для экспорта:', error);
-    const exportMonthSelect = document.getElementById('export-month-select');
-    exportMonthSelect.innerHTML = '<option value="">Ошибка загрузки</option>';
   }
 }
 
@@ -3075,6 +2829,24 @@ async function saveMonthlyReport() {
     }
   });
 
+  // Расчетная премия
+  const calculatedPremium = calculateTotalPremium({
+    krh: krh,
+    vkladCount: vkladCount,
+    credits: credits,
+    ompCount: ompCount,
+    zpNerezCount: zpNerezCount,
+    stickerCount: stickerCount,
+    yearSubCount: yearSubCount,
+    monthSubCount: monthSubCount,
+    krhLimitCount: krhLimitCount,
+    zpCardCount: zpCardCount,
+    cardTurnover: cardTurnover
+  });
+
+  // Фактическая премия (может быть скорректирована пользователем)
+  const adjustedPremium = parseInt(document.getElementById('monthly-adjusted-premium').value) || calculatedPremium;
+
   if (currentUser && currentUser.id !== 'demo' && db) {
     try {
       const existingReportQuery = await db.collection('monthlyReports')
@@ -3110,6 +2882,8 @@ async function saveMonthlyReport() {
         cardTurnover: cardTurnover,
         skbCount: skbCount,
         crmCalls: crmCalls,
+        calculatedPremium: calculatedPremium,
+        adjustedPremium: adjustedPremium,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       
@@ -3132,6 +2906,7 @@ async function saveMonthlyReport() {
       document.getElementById('monthly-report-card-turnover').value = '0';
       document.getElementById('monthly-report-skb-count').value = '0';
       document.getElementById('monthly-report-crm-calls').value = '0';
+      document.getElementById('monthly-adjusted-premium').value = '0';
       
       monthlyReportCreditIds.forEach(id => {
         const creditRow = document.getElementById(`monthly-report-credit-${id}`);
@@ -3139,9 +2914,8 @@ async function saveMonthlyReport() {
       });
       monthlyReportCreditIds = [];
       
-      // Обновляем профиль и опции экспорта
+      // Обновляем профиль
       loadProfile();
-      loadExportMonthOptions();
     } catch (error) {
       console.error('Ошибка сохранения ежемесячного отчета:', error);
       alert('Ошибка при сохранении отчета: ' + error.message);
@@ -3311,7 +3085,7 @@ async function loadLastMonthLeaderboard() {
             // Другие показатели можно добавить по необходимости
           },
           userId: report.userId,
-          premium: calculateTotalPremium(report)
+          premium: report.adjustedPremium || report.calculatedPremium || 0
         });
       }
     }
@@ -3627,7 +3401,6 @@ async function loadProfile() {
   await loadAchievements();
   await loadPremiumHistory();
   await loadProfileStats();
-  await loadExportMonthOptions();
 }
 
 // Загрузка достижений
@@ -3676,18 +3449,66 @@ async function loadPremiumHistory() {
     
     premiumHistoryList.innerHTML = monthlyReportsSnapshot.docs.map(doc => {
       const report = doc.data();
-      const premium = calculateTotalPremium(report);
+      const premium = report.adjustedPremium || report.calculatedPremium || 0;
       
       return `
         <div class="history-item">
           <span class="history-month">${report.monthName}</span>
           <span class="history-premium">${Math.round(premium).toLocaleString()} ₽</span>
+          <button class="edit-premium-btn" data-report-id="${doc.id}" data-month="${report.monthName}">
+            <i class="fas fa-edit"></i>
+          </button>
         </div>
       `;
     }).join('');
+    
+    // Добавляем обработчики для кнопок редактирования
+    document.querySelectorAll('.edit-premium-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const reportId = this.getAttribute('data-report-id');
+        const monthName = this.getAttribute('data-month');
+        editMonthlyPremium(reportId, monthName);
+      });
+    });
   } catch (error) {
     console.error('Ошибка загрузки истории премий:', error);
     showDemoPremiumHistory();
+  }
+}
+
+// Редактирование премии за месяц
+async function editMonthlyPremium(reportId, monthName) {
+  if (!reportId || !db) return;
+  
+  try {
+    const reportDoc = await db.collection('monthlyReports').doc(reportId).get();
+    if (!reportDoc.exists) {
+      alert('Отчет не найден');
+      return;
+    }
+    
+    const report = reportDoc.data();
+    const currentPremium = report.adjustedPremium || report.calculatedPremium || 0;
+    
+    const newPremium = prompt(`Введите фактическую премию за ${monthName}:`, currentPremium);
+    
+    if (newPremium === null) return; // Пользователь отменил
+    
+    const premiumValue = parseInt(newPremium);
+    if (isNaN(premiumValue) || premiumValue < 0) {
+      alert('Пожалуйста, введите корректное число');
+      return;
+    }
+    
+    await db.collection('monthlyReports').doc(reportId).update({
+      adjustedPremium: premiumValue
+    });
+    
+    alert('Премия успешно обновлена!');
+    loadProfile(); // Перезагружаем профиль
+  } catch (error) {
+    console.error('Ошибка обновления премии:', error);
+    alert('Ошибка при обновлении премии');
   }
 }
 
@@ -3701,8 +3522,6 @@ async function loadProfileStats() {
   try {
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
-      .orderBy('createdAt', 'desc')
-      .limit(12)
       .get();
     
     let totalPremium = 0;
@@ -3712,7 +3531,7 @@ async function loadProfileStats() {
     
     monthlyReportsSnapshot.forEach(doc => {
       const report = doc.data();
-      const premium = calculateTotalPremium(report);
+      const premium = report.adjustedPremium || report.calculatedPremium || 0;
       
       totalPremium += premium;
       totalCredits += report.dkCount || 0;
@@ -3735,418 +3554,29 @@ async function loadProfileStats() {
 // Показать демо-данные для истории премий
 function showDemoPremiumHistory() {
   const premiumHistoryList = document.getElementById('premium-history-list');
-  const months = [
-    'Октябрь 2023', 'Сентябрь 2023', 'Август 2023', 
-    'Июль 2023', 'Июнь 2023', 'Май 2023'
-  ];
   
-  premiumHistoryList.innerHTML = months.map((month, index) => {
-    const premium = 25000 + (index * 2000);
-    return `
-      <div class="history-item">
-        <span class="history-month">${month}</span>
-        <span class="history-premium">${premium.toLocaleString()} ₽</span>
-      </div>
-    `;
-  }).join('');
+  premiumHistoryList.innerHTML = `
+    <div class="history-item">
+      <span class="history-month">Октябрь 2023</span>
+      <span class="no-report">Нет отчета</span>
+    </div>
+    <div class="history-item">
+      <span class="history-month">Сентябрь 2023</span>
+      <span class="no-report">Нет отчета</span>
+    </div>
+    <div class="history-item">
+      <span class="history-month">Август 2023</span>
+      <span class="no-report">Нет отчета</span>
+    </div>
+  `;
 }
 
 // Показать демо-данные для статистики профиля
 function showDemoProfileStats() {
-  document.getElementById('total-premium').textContent = '150,000 ₽';
-  document.getElementById('average-premium').textContent = '25,000 ₽';
-  document.getElementById('total-credits').textContent = '45';
-  document.getElementById('total-deposits').textContent = '60';
-}
-
-// 🔧 ФУНКЦИИ ДЛЯ ЭКСПОРТА PDF
-
-// Получение отчета по monthKey
-async function getMonthlyReport(monthKey) {
-  if (!currentUser || currentUser.id === 'demo' || !db) {
-    return null;
-  }
-
-  try {
-    const monthlyReportsSnapshot = await db.collection('monthlyReports')
-      .where('userId', '==', String(currentUser.id))
-      .where('monthKey', '==', monthKey)
-      .get();
-
-    if (monthlyReportsSnapshot.empty) {
-      return null;
-    }
-
-    return monthlyReportsSnapshot.docs[0].data();
-  } catch (error) {
-    console.error('Ошибка загрузки отчета:', error);
-    return null;
-  }
-}
-
-// Предпросмотр PDF отчета
-async function previewPDFReport() {
-  const exportMonthSelect = document.getElementById('export-month-select');
-  const selectedMonthKey = exportMonthSelect.value;
-
-  if (!selectedMonthKey) {
-    alert('Выберите месяц для предпросмотра');
-    return;
-  }
-
-  const monthlyReportData = await getMonthlyReport(selectedMonthKey);
-  if (!monthlyReportData) {
-    alert('Отчет за выбранный месяц не найден');
-    return;
-  }
-
-  // Заполняем данные в превью
-  document.getElementById('pdf-period').textContent = `Период: ${monthlyReportData.monthName}`;
-  document.getElementById('pdf-employee-name').textContent = `${currentUser.firstName} ${currentUser.lastName || ''}`;
-  document.getElementById('pdf-generation-date').textContent = new Date().toLocaleDateString('ru-RU');
-  
-  // Основные показатели
-  const mainIndicators = document.getElementById('pdf-main-indicators');
-  mainIndicators.innerHTML = `
-    <tr>
-      <td>КВЦ клиенты</td>
-      <td>30</td>
-      <td>${monthlyReportData.kvc || 0}</td>
-      <td>${Math.round(((monthlyReportData.kvc || 0) / 30) * 100)}%</td>
-    </tr>
-    <tr>
-      <td>КРХ стартовало</td>
-      <td>15</td>
-      <td>${monthlyReportData.krh || 0}</td>
-      <td>${Math.round(((monthlyReportData.krh || 0) / 15) * 100)}%</td>
-    </tr>
-    <tr>
-      <td>ДК объем</td>
-      <td>960,000 ₽</td>
-      <td>${(monthlyReportData.dkVolume || 0).toLocaleString()} ₽</td>
-      <td>${Math.round(((monthlyReportData.dkVolume || 0) / 960000) * 100)}%</td>
-    </tr>
-    <tr>
-      <td>Вклад объем</td>
-      <td>1,920,000 ₽</td>
-      <td>${(monthlyReportData.vkladVolume || 0).toLocaleString()} ₽</td>
-      <td>${Math.round(((monthlyReportData.vkladVolume || 0) / 1920000) * 100)}%</td>
-    </tr>
-  `;
-  
-  // Кредитные продукты
-  const creditsTable = document.getElementById('pdf-credits-table');
-  let creditsHTML = '';
-  let totalCreditsPremium = 0;
-  
-  if (monthlyReportData.credits && monthlyReportData.credits.length > 0) {
-    monthlyReportData.credits.forEach(credit => {
-      const creditTypeName = CREDIT_TYPES[credit.type]?.name || credit.type;
-      const packageName = PACKAGES.find(p => p.value == credit.package)?.name || credit.package;
-      totalCreditsPremium += credit.premium || 0;
-      
-      creditsHTML += `
-        <tr>
-          <td>${creditTypeName}</td>
-          <td>${(credit.amount || 0).toLocaleString()} ₽</td>
-          <td>${packageName}</td>
-          <td>${credit.fz ? 'Да' : 'Нет'}</td>
-          <td>${(credit.premium || 0).toLocaleString()} ₽</td>
-        </tr>
-      `;
-    });
-  } else {
-    creditsHTML = '<tr><td colspan="5" style="text-align: center;">Нет данных</td></tr>';
-  }
-  
-  creditsTable.innerHTML = creditsHTML;
-  
-  // Дополнительные продукты
-  const additionalProducts = document.getElementById('pdf-additional-products');
-  const additionalPremium = 
-    (monthlyReportData.stickerCount * 50) +
-    (monthlyReportData.yearSubCount * 500) +
-    (monthlyReportData.monthSubCount * 200) +
-    (monthlyReportData.krhLimitCount * 100) +
-    (monthlyReportData.zpCardCount * 100) +
-    (monthlyReportData.ompCount * 50) +
-    (monthlyReportData.zpNerezCount * 300) +
-    Math.min((monthlyReportData.cardTurnover || 0) * 0.03, 100000);
-  
-  additionalProducts.innerHTML = `
-    <tr>
-      <td>Стикеры</td>
-      <td>${monthlyReportData.stickerCount || 0}</td>
-      <td>${((monthlyReportData.stickerCount || 0) * 50).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>Подписки годовые</td>
-      <td>${monthlyReportData.yearSubCount || 0}</td>
-      <td>${((monthlyReportData.yearSubCount || 0) * 500).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>Подписки ежемесячные</td>
-      <td>${monthlyReportData.monthSubCount || 0}</td>
-      <td>${((monthlyReportData.monthSubCount || 0) * 200).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>КРХ Лимит</td>
-      <td>${monthlyReportData.krhLimitCount || 0}</td>
-      <td>${((monthlyReportData.krhLimitCount || 0) * 100).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>ЗП карты</td>
-      <td>${monthlyReportData.zpCardCount || 0}</td>
-      <td>${((monthlyReportData.zpCardCount || 0) * 100).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>ОМП</td>
-      <td>${monthlyReportData.ompCount || 0}</td>
-      <td>${((monthlyReportData.ompCount || 0) * 50).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>ЗП нерез</td>
-      <td>${monthlyReportData.zpNerezCount || 0}</td>
-      <td>${((monthlyReportData.zpNerezCount || 0) * 300).toLocaleString()} ₽</td>
-    </tr>
-    <tr>
-      <td>Оборот по картам</td>
-      <td>${(monthlyReportData.cardTurnover || 0).toLocaleString()} ₽</td>
-      <td>${Math.min((monthlyReportData.cardTurnover || 0) * 0.03, 100000).toLocaleString()} ₽</td>
-    </tr>
-  `;
-  
-  // Чемпионат профессионалов
-  const championship = document.getElementById('pdf-championship');
-  let skbPoints = (monthlyReportData.skbCount || 0) < 3 ? 1 : -1;
-  let crmPoints = 0;
-  
-  if ((monthlyReportData.crmCalls || 0) <= 50) {
-    crmPoints = 2;
-  } else if ((monthlyReportData.crmCalls || 0) > 50 && (monthlyReportData.crmCalls || 0) < 60) {
-    crmPoints = 0;
-  } else {
-    crmPoints = -2;
-  }
-  
-  championship.innerHTML = `
-    <tr>
-      <td>СКБ (дебетовые с 2%)</td>
-      <td>${monthlyReportData.skbCount || 0}</td>
-      <td>${skbPoints}</td>
-    </tr>
-    <tr>
-      <td>Дозвоны CRM</td>
-      <td>${monthlyReportData.crmCalls || 0}</td>
-      <td>${crmPoints}</td>
-    </tr>
-  `;
-  
-  // Итоговая премия
-  const totalPremium = calculateTotalPremium(monthlyReportData);
-  document.getElementById('pdf-total-premium').textContent = `Итоговая премия: ${Math.round(totalPremium).toLocaleString()} ₽`;
-  
-  // Показываем превью
-  document.getElementById('pdf-preview').style.display = 'block';
-  document.getElementById('pdf-preview').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Генерация PDF отчета
-async function generatePDFReport() {
-  const exportMonthSelect = document.getElementById('export-month-select');
-  const selectedMonthKey = exportMonthSelect.value;
-
-  if (!selectedMonthKey) {
-    alert('Выберите месяц для экспорта');
-    return;
-  }
-
-  const monthlyReportData = await getMonthlyReport(selectedMonthKey);
-  if (!monthlyReportData) {
-    alert('Отчет за выбранный месяц не найден');
-    return;
-  }
-
-  try {
-    // Создаем PDF документ
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Устанавливаем шрифт поддерживающий кириллицу
-    doc.setFont('helvetica');
-    
-    // Заголовок
-    doc.setFontSize(20);
-    doc.setTextColor(44, 62, 80);
-    doc.text('Ежемесячный отчет МПП', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.setTextColor(127, 140, 141);
-    doc.text(`Период: ${monthlyReportData.monthName}`, 105, 30, { align: 'center' });
-    
-    // Информация о сотруднике и дате
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Сотрудник: ${currentUser.firstName} ${currentUser.lastName || ''}`, 20, 45);
-    doc.text(`Дата формирования: ${new Date().toLocaleDateString('ru-RU')}`, 20, 52);
-    
-    let yPosition = 70;
-    
-    // Основные показатели
-    doc.setFontSize(14);
-    doc.setTextColor(44, 62, 80);
-    doc.text('Основные показатели', 20, yPosition);
-    yPosition += 10;
-    
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    
-    // Таблица основных показателей
-    const mainIndicators = [
-      ['Показатель', 'План', 'Факт', 'Выполнение'],
-      ['КВЦ клиенты', '30', `${monthlyReportData.kvc || 0}`, `${Math.round(((monthlyReportData.kvc || 0) / 30) * 100)}%`],
-      ['КРХ стартовало', '15', `${monthlyReportData.krh || 0}`, `${Math.round(((monthlyReportData.krh || 0) / 15) * 100)}%`],
-      ['ДК объем', '960,000 ₽', `${(monthlyReportData.dkVolume || 0).toLocaleString()} ₽`, `${Math.round(((monthlyReportData.dkVolume || 0) / 960000) * 100)}%`],
-      ['Вклад объем', '1,920,000 ₽', `${(monthlyReportData.vkladVolume || 0).toLocaleString()} ₽`, `${Math.round(((monthlyReportData.vkladVolume || 0) / 1920000) * 100)}%`]
-    ];
-    
-    doc.autoTable({
-      startY: yPosition,
-      head: [mainIndicators[0]],
-      body: mainIndicators.slice(1),
-      theme: 'grid',
-      headStyles: { fillColor: [52, 152, 219] },
-      styles: { fontSize: 9 },
-      margin: { left: 20, right: 20 }
-    });
-    
-    yPosition = doc.lastAutoTable.finalY + 15;
-    
-    // Кредитные продукты
-    if (monthlyReportData.credits && monthlyReportData.credits.length > 0) {
-      doc.setFontSize(14);
-      doc.setTextColor(44, 62, 80);
-      doc.text('Кредитные продукты', 20, yPosition);
-      yPosition += 10;
-      
-      const creditsData = [['Тип кредита', 'Сумма', 'Пакет защиты', 'ФЗ', 'Премия']];
-      
-      monthlyReportData.credits.forEach(credit => {
-        const creditTypeName = CREDIT_TYPES[credit.type]?.name || credit.type;
-        const packageName = PACKAGES.find(p => p.value == credit.package)?.name || credit.package;
-        
-        creditsData.push([
-          creditTypeName,
-          `${(credit.amount || 0).toLocaleString()} ₽`,
-          packageName,
-          credit.fz ? 'Да' : 'Нет',
-          `${(credit.premium || 0).toLocaleString()} ₽`
-        ]);
-      });
-      
-      doc.autoTable({
-        startY: yPosition,
-        head: [creditsData[0]],
-        body: creditsData.slice(1),
-        theme: 'grid',
-        headStyles: { fillColor: [52, 152, 219] },
-        styles: { fontSize: 8 },
-        margin: { left: 20, right: 20 }
-      });
-      
-      yPosition = doc.lastAutoTable.finalY + 15;
-    }
-    
-    // Дополнительные продукты
-    doc.setFontSize(14);
-    doc.setTextColor(44, 62, 80);
-    doc.text('Дополнительные продукты', 20, yPosition);
-    yPosition += 10;
-    
-    const additionalData = [['Продукт', 'Количество', 'Премия']];
-    
-    const additionalProducts = [
-      ['Стикеры', monthlyReportData.stickerCount || 0, (monthlyReportData.stickerCount || 0) * 50],
-      ['Подписки годовые', monthlyReportData.yearSubCount || 0, (monthlyReportData.yearSubCount || 0) * 500],
-      ['Подписки ежемесячные', monthlyReportData.monthSubCount || 0, (monthlyReportData.monthSubCount || 0) * 200],
-      ['КРХ Лимит', monthlyReportData.krhLimitCount || 0, (monthlyReportData.krhLimitCount || 0) * 100],
-      ['ЗП карты', monthlyReportData.zpCardCount || 0, (monthlyReportData.zpCardCount || 0) * 100],
-      ['ОМП', monthlyReportData.ompCount || 0, (monthlyReportData.ompCount || 0) * 50],
-      ['ЗП нерез', monthlyReportData.zpNerezCount || 0, (monthlyReportData.zpNerezCount || 0) * 300],
-      ['Оборот по картам', (monthlyReportData.cardTurnover || 0).toLocaleString() + ' ₽', Math.min((monthlyReportData.cardTurnover || 0) * 0.03, 100000)]
-    ];
-    
-    additionalProducts.forEach(product => {
-      additionalData.push([product[0], product[1], `${product[2].toLocaleString()} ₽`]);
-    });
-    
-    doc.autoTable({
-      startY: yPosition,
-      head: [additionalData[0]],
-      body: additionalData.slice(1),
-      theme: 'grid',
-      headStyles: { fillColor: [52, 152, 219] },
-      styles: { fontSize: 9 },
-      margin: { left: 20, right: 20 }
-    });
-    
-    yPosition = doc.lastAutoTable.finalY + 15;
-    
-    // Чемпионат профессионалов
-    doc.setFontSize(14);
-    doc.setTextColor(44, 62, 80);
-    doc.text('Чемпионат профессионалов', 20, yPosition);
-    yPosition += 10;
-    
-    let skbPoints = (monthlyReportData.skbCount || 0) < 3 ? 1 : -1;
-    let crmPoints = 0;
-    
-    if ((monthlyReportData.crmCalls || 0) <= 50) {
-      crmPoints = 2;
-    } else if ((monthlyReportData.crmCalls || 0) > 50 && (monthlyReportData.crmCalls || 0) < 60) {
-      crmPoints = 0;
-    } else {
-      crmPoints = -2;
-    }
-    
-    const championshipData = [
-      ['Показатель', 'Значение', 'Баллы'],
-      ['СКБ (дебетовые с 2%)', monthlyReportData.skbCount || 0, skbPoints],
-      ['Дозвоны CRM', monthlyReportData.crmCalls || 0, crmPoints]
-    ];
-    
-    doc.autoTable({
-      startY: yPosition,
-      head: [championshipData[0]],
-      body: championshipData.slice(1),
-      theme: 'grid',
-      headStyles: { fillColor: [52, 152, 219] },
-      styles: { fontSize: 9 },
-      margin: { left: 20, right: 20 }
-    });
-    
-    yPosition = doc.lastAutoTable.finalY + 20;
-    
-    // Итоговая премия
-    const totalPremium = calculateTotalPremium(monthlyReportData);
-    
-    doc.setFontSize(16);
-    doc.setTextColor(39, 174, 96);
-    doc.text(`Итоговая премия: ${Math.round(totalPremium).toLocaleString()} ₽`, 105, yPosition, { align: 'center' });
-    
-    yPosition += 10;
-    
-    // Футер
-    doc.setFontSize(10);
-    doc.setTextColor(127, 140, 141);
-    doc.text('Отчет сформирован в системе расчета премии МПП', 105, yPosition, { align: 'center' });
-    
-    // Сохраняем PDF
-    doc.save(`Отчет_МПП_${monthlyReportData.monthName.replace(' ', '_')}.pdf`);
-  } catch (error) {
-    console.error('Ошибка генерации PDF:', error);
-    alert('Ошибка при генерации PDF: ' + error.message);
-  }
+  document.getElementById('total-premium').textContent = '0 ₽';
+  document.getElementById('average-premium').textContent = '0 ₽';
+  document.getElementById('total-credits').textContent = '0';
+  document.getElementById('total-deposits').textContent = '0';
 }
 
 // 🔧 ФУНКЦИИ АДМИН-ПАНЕЛИ
