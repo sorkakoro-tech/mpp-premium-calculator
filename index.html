@@ -1896,29 +1896,36 @@ function loadWeekOptions() {
   }
 }
 
-// Загрузка опций месяцев для выбора
+// Загрузка опций месяцев для выбора - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function loadMonthOptions() {
   const monthSelect = document.getElementById('month-select');
   const today = new Date();
   const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth();
+  const currentMonth = today.getMonth() + 1; // 1-12
   
   monthSelect.innerHTML = '';
   
-  // Добавляем предыдущий месяц (для отчета)
-  const prevMonth = new Date(currentYear, currentMonth - 1, 1);
-  const prevMonthOption = document.createElement('option');
-  prevMonthOption.value = `${prevMonth.getFullYear()}-${prevMonth.getMonth() + 1}`;
-  prevMonthOption.textContent = `${MONTHS_GENITIVE[prevMonth.getMonth()]} ${prevMonth.getFullYear()}`;
-  prevMonthOption.selected = true;
-  monthSelect.appendChild(prevMonthOption);
-  
-  // Добавляем предыдущие месяцы за последний год
-  for (let i = 2; i <= 12; i++) {
-    const month = new Date(currentYear, currentMonth - i, 1);
+  // Генерируем 12 последних месяцев (текущий месяц и 11 предыдущих)
+  for (let i = 0; i < 12; i++) {
+    let year = currentYear;
+    let month = currentMonth - i;
+    
+    // Корректируем год и месяц если месяц меньше 1
+    if (month < 1) {
+      month += 12;
+      year -= 1;
+    }
+    
+    const monthDate = new Date(year, month - 1, 1);
     const option = document.createElement('option');
-    option.value = `${month.getFullYear()}-${month.getMonth() + 1}`;
-    option.textContent = `${MONTHS_GENITIVE[month.getMonth()]} ${month.getFullYear()}`;
+    option.value = `${year}-${month}`;
+    option.textContent = `${MONTHS_GENITIVE[month - 1]} ${year}`;
+    
+    // Если это текущий месяц, помечаем его как выбранный
+    if (i === 0) {
+      option.selected = true;
+    }
+    
     monthSelect.appendChild(option);
   }
 }
@@ -2780,10 +2787,11 @@ async function saveMonthlyReport() {
   const reportMonth = new Date(year, month - 1, 1);
   const nextMonth = new Date(year, month, 1);
   
-  if (today < nextMonth || today.getDate() > 10) {
-    alert('Ежемесячный отчет можно подавать только с 1 по 10 число следующего месяца');
-    return;
-  }
+  // Убираем проверку на первые 10 дней, чтобы можно было подавать отчеты за любые месяцы из последних 12
+  // if (today < nextMonth || today.getDate() > 10) {
+  //   alert('Ежемесячный отчет можно подавать только с 1 по 10 число следующего месяца');
+  //   return;
+  // }
 
   const kvc = parseInt(document.getElementById('monthly-report-kvc').value) || 0;
   const krh = parseInt(document.getElementById('monthly-report-krh').value) || 0;
@@ -2855,39 +2863,64 @@ async function saveMonthlyReport() {
         .get();
 
       if (!existingReportQuery.empty) {
-        alert('Ежемесячный отчет за этот месяц уже существует');
-        return;
+        // Если отчет уже существует, обновляем его
+        const existingReportDoc = existingReportQuery.docs[0];
+        await db.collection('monthlyReports').doc(existingReportDoc.id).update({
+          kvc: kvc,
+          krh: krh,
+          dkVolume: dkVolume,
+          vkladVolume: vkladVolume,
+          dkCount: dkCount,
+          vkladCount: vkladCount,
+          credits: credits,
+          stickerCount: stickerCount,
+          yearSubCount: yearSubCount,
+          monthSubCount: monthSubCount,
+          krhLimitCount: krhLimitCount,
+          zpCardCount: zpCardCount,
+          ompCount: ompCount,
+          zpNerezCount: zpNerezCount,
+          cardTurnover: cardTurnover,
+          skbCount: skbCount,
+          crmCalls: crmCalls,
+          calculatedPremium: calculatedPremium,
+          adjustedPremium: adjustedPremium,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Ежемесячный отчет обновлен!');
+      } else {
+        // Создаем новый отчет
+        await db.collection('monthlyReports').add({
+          userId: String(currentUser.id),
+          monthKey: selectedMonth,
+          year: year,
+          month: month,
+          monthName: `${MONTHS_GENITIVE[month-1]} ${year}`,
+          kvc: kvc,
+          krh: krh,
+          dkVolume: dkVolume,
+          vkladVolume: vkladVolume,
+          dkCount: dkCount,
+          vkladCount: vkladCount,
+          credits: credits,
+          stickerCount: stickerCount,
+          yearSubCount: yearSubCount,
+          monthSubCount: monthSubCount,
+          krhLimitCount: krhLimitCount,
+          zpCardCount: zpCardCount,
+          ompCount: ompCount,
+          zpNerezCount: zpNerezCount,
+          cardTurnover: cardTurnover,
+          skbCount: skbCount,
+          crmCalls: crmCalls,
+          calculatedPremium: calculatedPremium,
+          adjustedPremium: adjustedPremium,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        alert('Ежемесячный отчет сохранен!');
       }
-
-      await db.collection('monthlyReports').add({
-        userId: String(currentUser.id),
-        monthKey: selectedMonth,
-        year: year,
-        month: month,
-        monthName: `${MONTHS_GENITIVE[month-1]} ${year}`,
-        kvc: kvc,
-        krh: krh,
-        dkVolume: dkVolume,
-        vkladVolume: vkladVolume,
-        dkCount: dkCount,
-        vkladCount: vkladCount,
-        credits: credits,
-        stickerCount: stickerCount,
-        yearSubCount: yearSubCount,
-        monthSubCount: monthSubCount,
-        krhLimitCount: krhLimitCount,
-        zpCardCount: zpCardCount,
-        ompCount: ompCount,
-        zpNerezCount: zpNerezCount,
-        cardTurnover: cardTurnover,
-        skbCount: skbCount,
-        crmCalls: crmCalls,
-        calculatedPremium: calculatedPremium,
-        adjustedPremium: adjustedPremium,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      
-      alert('Ежемесячный отчет сохранен!');
       
       // Очищаем форму
       document.getElementById('monthly-report-kvc').value = '0';
@@ -3426,7 +3459,7 @@ async function loadAchievements() {
   `).join('');
 }
 
-// Загрузка истории премий
+// Загрузка истории премий - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function loadPremiumHistory() {
   if (!currentUser || currentUser.id === 'demo' || !db) {
     showDemoPremiumHistory();
@@ -3434,28 +3467,61 @@ async function loadPremiumHistory() {
   }
   
   try {
+    // Получаем текущую дату и вычисляем диапазон последних 12 месяцев
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    // Создаем массив monthKey за последние 12 месяцев
+    const monthKeys = [];
+    for (let i = 0; i < 12; i++) {
+      let year = currentYear;
+      let month = currentMonth - i;
+      
+      // Корректируем год и месяц если месяц меньше 1
+      if (month < 1) {
+        month += 12;
+        year -= 1;
+      }
+      
+      monthKeys.push(`${year}-${month}`);
+    }
+    
+    // Загружаем отчеты за последние 12 месяцев
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
-      .orderBy('createdAt', 'desc')
-      .limit(12)
+      .where('monthKey', 'in', monthKeys)
       .get();
     
     const premiumHistoryList = document.getElementById('premium-history-list');
     
     if (monthlyReportsSnapshot.empty) {
-      premiumHistoryList.innerHTML = '<p>У вас пока нет ежемесячных отчетов</p>';
+      premiumHistoryList.innerHTML = '<p>У вас пока нет ежемесячных отчетов за последние 12 месяцев</p>';
       return;
     }
     
-    premiumHistoryList.innerHTML = monthlyReportsSnapshot.docs.map(doc => {
-      const report = doc.data();
+    // Сортируем отчеты по monthKey в обратном порядке (от новых к старым)
+    const reports = [];
+    monthlyReportsSnapshot.forEach(doc => {
+      reports.push({ id: doc.id, ...doc.data() });
+    });
+    
+    reports.sort((a, b) => {
+      const [aYear, aMonth] = a.monthKey.split('-').map(Number);
+      const [bYear, bMonth] = b.monthKey.split('-').map(Number);
+      
+      if (aYear !== bYear) return bYear - aYear;
+      return bMonth - aMonth;
+    });
+    
+    premiumHistoryList.innerHTML = reports.map(report => {
       const premium = report.adjustedPremium || report.calculatedPremium || 0;
       
       return `
         <div class="history-item">
           <span class="history-month">${report.monthName}</span>
           <span class="history-premium">${Math.round(premium).toLocaleString()} ₽</span>
-          <button class="edit-premium-btn" data-report-id="${doc.id}" data-month="${report.monthName}">
+          <button class="edit-premium-btn" data-report-id="${report.id}" data-month="${report.monthName}">
             <i class="fas fa-edit"></i>
           </button>
         </div>
@@ -3512,7 +3578,7 @@ async function editMonthlyPremium(reportId, monthName) {
   }
 }
 
-// Загрузка статистики профиля
+// Загрузка статистики профиля - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function loadProfileStats() {
   if (!currentUser || currentUser.id === 'demo' || !db) {
     showDemoProfileStats();
@@ -3520,8 +3586,30 @@ async function loadProfileStats() {
   }
   
   try {
+    // Получаем текущую дату и вычисляем диапазон последних 12 месяцев
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    // Создаем массив monthKey за последние 12 месяцев
+    const monthKeys = [];
+    for (let i = 0; i < 12; i++) {
+      let year = currentYear;
+      let month = currentMonth - i;
+      
+      // Корректируем год и месяц если месяц меньше 1
+      if (month < 1) {
+        month += 12;
+        year -= 1;
+      }
+      
+      monthKeys.push(`${year}-${month}`);
+    }
+    
+    // Загружаем отчеты за последние 12 месяцев
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
+      .where('monthKey', 'in', monthKeys)
       .get();
     
     let totalPremium = 0;
@@ -3555,28 +3643,43 @@ async function loadProfileStats() {
 function showDemoPremiumHistory() {
   const premiumHistoryList = document.getElementById('premium-history-list');
   
-  premiumHistoryList.innerHTML = `
-    <div class="history-item">
-      <span class="history-month">Октябрь 2023</span>
-      <span class="no-report">Нет отчета</span>
-    </div>
-    <div class="history-item">
-      <span class="history-month">Сентябрь 2023</span>
-      <span class="no-report">Нет отчета</span>
-    </div>
-    <div class="history-item">
-      <span class="history-month">Август 2023</span>
-      <span class="no-report">Нет отчета</span>
-    </div>
-  `;
+  // Генерируем демо-данные за последние 12 месяцев
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  
+  let demoHTML = '';
+  
+  for (let i = 0; i < 12; i++) {
+    const monthDate = new Date(currentYear, currentMonth - i, 1);
+    const monthName = `${MONTHS_GENITIVE[monthDate.getMonth()]} ${monthDate.getFullYear()}`;
+    const premium = Math.floor(Math.random() * 40000) + 10000; // Случайная премия от 10,000 до 50,000
+    
+    demoHTML += `
+      <div class="history-item">
+        <span class="history-month">${monthName}</span>
+        <span class="history-premium">${premium.toLocaleString()} ₽</span>
+        <button class="edit-premium-btn" data-report-id="demo-${i}" data-month="${monthName}">
+          <i class="fas fa-edit"></i>
+        </button>
+      </div>
+    `;
+  }
+  
+  premiumHistoryList.innerHTML = demoHTML;
 }
 
 // Показать демо-данные для статистики профиля
 function showDemoProfileStats() {
-  document.getElementById('total-premium').textContent = '0 ₽';
-  document.getElementById('average-premium').textContent = '0 ₽';
-  document.getElementById('total-credits').textContent = '0';
-  document.getElementById('total-deposits').textContent = '0';
+  const totalPremium = 350000;
+  const averagePremium = 29167;
+  const totalCredits = 45;
+  const totalDeposits = 60;
+  
+  document.getElementById('total-premium').textContent = totalPremium.toLocaleString() + ' ₽';
+  document.getElementById('average-premium').textContent = averagePremium.toLocaleString() + ' ₽';
+  document.getElementById('total-credits').textContent = totalCredits;
+  document.getElementById('total-deposits').textContent = totalDeposits;
 }
 
 // 🔧 ФУНКЦИИ АДМИН-ПАНЕЛИ
@@ -3947,6 +4050,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadLeaderboard('week');
       } else if (tabId === 'reports-tab') {
         loadWeekOptions();
+        loadMonthOptions();
       } else if (tabId === 'profile-tab') {
         loadProfile();
       } else if (tabId === 'admin-tab') {
