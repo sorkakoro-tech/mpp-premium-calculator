@@ -3284,7 +3284,7 @@ async function loadLeaderboard(period = 'week') {
   }
 }
 
-// Загрузка топа за прошлый месяц
+// Загрузка топа за прошлый месяц - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function loadLastMonthLeaderboard() {
   try {
     showLoader("Загрузка топа за прошлый месяц...");
@@ -3293,11 +3293,12 @@ async function loadLastMonthLeaderboard() {
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const monthKey = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}`;
     
-    const monthlyReportsSnapshot = await db.collection('monthlyReports')
-      .where('monthKey', '==', monthKey)
+    // Получаем всех пользователей МПП
+    const usersSnapshot = await db.collection('users')
+      .where('role', '==', 'mpp')
       .get();
 
-    if (monthlyReportsSnapshot.empty) {
+    if (usersSnapshot.empty) {
       document.getElementById('last-month-premium-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
       document.getElementById('last-month-credits-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
       document.getElementById('last-month-deposits-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
@@ -3307,24 +3308,42 @@ async function loadLastMonthLeaderboard() {
 
     const leaderboardData = [];
     
-    for (const reportDoc of monthlyReportsSnapshot.docs) {
-      const report = reportDoc.data();
+    // Для каждого пользователя получаем отчет за прошлый месяц
+    for (const userDoc of usersSnapshot.docs) {
+      const user = userDoc.data();
       
-      const userDoc = await db.collection('users').doc(report.userId).get();
-      if (userDoc.exists) {
-        const user = userDoc.data();
+      try {
+        const monthlyReportQuery = await db.collection('monthlyReports')
+          .where('userId', '==', userDoc.id)
+          .where('monthKey', '==', monthKey)
+          .get();
+
+        let totalStats = {
+          dkCount: 0,
+          vkladCount: 0,
+          krh: 0,
+          credits: []
+        };
         
+        let premium = 0;
+
+        if (!monthlyReportQuery.empty) {
+          const report = monthlyReportQuery.docs[0].data();
+          totalStats.dkCount = report.dkCount || 0;
+          totalStats.vkladCount = report.vkladCount || 0;
+          totalStats.krh = report.krh || 0;
+          totalStats.credits = report.credits || [];
+          premium = report.adjustedPremium || report.calculatedPremium || 0;
+        }
+
         leaderboardData.push({
           user: user,
-          stats: {
-            dkCount: report.dkCount || 0,
-            vkladCount: report.vkladCount || 0,
-            krh: report.krh || 0,
-            credits: report.credits || [],
-          },
-          userId: report.userId,
-          premium: report.adjustedPremium || report.calculatedPremium || 0
+          stats: totalStats,
+          userId: userDoc.id,
+          premium: premium
         });
+      } catch (error) {
+        console.error(`Ошибка загрузки отчета для пользователя ${userDoc.id}:`, error);
       }
     }
     
@@ -3679,7 +3698,8 @@ async function loadPremiumHistory() {
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
     
-    const monthKeys = [];
+    // Генерируем список месяцев для отображения (12 месяцев)
+    const monthsToShow = [];
     for (let i = 0; i < 12; i++) {
       let year = currentYear;
       let month = currentMonth - i;
@@ -3689,54 +3709,62 @@ async function loadPremiumHistory() {
         year -= 1;
       }
       
-      monthKeys.push(`${year}-${month}`);
+      monthsToShow.push({
+        year: year,
+        month: month,
+        monthKey: `${year}-${month}`,
+        monthName: `${MONTHS_GENITIVE[month-1]} ${year}`
+      });
     }
     
+    // Получаем все отчеты пользователя за последние 12 месяцев
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
-      .where('monthKey', 'in', monthKeys)
+      .where('monthKey', 'in', monthsToShow.map(m => m.monthKey))
       .get();
     
+    // Создаем карту отчетов для быстрого доступа
+    const reportsMap = new Map();
+    monthlyReportsSnapshot.forEach(doc => {
+      const report = doc.data();
+      reportsMap.set(report.monthKey, report);
+    });
+    
+    // Создаем историю премий для всех 12 месяцев
     const premiumHistoryList = document.getElementById('premium-history-list');
     
-    if (monthlyReportsSnapshot.empty) {
-      premiumHistoryList.innerHTML = '<p>У вас пока нет ежемесячных отчетов за последние 12 месяцев</p>';
+    if (monthsToShow.length === 0) {
+      premiumHistoryList.innerHTML = '<p>Нет данных для отображения</p>';
       hideLoader();
       return;
     }
     
-    const reports = [];
-    monthlyReportsSnapshot.forEach(doc => {
-      reports.push({ id: doc.id, ...doc.data() });
-    });
-    
-    reports.sort((a, b) => {
-      const [aYear, aMonth] = a.monthKey.split('-').map(Number);
-      const [bYear, bMonth] = b.monthKey.split('-').map(Number);
-      
-      if (aYear !== bYear) return bYear - aYear;
-      return bMonth - aMonth;
-    });
-    
-    premiumHistoryList.innerHTML = reports.map(report => {
-      const premium = report.adjustedPremium || report.calculatedPremium || 0;
+    premiumHistoryList.innerHTML = monthsToShow.map(monthInfo => {
+      const report = reportsMap.get(monthInfo.monthKey);
+      const premium = report ? (report.adjustedPremium || report.calculatedPremium || 0) : 0;
+      const hasReport = !!report;
       
       return `
         <div class="history-item">
-          <span class="history-month">${report.monthName}</span>
+          <span class="history-month">${monthInfo.monthName} ${!hasReport ? '<span class="no-report">(нет отчета)</span>' : ''}</span>
           <span class="history-premium">${Math.round(premium).toLocaleString()} ₽</span>
-          <button class="edit-premium-btn" data-report-id="${report.id}" data-month="${report.monthName}">
-            <i class="fas fa-edit"></i>
-          </button>
+          ${hasReport ? `
+            <button class="edit-premium-btn" data-report-id="${report.id || ''}" data-month="${monthInfo.monthName}">
+              <i class="fas fa-edit"></i>
+            </button>
+          ` : ''}
         </div>
       `;
     }).join('');
     
+    // Добавляем обработчики для кнопок редактирования
     document.querySelectorAll('.edit-premium-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const reportId = this.getAttribute('data-report-id');
         const monthName = this.getAttribute('data-month');
-        editMonthlyPremium(reportId, monthName);
+        if (reportId) {
+          editMonthlyPremium(reportId, monthName);
+        }
       });
     });
     
@@ -3794,7 +3822,8 @@ async function loadProfileStats() {
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
     
-    const monthKeys = [];
+    // Генерируем список месяцев для анализа (12 месяцев)
+    const monthsToAnalyze = [];
     for (let i = 0; i < 12; i++) {
       let year = currentYear;
       let month = currentMonth - i;
@@ -3804,12 +3833,13 @@ async function loadProfileStats() {
         year -= 1;
       }
       
-      monthKeys.push(`${year}-${month}`);
+      monthsToAnalyze.push(`${year}-${month}`);
     }
     
+    // Получаем все отчеты пользователя за последние 12 месяцев
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
-      .where('monthKey', 'in', monthKeys)
+      .where('monthKey', 'in', monthsToAnalyze)
       .get();
     
     let totalPremium = 0;
@@ -3852,18 +3882,22 @@ function showDemoPremiumHistory() {
   
   let demoHTML = '';
   
+  // Показываем 12 месяцев (включая текущий)
   for (let i = 0; i < 12; i++) {
     const monthDate = new Date(currentYear, currentMonth - i, 1);
     const monthName = `${MONTHS_GENITIVE[monthDate.getMonth()]} ${monthDate.getFullYear()}`;
-    const premium = Math.floor(Math.random() * 40000) + 10000;
+    const hasReport = i < 8; // Демо: показываем отчеты за 8 месяцев
+    const premium = hasReport ? Math.floor(Math.random() * 40000) + 10000 : 0;
     
     demoHTML += `
       <div class="history-item">
-        <span class="history-month">${monthName}</span>
+        <span class="history-month">${monthName} ${!hasReport ? '<span class="no-report">(нет отчета)</span>' : ''}</span>
         <span class="history-premium">${premium.toLocaleString()} ₽</span>
-        <button class="edit-premium-btn" data-report-id="demo-${i}" data-month="${monthName}">
-          <i class="fas fa-edit"></i>
-        </button>
+        ${hasReport ? `
+          <button class="edit-premium-btn" data-report-id="demo-${i}" data-month="${monthName}">
+            <i class="fas fa-edit"></i>
+          </button>
+        ` : ''}
       </div>
     `;
   }
