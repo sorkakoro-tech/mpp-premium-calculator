@@ -3621,7 +3621,7 @@ async function loadPremiumHistory() {
     const reportsMap = new Map();
     monthlyReportsSnapshot.forEach(doc => {
       const report = doc.data();
-      reportsMap.set(report.monthKey, report);
+      reportsMap.set(report.monthKey, { ...report, id: doc.id });
     });
     
     // Создаем историю премий для всех 12 месяцев
@@ -3634,16 +3634,16 @@ async function loadPremiumHistory() {
     }
     
     premiumHistoryList.innerHTML = monthsToShow.map(monthInfo => {
-      const report = reportsMap.get(monthInfo.monthKey);
-      const premium = report ? (report.adjustedPremium || report.calculatedPremium || 0) : 0;
-      const hasReport = !!report;
+      const reportData = reportsMap.get(monthInfo.monthKey);
+      const premium = reportData ? (reportData.adjustedPremium || reportData.calculatedPremium || 0) : 0;
+      const hasReport = !!reportData;
       
       return `
         <div class="history-item">
           <span class="history-month">${monthInfo.monthName} ${!hasReport ? '<span class="no-report">(нет отчета)</span>' : ''}</span>
           <span class="history-premium">${Math.round(premium).toLocaleString()} ₽</span>
           ${hasReport ? `
-            <button class="edit-premium-btn" data-report-id="${report.id || ''}" data-month="${monthInfo.monthName}">
+            <button class="edit-premium-btn" data-report-id="${reportData.id}" data-month="${monthInfo.monthName}">
               <i class="fas fa-edit"></i>
             </button>
           ` : ''}
@@ -3672,7 +3672,10 @@ async function loadPremiumHistory() {
 
 // Редактирование премии за месяц
 async function editMonthlyPremium(reportId, monthName) {
-  if (!reportId || !firebaseInitialized) return;
+  if (!reportId || !firebaseInitialized) {
+    showError('В демо-режиме редактирование невозможно');
+    return;
+  }
   
   try {
     const reportDoc = await db.collection('monthlyReports').doc(reportId).get();
@@ -3797,6 +3800,13 @@ function showDemoPremiumHistory() {
   }
   
   premiumHistoryList.innerHTML = demoHTML;
+  
+  // Добавляем обработчики для демо-кнопок редактирования
+  document.querySelectorAll('.edit-premium-btn[data-report-id^="demo-"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      showError('В демо-режиме редактирование невозможно');
+    });
+  });
 }
 
 // Показать демо-данные для статистики профиля
