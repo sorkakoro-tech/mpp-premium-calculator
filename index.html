@@ -1562,12 +1562,6 @@ input:focus, select:focus {
 <div id="last-month-premium-leaderboard">
 <!-- Топ по премии за прошлый месяц будет здесь -->
 </div>
-<div id="last-month-credits-leaderboard">
-<!-- Топ по кредитам за прошлый месяц будет здесь -->
-</div>
-<div id="last-month-deposits-leaderboard">
-<!-- Топ по вкладам за прошлый месяц будет здесь -->
-</div>
 </div>
 </div>
 </div>
@@ -2089,7 +2083,7 @@ function loadMonthOptions() {
     
     const monthDate = new Date(year, month - 1, 1);
     const option = document.createElement('option');
-    option.value = `${year}-${month}`;
+    option.value = `${year}-${month.toString().padStart(2, '0')}`;
     option.textContent = `${MONTHS_GENITIVE[month - 1]} ${year}`;
     
     // Если это текущий месяц, помечаем его как выбранный
@@ -2977,7 +2971,7 @@ async function saveWeeklyReport() {
   }
 }
 
-// Сохранение ежемесячного отчета
+// Сохранение ежемесячного отчета - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function saveMonthlyReport() {
   const monthSelect = document.getElementById('month-select');
   const selectedMonth = monthSelect.value;
@@ -3291,7 +3285,7 @@ async function loadLastMonthLeaderboard() {
     
     const now = new Date();
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const monthKey = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}`;
+    const monthKey = `${lastMonth.getFullYear()}-${(lastMonth.getMonth() + 1).toString().padStart(2, '0')}`;
     
     // Получаем всех пользователей МПП
     const usersSnapshot = await db.collection('users')
@@ -3300,8 +3294,6 @@ async function loadLastMonthLeaderboard() {
 
     if (usersSnapshot.empty) {
       document.getElementById('last-month-premium-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
-      document.getElementById('last-month-credits-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
-      document.getElementById('last-month-deposits-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
       hideLoader();
       return;
     }
@@ -3318,27 +3310,15 @@ async function loadLastMonthLeaderboard() {
           .where('monthKey', '==', monthKey)
           .get();
 
-        let totalStats = {
-          dkCount: 0,
-          vkladCount: 0,
-          krh: 0,
-          credits: []
-        };
-        
         let premium = 0;
 
         if (!monthlyReportQuery.empty) {
           const report = monthlyReportQuery.docs[0].data();
-          totalStats.dkCount = report.dkCount || 0;
-          totalStats.vkladCount = report.vkladCount || 0;
-          totalStats.krh = report.krh || 0;
-          totalStats.credits = report.credits || [];
           premium = report.adjustedPremium || report.calculatedPremium || 0;
         }
 
         leaderboardData.push({
           user: user,
-          stats: totalStats,
           userId: userDoc.id,
           premium: premium
         });
@@ -3351,8 +3331,6 @@ async function loadLastMonthLeaderboard() {
     document.getElementById('last-month-leaderboard').style.display = 'block';
     
     updateLastMonthPremiumLeaderboard(leaderboardData);
-    updateLastMonthCreditsLeaderboard(leaderboardData);
-    updateLastMonthDepositsLeaderboard(leaderboardData);
     hideLoader();
     
   } catch (error) {
@@ -3457,30 +3435,6 @@ function updateCreditsLeaderboard(leaderboardData) {
   }).join('');
 }
 
-// Обновление топа по кредитам за прошлый месяц
-function updateLastMonthCreditsLeaderboard(leaderboardData) {
-  const creditsSorted = [...leaderboardData].sort((a, b) =>
-    (b.stats.dkCount || 0) - (a.stats.dkCount || 0)
-  );
-  
-  const creditsLeaderboard = document.getElementById('last-month-credits-leaderboard');
-  if (creditsSorted.length === 0) {
-    creditsLeaderboard.innerHTML = '<p>Нет данных для отображения</p>';
-    return;
-  }
-  
-  creditsLeaderboard.innerHTML = creditsSorted.slice(0, 10).map((item, index) => {
-    const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
-    return `
-      <div class="leaderboard-item">
-        <span class="rank">${index + 1}</span>
-        <span class="name">${displayName}</span>
-        <span class="value">${item.stats.dkCount || 0} шт.</span>
-      </div>
-    `;
-  }).join('');
-}
-
 // Обновление топа по вкладам
 function updateDepositsLeaderboard(leaderboardData) {
   const depositsSorted = [...leaderboardData].sort((a, b) =>
@@ -3490,30 +3444,6 @@ function updateDepositsLeaderboard(leaderboardData) {
   const depositsLeaderboard = document.getElementById('deposits-leaderboard');
   if (depositsSorted.length === 0) {
     depositsLeaderboard.innerHTML = '<p>Нет данных для отображения</p>';
-    return;
-  }
-  
-  depositsLeaderboard.innerHTML = depositsSorted.slice(0, 10).map((item, index) => {
-    const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
-    return `
-      <div class="leaderboard-item">
-        <span class="rank">${index + 1}</span>
-        <span class="name">${displayName}</span>
-        <span class="value">${item.stats.vkladCount || 0} шт.</span>
-      </div>
-    `;
-  }).join('');
-}
-
-// Обновление топа по вкладам за прошлый месяц
-function updateLastMonthDepositsLeaderboard(leaderboardData) {
-  const depositsSorted = [...leaderboardData].sort((a, b) =>
-    (b.stats.vkladCount || 0) - (a.stats.vkladCount || 0)
-  );
-  
-  const depositsLeaderboard = document.getElementById('last-month-deposits-leaderboard');
-  if (depositsSorted.length === 0) {
-    depositsLeaderboard.innerHTML = '<p>Нет данных за прошлый месяц</p>';
     return;
   }
   
@@ -3551,42 +3481,6 @@ function showDemoLeaderboard(period) {
         <span class="rank">3</span>
         <span class="name">Сидоров Алексей</span>
         <span class="value">40,000 ₽</span>
-      </div>
-    `;
-    
-    document.getElementById('last-month-credits-leaderboard').innerHTML = `
-      <div class="leaderboard-item">
-        <span class="rank">1</span>
-        <span class="name">Иванов Иван</span>
-        <span class="value">15 шт.</span>
-      </div>
-      <div class="leaderboard-item">
-        <span class="rank">2</span>
-        <span class="name">Петров Петр</span>
-        <span class="value">14 шт.</span>
-      </div>
-      <div class="leaderboard-item">
-        <span class="rank">3</span>
-        <span class="name">Сидоров Алексей</span>
-        <span class="value">12 шт.</span>
-      </div>
-    `;
-    
-    document.getElementById('last-month-deposits-leaderboard').innerHTML = `
-      <div class="leaderboard-item">
-        <span class="rank">1</span>
-        <span class="name">Иванов Иван</span>
-        <span class="value">25 шт.</span>
-      </div>
-      <div class="leaderboard-item">
-        <span class="rank">2</span>
-        <span class="name">Петров Петр</span>
-        <span class="value">22 шт.</span>
-      </div>
-      <div class="leaderboard-item">
-        <span class="rank">3</span>
-        <span class="name">Сидоров Алексей</span>
-        <span class="value">20 шт.</span>
       </div>
     `;
     
@@ -3712,7 +3606,7 @@ async function loadPremiumHistory() {
       monthsToShow.push({
         year: year,
         month: month,
-        monthKey: `${year}-${month}`,
+        monthKey: `${year}-${month.toString().padStart(2, '0')}`,
         monthName: `${MONTHS_GENITIVE[month-1]} ${year}`
       });
     }
@@ -3833,7 +3727,7 @@ async function loadProfileStats() {
         year -= 1;
       }
       
-      monthsToAnalyze.push(`${year}-${month}`);
+      monthsToAnalyze.push(`${year}-${month.toString().padStart(2, '0')}`);
     }
     
     // Получаем все отчеты пользователя за последние 12 месяцев
