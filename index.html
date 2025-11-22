@@ -358,6 +358,57 @@ input:focus, select:focus {
   transform: scale(1.1);
 }
 
+.loader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  flex-direction: column;
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+.loader-text {
+  font-size: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: var(--accent);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: none;
+}
+
+.success-message {
+  background: var(--success);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: none;
+}
+
 @media (max-width: 360px) {
   body {
     font-size: 14px;
@@ -634,7 +685,7 @@ input:focus, select:focus {
 
 .chart-container {
   position: relative;
-  width: 250px;
+  width: 100%;
   height: 250px;
   margin: 15px auto;
 }
@@ -1003,6 +1054,16 @@ input:focus, select:focus {
 </style>
 </head>
 <body>
+<!-- Индикатор загрузки -->
+<div class="loader" id="globalLoader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">Загрузка...</div>
+</div>
+
+<!-- Сообщения об ошибках и успехе -->
+<div class="error-message" id="errorMessage"></div>
+<div class="success-message" id="successMessage"></div>
+
 <div class="container">
 <header>
 <h1><i class="fas fa-calculator" id="headerIcon"></i> <span id="headerTitle">Калькулятор премии МПП</span></h1>
@@ -1045,41 +1106,41 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label for="krh_plan">КРХ (план, шт.):</label>
-<input type="number" id="krh_plan" min="0" value="15">
+<input type="number" id="krh_plan" min="0" max="1000" value="15">
 </div>
 <div>
 <label for="krh_fact">КРХ (факт, шт.):</label>
-<input type="number" id="krh_fact" min="0" value="0">
+<input type="number" id="krh_fact" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="vklad_volume_plan">Вклад объем (план, руб.):</label>
-<input type="number" id="vklad_volume_plan" min="0" value="1920000">
+<input type="number" id="vklad_volume_plan" min="0" max="100000000" value="1920000">
 </div>
 <div>
 <label for="vklad_volume_fact">Вклад объем (факт, руб.):</label>
-<input type="number" id="vklad_volume_fact" min="0" value="0">
+<input type="number" id="vklad_volume_fact" min="0" max="100000000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="dk_volume_plan">ДК объем (план, руб.):</label>
-<input type="number" id="dk_volume_plan" min="0" value="960000">
+<input type="number" id="dk_volume_plan" min="0" max="100000000" value="960000">
 </div>
 <div>
 <label for="dk_volume_fact">ДК объем (факт, руб.):</label>
-<input type="number" id="dk_volume_fact" min="0" value="0" readonly style="background-color: #f0f8ff;">
+<input type="number" id="dk_volume_fact" min="0" max="100000000" value="0" readonly style="background-color: #f0f8ff;">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="kvc_plan">КВЦ (план, клиенты):</label>
-<input type="number" id="kvc_plan" min="0" value="30">
+<input type="number" id="kvc_plan" min="0" max="1000" value="30">
 </div>
 <div>
 <label for="kvc_fact">КВЦ (факт, клиенты):</label>
-<input type="number" id="kvc_fact" min="0" value="0">
+<input type="number" id="kvc_fact" min="0" max="1000" value="0">
 </div>
 </div>
 </div>
@@ -1102,55 +1163,55 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label for="vklad_count_fact">Вклады (шт.):</label>
-<input type="number" id="vklad_count_fact" min="0" value="0">
+<input type="number" id="vklad_count_fact" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="sticker_count">Стикеры:</label>
-<input type="number" id="sticker_count" min="0" value="0">
+<input type="number" id="sticker_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="year_sub_count">Подписки годовые:</label>
-<input type="number" id="year_sub_count" min="0" value="0">
+<input type="number" id="year_sub_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="month_sub_count">Подписки ежемесячные:</label>
-<input type="number" id="month_sub_count" min="0" value="0">
+<input type="number" id="month_sub_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="krh_limit_count">КРХ Лимит:</label>
-<input type="number" id="krh_limit_count" min="0" value="0">
+<input type="number" id="krh_limit_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="zp_card_count">ЗП карты:</label>
-<input type="number" id="zp_card_count" min="0" value="0">
+<input type="number" id="zp_card_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="omp_count">ОМП (шт.):</label>
-<input type="number" id="omp_count" min="0" value="0">
+<input type="number" id="omp_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="zp_nerez_count">ЗП нерез (шт.):</label>
-<input type="number" id="zp_nerez_count" min="0" value="0">
+<input type="number" id="zp_nerez_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="card_turnover">Оборот по картам (руб.):</label>
-<input type="number" id="card_turnover" min="0" value="0">
+<input type="number" id="card_turnover" min="0" max="100000000" value="0">
 </div>
 </div>
 </div>
@@ -1161,13 +1222,13 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label for="skb_count">СКБ (дебетовые с 2%):</label>
-<input type="number" id="skb_count" min="0" value="0">
+<input type="number" id="skb_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label for="crm_calls">Дозвоны CRM:</label>
-<input type="number" id="crm_calls" min="0" value="0">
+<input type="number" id="crm_calls" min="0" max="1000" value="0">
 </div>
 </div>
 </div>
@@ -1258,31 +1319,31 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label>КВЦ клиенты:</label>
-<input type="number" id="report-kvc" min="0" value="0">
+<input type="number" id="report-kvc" min="0" max="1000" value="0">
 </div>
 <div>
 <label>КРХ стартовало:</label>
-<input type="number" id="report-krh" min="0" value="0">
+<input type="number" id="report-krh" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ДК объем (руб.):</label>
-<input type="number" id="report-dk-volume" min="0" value="0">
+<input type="number" id="report-dk-volume" min="0" max="100000000" value="0">
 </div>
 <div>
 <label>Вклад объем (руб.):</label>
-<input type="number" id="report-vklad-volume" min="0" value="0">
+<input type="number" id="report-vklad-volume" min="0" max="100000000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ДК кол-во (шт.):</label>
-<input type="number" id="report-dk-count" min="0" value="0">
+<input type="number" id="report-dk-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Вклад кол-во (шт.):</label>
-<input type="number" id="report-vklad-count" min="0" value="0">
+<input type="number" id="report-vklad-count" min="0" max="1000" value="0">
 </div>
 </div>
 <!-- Кредиты в отчетах -->
@@ -1297,52 +1358,52 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label>Стикеры:</label>
-<input type="number" id="report-sticker-count" min="0" value="0">
+<input type="number" id="report-sticker-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Подписки годовые:</label>
-<input type="number" id="report-year-sub-count" min="0" value="0">
+<input type="number" id="report-year-sub-count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>Подписки ежемесячные:</label>
-<input type="number" id="report-month-sub-count" min="0" value="0">
+<input type="number" id="report-month-sub-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>КРХ Лимит:</label>
-<input type="number" id="report-krh-limit-count" min="0" value="0">
+<input type="number" id="report-krh-limit-count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ЗП карты:</label>
-<input type="number" id="report-zp-card-count" min="0" value="0">
+<input type="number" id="report-zp-card-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>ОМП (шт.):</label>
-<input type="number" id="report-omp-count" min="0" value="0">
+<input type="number" id="report-omp-count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ЗП нерез (шт.):</label>
-<input type="number" id="report-zp-nerez-count" min="0" value="0">
+<input type="number" id="report-zp-nerez-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Оборот по картам (руб.):</label>
-<input type="number" id="report-card-turnover" min="0" value="0">
+<input type="number" id="report-card-turnover" min="0" max="100000000" value="0">
 </div>
 </div>
 <h4>Чемпионат профессионалов</h4>
 <div class="plan-fact-container">
 <div>
 <label>СКБ (дебетовые с 2%):</label>
-<input type="number" id="report-skb-count" min="0" value="0">
+<input type="number" id="report-skb-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Дозвоны CRM:</label>
-<input type="number" id="report-crm-calls" min="0" value="0">
+<input type="number" id="report-crm-calls" min="0" max="1000" value="0">
 </div>
 </div>
 <button class="btn" id="save-weekly-report-btn">
@@ -1367,31 +1428,31 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label>КВЦ клиенты:</label>
-<input type="number" id="monthly-report-kvc" min="0" value="0">
+<input type="number" id="monthly-report-kvc" min="0" max="1000" value="0">
 </div>
 <div>
 <label>КРХ стартовало:</label>
-<input type="number" id="monthly-report-krh" min="0" value="0">
+<input type="number" id="monthly-report-krh" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ДК объем (руб.):</label>
-<input type="number" id="monthly-report-dk-volume" min="0" value="0">
+<input type="number" id="monthly-report-dk-volume" min="0" max="100000000" value="0">
 </div>
 <div>
 <label>Вклад объем (руб.):</label>
-<input type="number" id="monthly-report-vklad-volume" min="0" value="0">
+<input type="number" id="monthly-report-vklad-volume" min="0" max="100000000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ДК кол-во (шт.):</label>
-<input type="number" id="monthly-report-dk-count" min="0" value="0">
+<input type="number" id="monthly-report-dk-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Вклад кол-во (шт.):</label>
-<input type="number" id="monthly-report-vklad-count" min="0" value="0">
+<input type="number" id="monthly-report-vklad-count" min="0" max="1000" value="0">
 </div>
 </div>
 <!-- Кредиты в ежемесячных отчетах -->
@@ -1406,59 +1467,59 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label>Стикеры:</label>
-<input type="number" id="monthly-report-sticker-count" min="0" value="0">
+<input type="number" id="monthly-report-sticker-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Подписки годовые:</label>
-<input type="number" id="monthly-report-year-sub-count" min="0" value="0">
+<input type="number" id="monthly-report-year-sub-count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>Подписки ежемесячные:</label>
-<input type="number" id="monthly-report-month-sub-count" min="0" value="0">
+<input type="number" id="monthly-report-month-sub-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>КРХ Лимит:</label>
-<input type="number" id="monthly-report-krh-limit-count" min="0" value="0">
+<input type="number" id="monthly-report-krh-limit-count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ЗП карты:</label>
-<input type="number" id="monthly-report-zp-card-count" min="0" value="0">
+<input type="number" id="monthly-report-zp-card-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>ОМП (шт.):</label>
-<input type="number" id="monthly-report-omp-count" min="0" value="0">
+<input type="number" id="monthly-report-omp-count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
 <label>ЗП нерез (шт.):</label>
-<input type="number" id="monthly-report-zp-nerez-count" min="0" value="0">
+<input type="number" id="monthly-report-zp-nerez-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Оборот по картам (руб.):</label>
-<input type="number" id="monthly-report-card-turnover" min="0" value="0">
+<input type="number" id="monthly-report-card-turnover" min="0" max="100000000" value="0">
 </div>
 </div>
 <h4>Чемпионат профессионалов</h4>
 <div class="plan-fact-container">
 <div>
 <label>СКБ (дебетовые с 2%):</label>
-<input type="number" id="monthly-report-skb-count" min="0" value="0">
+<input type="number" id="monthly-report-skb-count" min="0" max="1000" value="0">
 </div>
 <div>
 <label>Дозвоны CRM:</label>
-<input type="number" id="monthly-report-crm-calls" min="0" value="0">
+<input type="number" id="monthly-report-crm-calls" min="0" max="1000" value="0">
 </div>
 </div>
 
 <!-- Поле для корректировки премии -->
 <div class="form-group">
 <label for="monthly-adjusted-premium">Фактическая премия (можно скорректировать):</label>
-<input type="number" id="monthly-adjusted-premium" min="0" value="0">
+<input type="number" id="monthly-adjusted-premium" min="0" max="1000000" value="0">
 </div>
 
 <button class="btn" id="save-monthly-report-btn">
@@ -1605,13 +1666,28 @@ const firebaseConfig = {
 };
 
 // Инициализация Firebase
-let db;
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-  console.log("Firebase инициализирован успешно");
-} catch (error) {
-  console.error("Ошибка инициализации Firebase:", error);
+let db = null;
+let firebaseInitialized = false;
+
+async function initializeFirebase() {
+  try {
+    showLoader("Инициализация Firebase...");
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    
+    // Проверяем подключение
+    await db.collection('users').limit(1).get();
+    firebaseInitialized = true;
+    console.log("Firebase инициализирован успешно");
+    hideLoader();
+    return true;
+  } catch (error) {
+    console.error("Ошибка инициализации Firebase:", error);
+    firebaseInitialized = false;
+    hideLoader();
+    showError("Ошибка подключения к базе данных. Приложение работает в демо-режиме.");
+    return false;
+  }
 }
 
 // НОВАЯ СИСТЕМА СТРАТ ДЛЯ ОСНОВНЫХ ПОКАЗАТЕЛЕЙ
@@ -1706,8 +1782,79 @@ let monthlyReportCreditIds = [];
 let currentTheme = localStorage.getItem('theme') || 'light';
 let selectedWeek = null;
 
+// 🔧 УТИЛИТЫ ДЛЯ РАБОТЫ С ПРИЛОЖЕНИЕМ
+
+// Показать/скрыть индикатор загрузки
+function showLoader(message = "Загрузка...") {
+  const loader = document.getElementById('globalLoader');
+  const loaderText = document.querySelector('.loader-text');
+  if (loader && loaderText) {
+    loaderText.textContent = message;
+    loader.style.display = 'flex';
+  }
+}
+
+function hideLoader() {
+  const loader = document.getElementById('globalLoader');
+  if (loader) {
+    loader.style.display = 'none';
+  }
+}
+
+// Показать сообщение об ошибке
+function showError(message) {
+  const errorElement = document.getElementById('errorMessage');
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    
+    // Автоматически скрыть через 5 секунд
+    setTimeout(() => {
+      errorElement.style.display = 'none';
+    }, 5000);
+  }
+}
+
+// Показать сообщение об успехе
+function showSuccess(message) {
+  const successElement = document.getElementById('successMessage');
+  if (successElement) {
+    successElement.textContent = message;
+    successElement.style.display = 'block';
+    
+    // Автоматически скрыть через 3 секунд
+    setTimeout(() => {
+      successElement.style.display = 'none';
+    }, 3000);
+  }
+}
+
+// Валидация ввода
+function validateInput(value, min = 0, max = 1000000) {
+  const num = parseInt(value);
+  if (isNaN(num) || num < min) return min;
+  if (num > max) return max;
+  return num;
+}
+
+// Проверка прав администратора
+function checkAdminRights() {
+  return userData.role === 'admin' && currentUser && currentUser.id !== 'demo';
+}
+
+// Глобальный обработчик ошибок
+window.addEventListener('error', function(e) {
+  console.error('Global error:', e);
+  showError('Произошла непредвиденная ошибка в приложении');
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('Unhandled promise rejection:', e);
+  showError('Ошибка при выполнении операции: ' + e.reason);
+});
+
 // Инициализация Telegram Web App
-function initTelegram() {
+async function initTelegram() {
   try {
     tg = window.Telegram.WebApp;
     tg.expand();
@@ -1722,7 +1869,7 @@ function initTelegram() {
         username: user.username
       };
       showUserInfo();
-      loadUserData();
+      await loadUserData();
     } else {
       currentUser = {
         id: 'demo',
@@ -1764,34 +1911,59 @@ function showUserInfo() {
   
   userAvatar.textContent = firstLetter;
   userName.textContent = displayName;
-  
-  // Обновим роль когда загрузим данные пользователя
 }
 
 // Инициализация приложения
-function initializeApp() {
+async function initializeApp() {
   document.querySelector('.container').style.display = 'block';
   document.querySelector('.nav-tabs').style.display = 'flex';
   document.querySelector('.theme-toggle').style.display = 'flex';
   
+  // Настройка валидации ввода
+  setupInputValidation();
+  
   initializeMPPCalculator();
   initializeReports();
-  loadProfile();
+  await loadProfile();
   loadWeekOptions();
   loadMonthOptions();
-  loadLeaderboard('week');
+  await loadLeaderboard('week');
   
   addCredit();
 }
 
+// Настройка валидации ввода
+function setupInputValidation() {
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('change', function() {
+      const min = parseInt(this.getAttribute('min')) || 0;
+      const max = parseInt(this.getAttribute('max')) || 1000000;
+      this.value = validateInput(this.value, min, max);
+    });
+    
+    input.addEventListener('input', function() {
+      const min = parseInt(this.getAttribute('min')) || 0;
+      const max = parseInt(this.getAttribute('max')) || 1000000;
+      const value = parseInt(this.value);
+      
+      if (!isNaN(value) && (value < min || value > max)) {
+        this.style.borderColor = 'var(--accent)';
+      } else {
+        this.style.borderColor = 'var(--border-color)';
+      }
+    });
+  });
+}
+
 // Загрузка данных пользователя
 async function loadUserData() {
-  if (!currentUser || currentUser.id === 'demo' || !db) {
+  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
     initializeApp();
     return;
   }
 
   try {
+    showLoader("Загрузка данных пользователя...");
     const userDoc = await db.collection('users').doc(String(currentUser.id)).get();
     if (userDoc.exists) {
       const data = userDoc.data();
@@ -1803,10 +1975,6 @@ async function loadUserData() {
       if (userData.role === 'admin') {
         userRole.style.color = '#e74c3c';
         userRole.style.fontWeight = 'bold';
-      }
-      
-      // Показываем админ-панель если пользователь админ
-      if (userData.role === 'admin') {
         document.getElementById('admin-nav').style.display = 'flex';
       }
       
@@ -1826,9 +1994,12 @@ async function loadUserData() {
       
       userData.role = 'mpp';
     }
+    hideLoader();
     initializeApp();
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
+    hideLoader();
+    showError('Ошибка загрузки данных пользователя');
     initializeApp();
   }
 }
@@ -2034,7 +2205,7 @@ function addCredit() {
     </div>
     <div>
       <label>Сумма кредита (₽):</label>
-      <input type="number" id="credit-amount-${creditId}" min="0" value="0" class="credit-amount">
+      <input type="number" id="credit-amount-${creditId}" min="0" max="100000000" value="0" class="credit-amount">
     </div>
     <div>
       <label>Премия:</label>
@@ -2059,13 +2230,16 @@ function addCredit() {
   packageSelect.addEventListener('change', () => updateCreditPremium(creditId));
   fzSelect.addEventListener('change', () => updateCreditPremium(creditId));
   amountInput.addEventListener('input', () => {
+    amountInput.value = validateInput(amountInput.value, 0, 100000000);
     updateCreditPremium(creditId);
     updateDKIndicators();
   });
   
   removeBtn.addEventListener('click', function() {
     const creditIdToRemove = this.getAttribute('data-id');
-    removeCredit(creditIdToRemove);
+    if (confirm('Вы уверены, что хотите удалить этот кредит?')) {
+      removeCredit(creditIdToRemove);
+    }
   });
   
   updateCreditPremium(creditId);
@@ -2109,7 +2283,7 @@ function addReportCredit() {
     </div>
     <div>
       <label>Сумма кредита (₽):</label>
-      <input type="number" id="report-credit-amount-${creditId}" min="0" value="0" class="report-credit-amount">
+      <input type="number" id="report-credit-amount-${creditId}" min="0" max="100000000" value="0" class="report-credit-amount">
     </div>
     <div>
       <label>Премия:</label>
@@ -2134,12 +2308,15 @@ function addReportCredit() {
   packageSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
   fzSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
   amountInput.addEventListener('input', () => {
+    amountInput.value = validateInput(amountInput.value, 0, 100000000);
     updateReportCreditPremium(creditId);
   });
   
   removeBtn.addEventListener('click', function() {
     const creditIdToRemove = this.getAttribute('data-id');
-    removeReportCredit(creditIdToRemove);
+    if (confirm('Вы уверены, что хотите удалить этот кредит?')) {
+      removeReportCredit(creditIdToRemove);
+    }
   });
   
   updateReportCreditPremium(creditId);
@@ -2182,7 +2359,7 @@ function addMonthlyReportCredit() {
     </div>
     <div>
       <label>Сумма кредита (₽):</label>
-      <input type="number" id="monthly-report-credit-amount-${creditId}" min="0" value="0" class="monthly-report-credit-amount">
+      <input type="number" id="monthly-report-credit-amount-${creditId}" min="0" max="100000000" value="0" class="monthly-report-credit-amount">
     </div>
     <div>
       <label>Премия:</label>
@@ -2207,12 +2384,15 @@ function addMonthlyReportCredit() {
   packageSelect.addEventListener('change', () => updateMonthlyReportCreditPremium(creditId));
   fzSelect.addEventListener('change', () => updateMonthlyReportCreditPremium(creditId));
   amountInput.addEventListener('input', () => {
+    amountInput.value = validateInput(amountInput.value, 0, 100000000);
     updateMonthlyReportCreditPremium(creditId);
   });
   
   removeBtn.addEventListener('click', function() {
     const creditIdToRemove = this.getAttribute('data-id');
-    removeMonthlyReportCredit(creditIdToRemove);
+    if (confirm('Вы уверены, что хотите удалить этот кредит?')) {
+      removeMonthlyReportCredit(creditIdToRemove);
+    }
   });
   
   updateMonthlyReportCreditPremium(creditId);
@@ -2389,7 +2569,15 @@ function getFinalStrata(points) {
 // Отрисовка круговой диаграммы
 function drawPremiumPieChart(data) {
   const canvas = document.getElementById('premium-chart');
+  if (!canvas) return;
+  
   const ctx = canvas.getContext('2d');
+  const container = canvas.parentElement;
+  
+  // Устанавливаем размер canvas в зависимости от контейнера
+  canvas.width = container.offsetWidth;
+  canvas.height = container.offsetHeight;
+  
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
   const radius = Math.min(centerX, centerY) - 10;
@@ -2445,205 +2633,216 @@ function updateChartLegend(data) {
 
 // Основная функция расчета премии
 async function calculatePremium() {
-  const krhPlan = parseInt(document.getElementById('krh_plan').value) || 0;
-  const krhFact = parseInt(document.getElementById('krh_fact').value) || 0;
-  const krhPercent = krhPlan > 0 ? Math.round((krhFact / krhPlan) * 100) : 0;
-
-  const vkladVolumePlan = parseInt(document.getElementById('vklad_volume_plan').value) || 0;
-  const vkladVolumeFact = parseInt(document.getElementById('vklad_volume_fact').value) || 0;
-  const vkladVolumePercent = vkladVolumePlan > 0 ? Math.round((vkladVolumeFact / vkladVolumePlan) * 100) : 0;
-
-  const dkVolumePlan = parseInt(document.getElementById('dk_volume_plan').value) || 0;
-  const dkVolumeFact = parseInt(document.getElementById('dk_volume_fact').value) || 0;
-  const dkVolumePercent = dkVolumePlan > 0 ? Math.round((dkVolumeFact / dkVolumePlan) * 100) : 0;
-
-  const kvcPlan = parseInt(document.getElementById('kvc_plan').value) || 0;
-  const kvcFact = parseInt(document.getElementById('kvc_fact').value) || 0;
-  const kvcPercent = kvcPlan > 0 ? Math.round((kvcFact / kvcPlan) * 100) : 0;
-
-  const krhStrata = getStrataByPercent(krhPercent);
-  const vkladStrata = getStrataByPercent(vkladVolumePercent);
-  const dkStrata = getStrataByPercent(dkVolumePercent);
-  const kvcStrata = getStrataByPercent(kvcPercent);
-
-  document.getElementById('plan_results').innerHTML = `
-    КРХ: ${krhFact}/${krhPlan} = ${krhPercent}% <span class="strata-badge">Страта ${krhStrata.strata}</span> <span class="multiplier-badge">×${krhStrata.multiplier}</span> <span class="points-badge">${krhStrata.points} баллов</span><br>
-    Вклад объем: ${vkladVolumeFact.toLocaleString()}/${vkladVolumePlan.toLocaleString()} = ${vkladVolumePercent}% <span class="strata-badge">Страта ${vkladStrata.strata}</span> <span class="multiplier-badge">×${vkladStrata.multiplier}</span> <span class="points-badge">${vkladStrata.points} баллов</span><br>
-    ДК объем: ${dkVolumeFact.toLocaleString()}/${dkVolumePlan.toLocaleString()} = ${dkVolumePercent}% <span class="strata-badge">Страта ${dkStrata.strata}</span> <span class="multiplier-badge">×${dkStrata.multiplier}</span> <span class="points-badge">${dkStrata.points} баллов</span><br>
-    КВЦ: ${kvcFact}/${kvcPlan} = ${kvcPercent}% <span class="strata-badge">Страта ${kvcStrata.strata}</span> <span class="multiplier-badge">×${kvcStrata.multiplier}</span> <span class="points-badge">${kvcStrata.points} баллов</span>
-  `;
-
-  let dkSum = 0;
-  let eligibleCreditsCount = 0;
-  const creditPremiumInputs = document.querySelectorAll('input[id^="credit-premium-"]');
-  creditPremiumInputs.forEach(premiumInput => {
-    const creditPremiumText = premiumInput.value;
-    const creditPremium = parseInt(creditPremiumText.replace(/\s/g, '').replace('₽', '')) || 0;
+  try {
+    showLoader("Расчет премии...");
     
-    if (dkVolumePercent >= 70) {
-      dkSum += creditPremium;
-    } else {
-      const creditRow = premiumInput.closest('.credit-row');
-      const typeSelect = creditRow.querySelector('.credit-type');
-      if (typeSelect) {
-        const creditType = typeSelect.value;
-        const creditConfig = CREDIT_TYPES[creditType];
-        dkSum += creditConfig.base;
+    // Валидация ввода
+    const krhPlan = validateInput(document.getElementById('krh_plan').value, 0, 1000);
+    const krhFact = validateInput(document.getElementById('krh_fact').value, 0, 1000);
+    const krhPercent = krhPlan > 0 ? Math.round((krhFact / krhPlan) * 100) : (krhFact > 0 ? 100 : 0);
+
+    const vkladVolumePlan = validateInput(document.getElementById('vklad_volume_plan').value, 0, 100000000);
+    const vkladVolumeFact = validateInput(document.getElementById('vklad_volume_fact').value, 0, 100000000);
+    const vkladVolumePercent = vkladVolumePlan > 0 ? Math.round((vkladVolumeFact / vkladVolumePlan) * 100) : (vkladVolumeFact > 0 ? 100 : 0);
+
+    const dkVolumePlan = validateInput(document.getElementById('dk_volume_plan').value, 0, 100000000);
+    const dkVolumeFact = validateInput(document.getElementById('dk_volume_fact').value, 0, 100000000);
+    const dkVolumePercent = dkVolumePlan > 0 ? Math.round((dkVolumeFact / dkVolumePlan) * 100) : (dkVolumeFact > 0 ? 100 : 0);
+
+    const kvcPlan = validateInput(document.getElementById('kvc_plan').value, 0, 1000);
+    const kvcFact = validateInput(document.getElementById('kvc_fact').value, 0, 1000);
+    const kvcPercent = kvcPlan > 0 ? Math.round((kvcFact / kvcPlan) * 100) : (kvcFact > 0 ? 100 : 0);
+
+    const krhStrata = getStrataByPercent(krhPercent);
+    const vkladStrata = getStrataByPercent(vkladVolumePercent);
+    const dkStrata = getStrataByPercent(dkVolumePercent);
+    const kvcStrata = getStrataByPercent(kvcPercent);
+
+    document.getElementById('plan_results').innerHTML = `
+      КРХ: ${krhFact}/${krhPlan} = ${krhPercent}% <span class="strata-badge">Страта ${krhStrata.strata}</span> <span class="multiplier-badge">×${krhStrata.multiplier}</span> <span class="points-badge">${krhStrata.points} баллов</span><br>
+      Вклад объем: ${vkladVolumeFact.toLocaleString()}/${vkladVolumePlan.toLocaleString()} = ${vkladVolumePercent}% <span class="strata-badge">Страта ${vkladStrata.strata}</span> <span class="multiplier-badge">×${vkladStrata.multiplier}</span> <span class="points-badge">${vkladStrata.points} баллов</span><br>
+      ДК объем: ${dkVolumeFact.toLocaleString()}/${dkVolumePlan.toLocaleString()} = ${dkVolumePercent}% <span class="strata-badge">Страта ${dkStrata.strata}</span> <span class="multiplier-badge">×${dkStrata.multiplier}</span> <span class="points-badge">${dkStrata.points} баллов</span><br>
+      КВЦ: ${kvcFact}/${kvcPlan} = ${kvcPercent}% <span class="strata-badge">Страта ${kvcStrata.strata}</span> <span class="multiplier-badge">×${kvcStrata.multiplier}</span> <span class="points-badge">${kvcStrata.points} баллов</span>
+    `;
+
+    let dkSum = 0;
+    let eligibleCreditsCount = 0;
+    const creditPremiumInputs = document.querySelectorAll('input[id^="credit-premium-"]');
+    creditPremiumInputs.forEach(premiumInput => {
+      const creditPremiumText = premiumInput.value;
+      const creditPremium = parseInt(creditPremiumText.replace(/\s/g, '').replace('₽', '')) || 0;
+      
+      if (dkVolumePercent >= 70) {
+        dkSum += creditPremium;
+      } else {
+        const creditRow = premiumInput.closest('.credit-row');
+        const typeSelect = creditRow.querySelector('.credit-type');
+        if (typeSelect) {
+          const creditType = typeSelect.value;
+          const creditConfig = CREDIT_TYPES[creditType];
+          dkSum += creditConfig.base;
+        }
       }
-    }
+      
+      if (creditPremium > 0) {
+        eligibleCreditsCount++;
+      }
+    });
     
-    if (creditPremium > 0) {
-      eligibleCreditsCount++;
+    const dkSumAfterMultiplier = dkSum * dkStrata.multiplier;
+
+    const vkladCountFact = validateInput(document.getElementById('vklad_count_fact').value, 0, 1000);
+    const vkladySum = vkladCountFact * 200;
+    const vkladySumAfterMultiplier = vkladySum * vkladStrata.multiplier;
+
+    const startedKrhSum = krhFact * 600;
+    const startedKrhSumAfterMultiplier = startedKrhSum * krhStrata.multiplier;
+
+    const mainProductsSum = dkSumAfterMultiplier + vkladySumAfterMultiplier + startedKrhSumAfterMultiplier;
+
+    let otherProductsSum = 0;
+    const stickerCount = validateInput(document.getElementById('sticker_count').value, 0, 1000);
+    const stickerSum = stickerCount * 50;
+
+    const yearSubCount = validateInput(document.getElementById('year_sub_count').value, 0, 1000);
+    const yearSubSum = yearSubCount * 500;
+
+    const monthSubCount = validateInput(document.getElementById('month_sub_count').value, 0, 1000);
+    const monthSubSum = monthSubCount * 200;
+
+    const krhLimitCount = validateInput(document.getElementById('krh_limit_count').value, 0, 1000);
+    const krhLimitSum = krhLimitCount * 100;
+
+    const zpCardCount = validateInput(document.getElementById('zp_card_count').value, 0, 1000);
+    const zpCardSum = zpCardCount * 100;
+
+    const ompCount = validateInput(document.getElementById('omp_count').value, 0, 1000);
+    const ompSum = ompCount * 50;
+
+    const zpNerezCount = validateInput(document.getElementById('zp_nerez_count').value, 0, 1000);
+    const zpNerezSum = zpNerezCount * 300;
+
+    const cardTurnover = validateInput(document.getElementById('card_turnover').value, 0, 100000000);
+    const cardTurnoverSum = Math.min(cardTurnover * 0.03, 100000);
+
+    const skbCount = validateInput(document.getElementById('skb_count').value, 0, 1000);
+    const crmCalls = validateInput(document.getElementById('crm_calls').value, 0, 1000);
+
+    otherProductsSum = stickerSum + yearSubSum + monthSubSum + krhLimitSum + zpCardSum + ompSum + zpNerezSum + cardTurnoverSum;
+
+    document.getElementById('payments_results').innerHTML = `
+      Кредиты: ${dkSum.toLocaleString()}₽ × ${dkStrata.multiplier} = ${dkSumAfterMultiplier.toLocaleString()}₽<br>
+      Вклады: ${vkladySum.toLocaleString()}₽ × ${vkladStrata.multiplier} = ${vkladySumAfterMultiplier.toLocaleString()}₽<br>
+      КРХ: ${startedKrhSum.toLocaleString()}₽ × ${krhStrata.multiplier} = ${startedKrhSumAfterMultiplier.toLocaleString()}₽<br>
+      Доп. продукты: ${otherProductsSum.toLocaleString()}₽
+    `;
+
+    let skbPoints = 0;
+    let crmPoints = 0;
+    skbPoints = skbCount < 3 ? 1 : -1;
+    if (crmCalls <= 50) {
+      crmPoints = 2;
+    } else if (crmCalls > 50 && crmCalls < 60) {
+      crmPoints = 0;
+    } else {
+      crmPoints = -2;
     }
-  });
-  
-  const dkSumAfterMultiplier = dkSum * dkStrata.multiplier;
 
-  const vkladCountFact = parseInt(document.getElementById('vklad_count_fact').value) || 0;
-  const vkladySum = vkladCountFact * 200;
-  const vkladySumAfterMultiplier = vkladySum * vkladStrata.multiplier;
+    document.getElementById('championship_results').innerHTML = `
+      СКБ: ${skbCount} шт. → ${skbPoints > 0 ? '+' : ''}${skbPoints} балл<br>
+      Дозвоны: ${crmCalls} → ${crmPoints > 0 ? '+' : ''}${crmPoints} баллов<br>
+      Итого ЧП: ${skbPoints + crmPoints} баллов
+    `;
 
-  const startedKrhSum = krhFact * 600;
-  const startedKrhSumAfterMultiplier = startedKrhSum * krhStrata.multiplier;
+    const totalPoints = krhStrata.points + vkladStrata.points + dkStrata.points + kvcStrata.points;
+    const championshipPoints = skbPoints + crmPoints;
+    const finalPoints = totalPoints + championshipPoints;
+    const finalStrata = getFinalStrata(finalPoints);
 
-  const mainProductsSum = dkSumAfterMultiplier + vkladySumAfterMultiplier + startedKrhSumAfterMultiplier;
+    document.getElementById('final_strata_calculation').innerHTML = `
+      Сумма баллов по показателям: ${krhStrata.points} + ${vkladStrata.points} + ${dkStrata.points} + ${kvcStrata.points} = ${totalPoints} баллов<br>
+      Корректировка ЧП: ${championshipPoints} баллов<br>
+      Итоговые баллы: ${totalPoints} + ${championshipPoints} = ${finalPoints} баллов<br>
+      <strong>Итоговая страта: <span class="final-strata-badge">${finalStrata}</span></strong>
+    `;
 
-  let otherProductsSum = 0;
-  const stickerCount = parseInt(document.getElementById('sticker_count').value) || 0;
-  const stickerSum = stickerCount * 50;
+    const positionBonus = parseInt(document.getElementById('position').value) || 0;
+    const moscowCoef = parseFloat(document.getElementById('moscow_coef').value) || 1;
 
-  const yearSubCount = parseInt(document.getElementById('year_sub_count').value) || 0;
-  const yearSubSum = yearSubCount * 500;
+    const extraBonus = eligibleCreditsCount >= 3 ? 5000 : 0;
 
-  const monthSubCount = parseInt(document.getElementById('month_sub_count').value) || 0;
-  const monthSubSum = monthSubCount * 200;
+    const sumBeforeMoscow = mainProductsSum + otherProductsSum;
+    const sumAfterMoscow = sumBeforeMoscow * moscowCoef;
+    const finalPremium = sumAfterMoscow + extraBonus + positionBonus;
 
-  const krhLimitCount = parseInt(document.getElementById('krh_limit_count').value) || 0;
-  const krhLimitSum = krhLimitCount * 100;
-
-  const zpCardCount = parseInt(document.getElementById('zp_card_count').value) || 0;
-  const zpCardSum = zpCardCount * 100;
-
-  const ompCount = parseInt(document.getElementById('omp_count').value) || 0;
-  const ompSum = ompCount * 50;
-
-  const zpNerezCount = parseInt(document.getElementById('zp_nerez_count').value) || 0;
-  const zpNerezSum = zpNerezCount * 300;
-
-  const cardTurnover = parseInt(document.getElementById('card_turnover').value) || 0;
-  const cardTurnoverSum = Math.min(cardTurnover * 0.03, 100000);
-
-  const skbCount = parseInt(document.getElementById('skb_count').value) || 0;
-  const crmCalls = parseInt(document.getElementById('crm_calls').value) || 0;
-
-  otherProductsSum = stickerSum + yearSubSum + monthSubSum + krhLimitSum + zpCardSum + ompSum + zpNerezSum + cardTurnoverSum;
-
-  document.getElementById('payments_results').innerHTML = `
-    Кредиты: ${dkSum.toLocaleString()}₽ × ${dkStrata.multiplier} = ${dkSumAfterMultiplier.toLocaleString()}₽<br>
-    Вклады: ${vkladySum.toLocaleString()}₽ × ${vkladStrata.multiplier} = ${vkladySumAfterMultiplier.toLocaleString()}₽<br>
-    КРХ: ${startedKrhSum.toLocaleString()}₽ × ${krhStrata.multiplier} = ${startedKrhSumAfterMultiplier.toLocaleString()}₽<br>
-    Доп. продукты: ${otherProductsSum.toLocaleString()}₽
-  `;
-
-  let skbPoints = 0;
-  let crmPoints = 0;
-  skbPoints = skbCount < 3 ? 1 : -1;
-  if (crmCalls <= 50) {
-    crmPoints = 2;
-  } else if (crmCalls > 50 && crmCalls < 60) {
-    crmPoints = 0;
-  } else {
-    crmPoints = -2;
-  }
-
-  document.getElementById('championship_results').innerHTML = `
-    СКБ: ${skbCount} шт. → ${skbPoints > 0 ? '+' : ''}${skbPoints} балл<br>
-    Дозвоны: ${crmCalls} → ${crmPoints > 0 ? '+' : ''}${crmPoints} баллов<br>
-    Итого ЧП: ${skbPoints + crmPoints} баллов
-  `;
-
-  const totalPoints = krhStrata.points + vkladStrata.points + dkStrata.points + kvcStrata.points;
-  const championshipPoints = skbPoints + crmPoints;
-  const finalPoints = totalPoints + championshipPoints;
-  const finalStrata = getFinalStrata(finalPoints);
-
-  document.getElementById('final_strata_calculation').innerHTML = `
-    Сумма баллов по показателям: ${krhStrata.points} + ${vkladStrata.points} + ${dkStrata.points} + ${kvcStrata.points} = ${totalPoints} баллов<br>
-    Корректировка ЧП: ${championshipPoints} баллов<br>
-    Итоговые баллы: ${totalPoints} + ${championshipPoints} = ${finalPoints} баллов<br>
-    <strong>Итоговая страта: <span class="final-strata-badge">${finalStrata}</span></strong>
-  `;
-
-  const positionBonus = parseInt(document.getElementById('position').value) || 0;
-  const moscowCoef = parseFloat(document.getElementById('moscow_coef').value) || 1;
-
-  const extraBonus = eligibleCreditsCount >= 3 ? 5000 : 0;
-
-  const sumBeforeMoscow = mainProductsSum + otherProductsSum;
-  const sumAfterMoscow = sumBeforeMoscow * moscowCoef;
-  const finalPremium = sumAfterMoscow + extraBonus + positionBonus;
-
-  let detailedHTML = '';
-  detailedHTML = `
-    <div class="detail-item">
-      <span class="detail-label">Основные продукты:</span>
-      <span class="detail-value">${mainProductsSum.toLocaleString()}₽</span>
-    </div>
-    <div class="detail-item">
-      <span class="detail-label">Доп. продукты:</span>
-      <span class="detail-value">${otherProductsSum.toLocaleString()}₽</span>
-    </div>
-    <div class="detail-item">
-      <span class="detail-label">Сумма до регион. коэф.:</span>
-      <span class="detail-value">${sumBeforeMoscow.toLocaleString()}₽</span>
-    </div>
-    <div class="detail-item">
-      <span class="detail-label">Регион. коэффициент (${moscowCoef}):</span>
-      <span class="detail-value">${sumAfterMoscow.toLocaleString()}₽</span>
-    </div>
-  `;
-  
-  if (extraBonus > 0) {
-    detailedHTML += `
+    let detailedHTML = '';
+    detailedHTML = `
       <div class="detail-item">
-        <span class="detail-label">Экстрабонус за 3+ кредита:</span>
-        <span class="detail-value">+${extraBonus.toLocaleString()}₽</span>
+        <span class="detail-label">Основные продукты:</span>
+        <span class="detail-value">${mainProductsSum.toLocaleString()}₽</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Доп. продукты:</span>
+        <span class="detail-value">${otherProductsSum.toLocaleString()}₽</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Сумма до регион. коэф.:</span>
+        <span class="detail-value">${sumBeforeMoscow.toLocaleString()}₽</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Регион. коэффициент (${moscowCoef}):</span>
+        <span class="detail-value">${sumAfterMoscow.toLocaleString()}₽</span>
       </div>
     `;
-  }
-  
-  detailedHTML += `
-    <div class="detail-item">
-      <span class="detail-label">Надбавка за должность:</span>
-      <span class="detail-value">+${positionBonus.toLocaleString()}₽</span>
-    </div>
-  `;
-  
-  document.getElementById('detailed_calculation').innerHTML = detailedHTML;
+    
+    if (extraBonus > 0) {
+      detailedHTML += `
+        <div class="detail-item">
+          <span class="detail-label">Экстрабонус за 3+ кредита:</span>
+          <span class="detail-value">+${extraBonus.toLocaleString()}₽</span>
+        </div>
+      `;
+    }
+    
+    detailedHTML += `
+      <div class="detail-item">
+        <span class="detail-label">Надбавка за должность:</span>
+        <span class="detail-value">+${positionBonus.toLocaleString()}₽</span>
+      </div>
+    `;
+    
+    document.getElementById('detailed_calculation').innerHTML = detailedHTML;
 
-  document.getElementById('final_premium').textContent = Math.round(finalPremium).toLocaleString() + ' ₽';
-  document.getElementById('results').style.display = 'block';
-  
-  const chartData = [
-    { label: 'Кредиты', value: dkSumAfterMultiplier, color: CHART_COLORS[0] },
-    { label: 'Вклады', value: vkladySumAfterMultiplier, color: CHART_COLORS[1] },
-    { label: 'КРХ', value: startedKrhSumAfterMultiplier, color: CHART_COLORS[2] },
-    { label: 'Доп. продукты', value: otherProductsSum, color: CHART_COLORS[3] }
-  ];
-  
-  if (extraBonus > 0) {
-    chartData.push({ label: 'Экстрабонус', value: extraBonus, color: CHART_COLORS[4] });
+    document.getElementById('final_premium').textContent = Math.round(finalPremium).toLocaleString() + ' ₽';
+    document.getElementById('results').style.display = 'block';
+    
+    const chartData = [
+      { label: 'Кредиты', value: dkSumAfterMultiplier, color: CHART_COLORS[0] },
+      { label: 'Вклады', value: vkladySumAfterMultiplier, color: CHART_COLORS[1] },
+      { label: 'КРХ', value: startedKrhSumAfterMultiplier, color: CHART_COLORS[2] },
+      { label: 'Доп. продукты', value: otherProductsSum, color: CHART_COLORS[3] }
+    ];
+    
+    if (extraBonus > 0) {
+      chartData.push({ label: 'Экстрабонус', value: extraBonus, color: CHART_COLORS[4] });
+    }
+    
+    if (positionBonus > 0) {
+      chartData.push({ label: 'Надбавка за должность', value: positionBonus, color: CHART_COLORS[5] });
+    }
+    
+    const filteredData = chartData.filter(item => item.value > 0);
+    drawPremiumPieChart(filteredData);
+    updateChartLegend(filteredData);
+    
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка расчета премии:', error);
+    hideLoader();
+    showError('Ошибка при расчете премии: ' + error.message);
   }
-  
-  if (positionBonus > 0) {
-    chartData.push({ label: 'Надбавка за должность', value: positionBonus, color: CHART_COLORS[5] });
-  }
-  
-  const filteredData = chartData.filter(item => item.value > 0);
-  drawPremiumPieChart(filteredData);
-  updateChartLegend(filteredData);
-  
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
 
 // 🔧 ФУНКЦИИ ДЛЯ ОТЧЕТОВ (МПП)
@@ -2651,63 +2850,67 @@ async function calculatePremium() {
 // Сохранение еженедельного отчета
 async function saveWeeklyReport() {
   if (!selectedWeek) {
-    alert('Выберите неделю для отчета');
+    showError('Выберите неделю для отчета');
     return;
   }
 
-  const kvc = parseInt(document.getElementById('report-kvc').value) || 0;
-  const krh = parseInt(document.getElementById('report-krh').value) || 0;
-  const dkVolume = parseInt(document.getElementById('report-dk-volume').value) || 0;
-  const vkladVolume = parseInt(document.getElementById('report-vklad-volume').value) || 0;
-  const dkCount = parseInt(document.getElementById('report-dk-count').value) || 0;
-  const vkladCount = parseInt(document.getElementById('report-vklad-count').value) || 0;
-  
-  const stickerCount = parseInt(document.getElementById('report-sticker-count').value) || 0;
-  const yearSubCount = parseInt(document.getElementById('report-year-sub-count').value) || 0;
-  const monthSubCount = parseInt(document.getElementById('report-month-sub-count').value) || 0;
-  const krhLimitCount = parseInt(document.getElementById('report-krh-limit-count').value) || 0;
-  const zpCardCount = parseInt(document.getElementById('report-zp-card-count').value) || 0;
-  const ompCount = parseInt(document.getElementById('report-omp-count').value) || 0;
-  const zpNerezCount = parseInt(document.getElementById('report-zp-nerez-count').value) || 0;
-  const cardTurnover = parseInt(document.getElementById('report-card-turnover').value) || 0;
-  
-  const skbCount = parseInt(document.getElementById('report-skb-count').value) || 0;
-  const crmCalls = parseInt(document.getElementById('report-crm-calls').value) || 0;
+  try {
+    showLoader("Сохранение отчета...");
+    
+    // Валидация ввода
+    const kvc = validateInput(document.getElementById('report-kvc').value, 0, 1000);
+    const krh = validateInput(document.getElementById('report-krh').value, 0, 1000);
+    const dkVolume = validateInput(document.getElementById('report-dk-volume').value, 0, 100000000);
+    const vkladVolume = validateInput(document.getElementById('report-vklad-volume').value, 0, 100000000);
+    const dkCount = validateInput(document.getElementById('report-dk-count').value, 0, 1000);
+    const vkladCount = validateInput(document.getElementById('report-vklad-count').value, 0, 1000);
+    
+    const stickerCount = validateInput(document.getElementById('report-sticker-count').value, 0, 1000);
+    const yearSubCount = validateInput(document.getElementById('report-year-sub-count').value, 0, 1000);
+    const monthSubCount = validateInput(document.getElementById('report-month-sub-count').value, 0, 1000);
+    const krhLimitCount = validateInput(document.getElementById('report-krh-limit-count').value, 0, 1000);
+    const zpCardCount = validateInput(document.getElementById('report-zp-card-count').value, 0, 1000);
+    const ompCount = validateInput(document.getElementById('report-omp-count').value, 0, 1000);
+    const zpNerezCount = validateInput(document.getElementById('report-zp-nerez-count').value, 0, 1000);
+    const cardTurnover = validateInput(document.getElementById('report-card-turnover').value, 0, 100000000);
+    
+    const skbCount = validateInput(document.getElementById('report-skb-count').value, 0, 1000);
+    const crmCalls = validateInput(document.getElementById('report-crm-calls').value, 0, 1000);
 
-  const credits = [];
-  reportCreditIds.forEach(id => {
-    const typeSelect = document.getElementById(`report-credit-type-${id}`);
-    const packageSelect = document.getElementById(`report-credit-package-${id}`);
-    const fzSelect = document.getElementById(`report-credit-fz-${id}`);
-    const amountInput = document.getElementById(`report-credit-amount-${id}`);
-    const premiumInput = document.getElementById(`report-credit-premium-${id}`);
+    const credits = [];
+    reportCreditIds.forEach(id => {
+      const typeSelect = document.getElementById(`report-credit-type-${id}`);
+      const packageSelect = document.getElementById(`report-credit-package-${id}`);
+      const fzSelect = document.getElementById(`report-credit-fz-${id}`);
+      const amountInput = document.getElementById(`report-credit-amount-${id}`);
+      const premiumInput = document.getElementById(`report-credit-premium-${id}`);
 
-    if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
-      const creditType = typeSelect.value;
-      const packageValue = packageSelect.value;
-      const hasFZ = fzSelect.value === 'true';
-      const creditAmount = parseInt(amountInput.value) || 0;
-      const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
-      
-      credits.push({
-        type: creditType,
-        package: packageValue,
-        fz: hasFZ,
-        amount: creditAmount,
-        premium: creditPremium
-      });
-    }
-  });
+      if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+        const creditType = typeSelect.value;
+        const packageValue = packageSelect.value;
+        const hasFZ = fzSelect.value === 'true';
+        const creditAmount = parseInt(amountInput.value) || 0;
+        const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
+        
+        credits.push({
+          type: creditType,
+          package: packageValue,
+          fz: hasFZ,
+          amount: creditAmount,
+          premium: creditPremium
+        });
+      }
+    });
 
-  if (currentUser && currentUser.id !== 'demo' && db) {
-    try {
+    if (currentUser && currentUser.id !== 'demo' && firebaseInitialized) {
       const existingReportQuery = await db.collection('weeklyReports')
         .where('userId', '==', String(currentUser.id))
         .where('weekStart', '==', firebase.firestore.Timestamp.fromDate(selectedWeek.start))
         .get();
 
       if (!existingReportQuery.empty) {
-        alert('Отчет за эту неделю уже существует');
+        hideLoader();
+        showError('Отчет за эту неделю уже существует');
         return;
       }
 
@@ -2737,8 +2940,10 @@ async function saveWeeklyReport() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       
-      alert('Отчет сохранен!');
+      hideLoader();
+      showSuccess('Отчет сохранен!');
       
+      // Очищаем форму
       document.getElementById('report-kvc').value = '0';
       document.getElementById('report-krh').value = '0';
       document.getElementById('report-dk-volume').value = '0';
@@ -2761,12 +2966,14 @@ async function saveWeeklyReport() {
         if (creditRow) creditRow.remove();
       });
       reportCreditIds = [];
-    } catch (error) {
-      console.error('Ошибка сохранения отчета:', error);
-      alert('Ошибка при сохранении отчета: ' + error.message);
+    } else {
+      hideLoader();
+      showError('Нет подключения к базе данных или вы в демо-режиме');
     }
-  } else {
-    alert('Нет подключения к базе данных или вы в демо-режиме');
+  } catch (error) {
+    console.error('Ошибка сохранения отчета:', error);
+    hideLoader();
+    showError('Ошибка при сохранении отчета: ' + error.message);
   }
 }
 
@@ -2776,87 +2983,79 @@ async function saveMonthlyReport() {
   const selectedMonth = monthSelect.value;
   
   if (!selectedMonth) {
-    alert('Выберите месяц для отчета');
+    showError('Выберите месяц для отчета');
     return;
   }
 
-  const [year, month] = selectedMonth.split('-').map(Number);
-  
-  // Проверяем, что отчет подается в первые 10 дней следующего месяца
-  const today = new Date();
-  const reportMonth = new Date(year, month - 1, 1);
-  const nextMonth = new Date(year, month, 1);
-  
-  // Убираем проверку на первые 10 дней, чтобы можно было подавать отчеты за любые месяцы из последних 12
-  // if (today < nextMonth || today.getDate() > 10) {
-  //   alert('Ежемесячный отчет можно подавать только с 1 по 10 число следующего месяца');
-  //   return;
-  // }
+  try {
+    showLoader("Сохранение отчета...");
+    
+    const [year, month] = selectedMonth.split('-').map(Number);
 
-  const kvc = parseInt(document.getElementById('monthly-report-kvc').value) || 0;
-  const krh = parseInt(document.getElementById('monthly-report-krh').value) || 0;
-  const dkVolume = parseInt(document.getElementById('monthly-report-dk-volume').value) || 0;
-  const vkladVolume = parseInt(document.getElementById('monthly-report-vklad-volume').value) || 0;
-  const dkCount = parseInt(document.getElementById('monthly-report-dk-count').value) || 0;
-  const vkladCount = parseInt(document.getElementById('monthly-report-vklad-count').value) || 0;
-  
-  const stickerCount = parseInt(document.getElementById('monthly-report-sticker-count').value) || 0;
-  const yearSubCount = parseInt(document.getElementById('monthly-report-year-sub-count').value) || 0;
-  const monthSubCount = parseInt(document.getElementById('monthly-report-month-sub-count').value) || 0;
-  const krhLimitCount = parseInt(document.getElementById('monthly-report-krh-limit-count').value) || 0;
-  const zpCardCount = parseInt(document.getElementById('monthly-report-zp-card-count').value) || 0;
-  const ompCount = parseInt(document.getElementById('monthly-report-omp-count').value) || 0;
-  const zpNerezCount = parseInt(document.getElementById('monthly-report-zp-nerez-count').value) || 0;
-  const cardTurnover = parseInt(document.getElementById('monthly-report-card-turnover').value) || 0;
-  
-  const skbCount = parseInt(document.getElementById('monthly-report-skb-count').value) || 0;
-  const crmCalls = parseInt(document.getElementById('monthly-report-crm-calls').value) || 0;
+    // Валидация ввода
+    const kvc = validateInput(document.getElementById('monthly-report-kvc').value, 0, 1000);
+    const krh = validateInput(document.getElementById('monthly-report-krh').value, 0, 1000);
+    const dkVolume = validateInput(document.getElementById('monthly-report-dk-volume').value, 0, 100000000);
+    const vkladVolume = validateInput(document.getElementById('monthly-report-vklad-volume').value, 0, 100000000);
+    const dkCount = validateInput(document.getElementById('monthly-report-dk-count').value, 0, 1000);
+    const vkladCount = validateInput(document.getElementById('monthly-report-vklad-count').value, 0, 1000);
+    
+    const stickerCount = validateInput(document.getElementById('monthly-report-sticker-count').value, 0, 1000);
+    const yearSubCount = validateInput(document.getElementById('monthly-report-year-sub-count').value, 0, 1000);
+    const monthSubCount = validateInput(document.getElementById('monthly-report-month-sub-count').value, 0, 1000);
+    const krhLimitCount = validateInput(document.getElementById('monthly-report-krh-limit-count').value, 0, 1000);
+    const zpCardCount = validateInput(document.getElementById('monthly-report-zp-card-count').value, 0, 1000);
+    const ompCount = validateInput(document.getElementById('monthly-report-omp-count').value, 0, 1000);
+    const zpNerezCount = validateInput(document.getElementById('monthly-report-zp-nerez-count').value, 0, 1000);
+    const cardTurnover = validateInput(document.getElementById('monthly-report-card-turnover').value, 0, 100000000);
+    
+    const skbCount = validateInput(document.getElementById('monthly-report-skb-count').value, 0, 1000);
+    const crmCalls = validateInput(document.getElementById('monthly-report-crm-calls').value, 0, 1000);
 
-  const credits = [];
-  monthlyReportCreditIds.forEach(id => {
-    const typeSelect = document.getElementById(`monthly-report-credit-type-${id}`);
-    const packageSelect = document.getElementById(`monthly-report-credit-package-${id}`);
-    const fzSelect = document.getElementById(`monthly-report-credit-fz-${id}`);
-    const amountInput = document.getElementById(`monthly-report-credit-amount-${id}`);
-    const premiumInput = document.getElementById(`monthly-report-credit-premium-${id}`);
+    const credits = [];
+    monthlyReportCreditIds.forEach(id => {
+      const typeSelect = document.getElementById(`monthly-report-credit-type-${id}`);
+      const packageSelect = document.getElementById(`monthly-report-credit-package-${id}`);
+      const fzSelect = document.getElementById(`monthly-report-credit-fz-${id}`);
+      const amountInput = document.getElementById(`monthly-report-credit-amount-${id}`);
+      const premiumInput = document.getElementById(`monthly-report-credit-premium-${id}`);
 
-    if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
-      const creditType = typeSelect.value;
-      const packageValue = packageSelect.value;
-      const hasFZ = fzSelect.value === 'true';
-      const creditAmount = parseInt(amountInput.value) || 0;
-      const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
-      
-      credits.push({
-        type: creditType,
-        package: packageValue,
-        fz: hasFZ,
-        amount: creditAmount,
-        premium: creditPremium
-      });
-    }
-  });
+      if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+        const creditType = typeSelect.value;
+        const packageValue = packageSelect.value;
+        const hasFZ = fzSelect.value === 'true';
+        const creditAmount = parseInt(amountInput.value) || 0;
+        const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
+        
+        credits.push({
+          type: creditType,
+          package: packageValue,
+          fz: hasFZ,
+          amount: creditAmount,
+          premium: creditPremium
+        });
+      }
+    });
 
-  // Расчетная премия
-  const calculatedPremium = calculateTotalPremium({
-    krh: krh,
-    vkladCount: vkladCount,
-    credits: credits,
-    ompCount: ompCount,
-    zpNerezCount: zpNerezCount,
-    stickerCount: stickerCount,
-    yearSubCount: yearSubCount,
-    monthSubCount: monthSubCount,
-    krhLimitCount: krhLimitCount,
-    zpCardCount: zpCardCount,
-    cardTurnover: cardTurnover
-  });
+    // Расчетная премия
+    const calculatedPremium = calculateTotalPremium({
+      krh: krh,
+      vkladCount: vkladCount,
+      credits: credits,
+      ompCount: ompCount,
+      zpNerezCount: zpNerezCount,
+      stickerCount: stickerCount,
+      yearSubCount: yearSubCount,
+      monthSubCount: monthSubCount,
+      krhLimitCount: krhLimitCount,
+      zpCardCount: zpCardCount,
+      cardTurnover: cardTurnover
+    });
 
-  // Фактическая премия (может быть скорректирована пользователем)
-  const adjustedPremium = parseInt(document.getElementById('monthly-adjusted-premium').value) || calculatedPremium;
+    // Фактическая премия (может быть скорректирована пользователем)
+    const adjustedPremium = validateInput(document.getElementById('monthly-adjusted-premium').value, 0, 1000000) || calculatedPremium;
 
-  if (currentUser && currentUser.id !== 'demo' && db) {
-    try {
+    if (currentUser && currentUser.id !== 'demo' && firebaseInitialized) {
       const existingReportQuery = await db.collection('monthlyReports')
         .where('userId', '==', String(currentUser.id))
         .where('monthKey', '==', selectedMonth)
@@ -2888,7 +3087,8 @@ async function saveMonthlyReport() {
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        alert('Ежемесячный отчет обновлен!');
+        hideLoader();
+        showSuccess('Ежемесячный отчет обновлен!');
       } else {
         // Создаем новый отчет
         await db.collection('monthlyReports').add({
@@ -2919,7 +3119,8 @@ async function saveMonthlyReport() {
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        alert('Ежемесячный отчет сохранен!');
+        hideLoader();
+        showSuccess('Ежемесячный отчет сохранен!');
       }
       
       // Очищаем форму
@@ -2948,13 +3149,15 @@ async function saveMonthlyReport() {
       monthlyReportCreditIds = [];
       
       // Обновляем профиль
-      loadProfile();
-    } catch (error) {
-      console.error('Ошибка сохранения ежемесячного отчета:', error);
-      alert('Ошибка при сохранении отчета: ' + error.message);
+      await loadProfile();
+    } else {
+      hideLoader();
+      showError('Нет подключения к базе данных или вы в демо-режиме');
     }
-  } else {
-    alert('Нет подключения к базе данных или вы в демо-режиме');
+  } catch (error) {
+    console.error('Ошибка сохранения ежемесячного отчета:', error);
+    hideLoader();
+    showError('Ошибка при сохранении отчета: ' + error.message);
   }
 }
 
@@ -2962,13 +3165,13 @@ async function saveMonthlyReport() {
 
 // Загрузка топа сотрудников
 async function loadLeaderboard(period = 'week') {
-  if (!db) {
+  if (!firebaseInitialized) {
     showDemoLeaderboard(period);
     return;
   }
 
   try {
-    console.log("Загрузка топа для периода:", period);
+    showLoader("Загрузка топа...");
     
     let startDate, endDate;
     const now = new Date();
@@ -2983,7 +3186,6 @@ async function loadLeaderboard(period = 'week') {
       endDate.setDate(startDate.getDate() + 6);
       endDate.setHours(23, 59, 59, 999);
       
-      // Показываем текущий период и скрываем прошлый месяц
       document.getElementById('current-period-leaderboard').style.display = 'block';
       document.getElementById('last-month-leaderboard').style.display = 'none';
     } else if (period === 'month') {
@@ -2991,12 +3193,11 @@ async function loadLeaderboard(period = 'week') {
       endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       endDate.setHours(23, 59, 59, 999);
       
-      // Показываем текущий период и скрываем прошлый месяц
       document.getElementById('current-period-leaderboard').style.display = 'block';
       document.getElementById('last-month-leaderboard').style.display = 'none';
     } else if (period === 'last-month') {
-      // Для прошлого месяца используем ежемесячные отчеты
       await loadLastMonthLeaderboard();
+      hideLoader();
       return;
     }
 
@@ -3005,6 +3206,7 @@ async function loadLeaderboard(period = 'week') {
       .get();
 
     if (usersSnapshot.empty) {
+      hideLoader();
       showDemoLeaderboard(period);
       return;
     }
@@ -3073,9 +3275,11 @@ async function loadLeaderboard(period = 'week') {
     updatePremiumLeaderboard(leaderboardData);
     updateCreditsLeaderboard(leaderboardData);
     updateDepositsLeaderboard(leaderboardData);
+    hideLoader();
 
   } catch (error) {
     console.error('Ошибка загрузки топа:', error);
+    hideLoader();
     showDemoLeaderboard(period);
   }
 }
@@ -3083,6 +3287,8 @@ async function loadLeaderboard(period = 'week') {
 // Загрузка топа за прошлый месяц
 async function loadLastMonthLeaderboard() {
   try {
+    showLoader("Загрузка топа за прошлый месяц...");
+    
     const now = new Date();
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const monthKey = `${lastMonth.getFullYear()}-${lastMonth.getMonth() + 1}`;
@@ -3095,6 +3301,7 @@ async function loadLastMonthLeaderboard() {
       document.getElementById('last-month-premium-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
       document.getElementById('last-month-credits-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
       document.getElementById('last-month-deposits-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
+      hideLoader();
       return;
     }
 
@@ -3103,7 +3310,6 @@ async function loadLastMonthLeaderboard() {
     for (const reportDoc of monthlyReportsSnapshot.docs) {
       const report = reportDoc.data();
       
-      // Получаем информацию о пользователе
       const userDoc = await db.collection('users').doc(report.userId).get();
       if (userDoc.exists) {
         const user = userDoc.data();
@@ -3115,7 +3321,6 @@ async function loadLastMonthLeaderboard() {
             vkladCount: report.vkladCount || 0,
             krh: report.krh || 0,
             credits: report.credits || [],
-            // Другие показатели можно добавить по необходимости
           },
           userId: report.userId,
           premium: report.adjustedPremium || report.calculatedPremium || 0
@@ -3123,16 +3328,17 @@ async function loadLastMonthLeaderboard() {
       }
     }
     
-    // Показываем раздел за прошлый месяц и скрываем текущий период
     document.getElementById('current-period-leaderboard').style.display = 'none';
     document.getElementById('last-month-leaderboard').style.display = 'block';
     
     updateLastMonthPremiumLeaderboard(leaderboardData);
     updateLastMonthCreditsLeaderboard(leaderboardData);
     updateLastMonthDepositsLeaderboard(leaderboardData);
+    hideLoader();
     
   } catch (error) {
     console.error('Ошибка загрузки топа за прошлый месяц:', error);
+    hideLoader();
     document.getElementById('last-month-premium-leaderboard').innerHTML = '<p>Ошибка загрузки данных</p>';
   }
 }
@@ -3461,24 +3667,23 @@ async function loadAchievements() {
 
 // Загрузка истории премий - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function loadPremiumHistory() {
-  if (!currentUser || currentUser.id === 'demo' || !db) {
+  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
     showDemoPremiumHistory();
     return;
   }
   
   try {
-    // Получаем текущую дату и вычисляем диапазон последних 12 месяцев
+    showLoader("Загрузка истории премий...");
+    
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
     
-    // Создаем массив monthKey за последние 12 месяцев
     const monthKeys = [];
     for (let i = 0; i < 12; i++) {
       let year = currentYear;
       let month = currentMonth - i;
       
-      // Корректируем год и месяц если месяц меньше 1
       if (month < 1) {
         month += 12;
         year -= 1;
@@ -3487,7 +3692,6 @@ async function loadPremiumHistory() {
       monthKeys.push(`${year}-${month}`);
     }
     
-    // Загружаем отчеты за последние 12 месяцев
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
       .where('monthKey', 'in', monthKeys)
@@ -3497,10 +3701,10 @@ async function loadPremiumHistory() {
     
     if (monthlyReportsSnapshot.empty) {
       premiumHistoryList.innerHTML = '<p>У вас пока нет ежемесячных отчетов за последние 12 месяцев</p>';
+      hideLoader();
       return;
     }
     
-    // Сортируем отчеты по monthKey в обратном порядке (от новых к старым)
     const reports = [];
     monthlyReportsSnapshot.forEach(doc => {
       reports.push({ id: doc.id, ...doc.data() });
@@ -3528,7 +3732,6 @@ async function loadPremiumHistory() {
       `;
     }).join('');
     
-    // Добавляем обработчики для кнопок редактирования
     document.querySelectorAll('.edit-premium-btn').forEach(btn => {
       btn.addEventListener('click', function() {
         const reportId = this.getAttribute('data-report-id');
@@ -3536,20 +3739,23 @@ async function loadPremiumHistory() {
         editMonthlyPremium(reportId, monthName);
       });
     });
+    
+    hideLoader();
   } catch (error) {
     console.error('Ошибка загрузки истории премий:', error);
+    hideLoader();
     showDemoPremiumHistory();
   }
 }
 
 // Редактирование премии за месяц
 async function editMonthlyPremium(reportId, monthName) {
-  if (!reportId || !db) return;
+  if (!reportId || !firebaseInitialized) return;
   
   try {
     const reportDoc = await db.collection('monthlyReports').doc(reportId).get();
     if (!reportDoc.exists) {
-      alert('Отчет не найден');
+      showError('Отчет не найден');
       return;
     }
     
@@ -3558,46 +3764,41 @@ async function editMonthlyPremium(reportId, monthName) {
     
     const newPremium = prompt(`Введите фактическую премию за ${monthName}:`, currentPremium);
     
-    if (newPremium === null) return; // Пользователь отменил
+    if (newPremium === null) return;
     
-    const premiumValue = parseInt(newPremium);
-    if (isNaN(premiumValue) || premiumValue < 0) {
-      alert('Пожалуйста, введите корректное число');
-      return;
-    }
+    const premiumValue = validateInput(newPremium, 0, 1000000);
     
     await db.collection('monthlyReports').doc(reportId).update({
       adjustedPremium: premiumValue
     });
     
-    alert('Премия успешно обновлена!');
-    loadProfile(); // Перезагружаем профиль
+    showSuccess('Премия успешно обновлена!');
+    await loadProfile();
   } catch (error) {
     console.error('Ошибка обновления премии:', error);
-    alert('Ошибка при обновлении премии');
+    showError('Ошибка при обновлении премии');
   }
 }
 
 // Загрузка статистики профиля - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function loadProfileStats() {
-  if (!currentUser || currentUser.id === 'demo' || !db) {
+  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
     showDemoProfileStats();
     return;
   }
   
   try {
-    // Получаем текущую дату и вычисляем диапазон последних 12 месяцев
+    showLoader("Загрузка статистики...");
+    
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
     
-    // Создаем массив monthKey за последние 12 месяцев
     const monthKeys = [];
     for (let i = 0; i < 12; i++) {
       let year = currentYear;
       let month = currentMonth - i;
       
-      // Корректируем год и месяц если месяц меньше 1
       if (month < 1) {
         month += 12;
         year -= 1;
@@ -3606,7 +3807,6 @@ async function loadProfileStats() {
       monthKeys.push(`${year}-${month}`);
     }
     
-    // Загружаем отчеты за последние 12 месяцев
     const monthlyReportsSnapshot = await db.collection('monthlyReports')
       .where('userId', '==', String(currentUser.id))
       .where('monthKey', 'in', monthKeys)
@@ -3633,8 +3833,11 @@ async function loadProfileStats() {
     document.getElementById('average-premium').textContent = averagePremium.toLocaleString() + ' ₽';
     document.getElementById('total-credits').textContent = totalCredits;
     document.getElementById('total-deposits').textContent = totalDeposits;
+    
+    hideLoader();
   } catch (error) {
     console.error('Ошибка загрузки статистики профиля:', error);
+    hideLoader();
     showDemoProfileStats();
   }
 }
@@ -3643,7 +3846,6 @@ async function loadProfileStats() {
 function showDemoPremiumHistory() {
   const premiumHistoryList = document.getElementById('premium-history-list');
   
-  // Генерируем демо-данные за последние 12 месяцев
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
@@ -3653,7 +3855,7 @@ function showDemoPremiumHistory() {
   for (let i = 0; i < 12; i++) {
     const monthDate = new Date(currentYear, currentMonth - i, 1);
     const monthName = `${MONTHS_GENITIVE[monthDate.getMonth()]} ${monthDate.getFullYear()}`;
-    const premium = Math.floor(Math.random() * 40000) + 10000; // Случайная премия от 10,000 до 50,000
+    const premium = Math.floor(Math.random() * 40000) + 10000;
     
     demoHTML += `
       <div class="history-item">
@@ -3686,9 +3888,11 @@ function showDemoProfileStats() {
 
 // Загрузка данных для админ-панели
 async function loadAdminData() {
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
+    showLoader("Загрузка админ-панели...");
+    
     const usersSnapshot = await db.collection('users').get();
     const reportsSnapshot = await db.collection('weeklyReports')
       .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)))
@@ -3697,8 +3901,11 @@ async function loadAdminData() {
     const userStats = await calculateUserStats(usersSnapshot, reportsSnapshot);
     updateAdminDashboard(userStats);
     
+    hideLoader();
   } catch (error) {
     console.error('Ошибка загрузки админ-данных:', error);
+    hideLoader();
+    showError('Ошибка загрузки админ-панели');
   }
 }
 
@@ -3855,59 +4062,80 @@ function updateAdminDashboard(userStats) {
 
 // Повышение пользователя до админа
 async function promoteToAdmin(userId) {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
   if (!confirm('Вы уверены, что хотите сделать этого пользователя администратором?')) {
     return;
   }
   
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
+    showLoader("Назначение администратора...");
     await db.collection('users').doc(userId).update({
       role: 'admin'
     });
     
-    alert('Пользователь успешно повышен до администратора!');
-    loadAdminData();
+    hideLoader();
+    showSuccess('Пользователь успешно повышен до администратора!');
+    await loadAdminData();
   } catch (error) {
     console.error('Ошибка повышения пользователя:', error);
-    alert('Ошибка при изменении роли пользователя');
+    hideLoader();
+    showError('Ошибка при изменении роли пользователя');
   }
 }
 
 // Понижение админа до МПП
 async function demoteToMpp(userId) {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
   if (!confirm('Вы уверены, что хотите убрать права администратора у этого пользователя?')) {
     return;
   }
   
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
+    showLoader("Изменение роли пользователя...");
     await db.collection('users').doc(userId).update({
       role: 'mpp'
     });
     
-    alert('Права администратора успешно сняты!');
-    loadAdminData();
+    hideLoader();
+    showSuccess('Права администратора успешно сняты!');
+    await loadAdminData();
   } catch (error) {
     console.error('Ошибка понижения пользователя:', error);
-    alert('Ошибка при изменении роли пользователя');
+    hideLoader();
+    showError('Ошибка при изменении роли пользователя');
   }
 }
 
 // Удаление пользователя
 async function deleteUser(userId) {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
   if (!confirm('ВНИМАНИЕ! Это действие удалит пользователя и все его данные. Вы уверены?')) {
     return;
   }
   
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
-    // Удаляем пользователя
+    showLoader("Удаление пользователя...");
+    
     await db.collection('users').doc(userId).delete();
     
-    // Удаляем все отчеты пользователя
     const reportsSnapshot = await db.collection('weeklyReports')
       .where('userId', '==', userId)
       .get();
@@ -3918,19 +4146,23 @@ async function deleteUser(userId) {
     });
     await batch.commit();
     
-    alert('Пользователь и все его данные успешно удалены!');
-    loadAdminData();
+    hideLoader();
+    showSuccess('Пользователь и все его данные успешно удалены!');
+    await loadAdminData();
   } catch (error) {
     console.error('Ошибка удаления пользователя:', error);
-    alert('Ошибка при удалении пользователя');
+    hideLoader();
+    showError('Ошибка при удалении пользователя');
   }
 }
 
 // Экспорт данных
 async function exportData() {
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
+    showLoader("Экспорт данных...");
+    
     const usersSnapshot = await db.collection('users').get();
     const reportsSnapshot = await db.collection('weeklyReports').get();
     
@@ -3958,22 +4190,31 @@ async function exportData() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    alert('Данные успешно экспортированы!');
+    hideLoader();
+    showSuccess('Данные успешно экспортированы!');
   } catch (error) {
     console.error('Ошибка экспорта:', error);
-    alert('Ошибка при экспорте данных');
+    hideLoader();
+    showError('Ошибка при экспорте данных');
   }
 }
 
 // Очистка тестовых данных
 async function clearTestData() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
   if (!confirm('Вы уверены, что хотите удалить все тестовые данные? Это действие нельзя отменить.')) {
     return;
   }
   
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
+    showLoader("Очистка тестовых данных...");
+    
     const usersSnapshot = await db.collection('users')
       .where('telegramUserId', '==', 'demo')
       .get();
@@ -3985,24 +4226,33 @@ async function clearTestData() {
     });
     
     await batch.commit();
-    alert('Тестовые данные удалены!');
-    loadAdminData();
+    
+    hideLoader();
+    showSuccess('Тестовые данные удалены!');
+    await loadAdminData();
   } catch (error) {
     console.error('Ошибка очистки данных:', error);
-    alert('Ошибка при удалении данных');
+    hideLoader();
+    showError('Ошибка при удалении данных');
   }
 }
 
 // Сброс системы
 async function resetSystem() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
   if (!confirm('ВНИМАНИЕ! Это действие удалит ВСЕ данные системы. Это необратимо. Вы уверены?')) {
     return;
   }
   
-  if (!db) return;
+  if (!firebaseInitialized) return;
   
   try {
-    // Удаляем всех пользователей (кроме текущего админа)
+    showLoader("Сброс системы...");
+    
     const usersSnapshot = await db.collection('users').get();
     const batch = db.batch();
     
@@ -4012,25 +4262,31 @@ async function resetSystem() {
       }
     });
     
-    // Удаляем все отчеты
     const reportsSnapshot = await db.collection('weeklyReports').get();
     reportsSnapshot.forEach(doc => {
       batch.delete(doc.ref);
     });
     
     await batch.commit();
-    alert('Система успешно сброшена!');
-    loadAdminData();
+    
+    hideLoader();
+    showSuccess('Система успешно сброшена!');
+    await loadAdminData();
   } catch (error) {
     console.error('Ошибка сброса системы:', error);
-    alert('Ошибка при сбросе системы');
+    hideLoader();
+    showError('Ошибка при сбросе системы');
   }
 }
 
 // 🔧 ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   console.log("DOM загружен, инициализация...");
+  
+  // Инициализируем Firebase до всего остального
+  await initializeFirebase();
+  
   initTelegram();
   initTheme();
 
