@@ -2101,6 +2101,59 @@ window.addEventListener('unhandledrejection', function(e) {
   showError('Ошибка при выполнении операции: ' + e.reason);
 });
 
+// Функции для работы с планами
+function getDefaultPlans() {
+  return {
+    krh_plan: 14,
+    vklad_volume_plan: 1920000,
+    vklad_count_plan: 4,
+    dk_count_plan: 2,
+    dk_volume_plan: 960000,
+    kvc_plan: 30
+  };
+}
+
+// Получение планов для указанного месяца
+async function getPlansForMonth(monthKey) {
+  if (!firebaseInitialized) {
+    return getDefaultPlans();
+  }
+
+  try {
+    const plansDoc = await db.collection('plans').doc(monthKey).get();
+    if (plansDoc.exists) {
+      return plansDoc.data();
+    } else {
+      return getDefaultPlans();
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки планов:', error);
+    return getDefaultPlans();
+  }
+}
+
+// Загрузка планов в калькулятор
+async function loadPlansIntoCalculator() {
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+  
+  try {
+    const plans = await getPlansForMonth(currentMonthKey);
+    
+    // Устанавливаем планы в поля ввода калькулятора
+    document.getElementById('krh_plan').value = plans.krh_plan;
+    document.getElementById('vklad_volume_plan').value = plans.vklad_volume_plan;
+    document.getElementById('vklad_count_plan').value = plans.vklad_count_plan;
+    document.getElementById('dk_count_plan').value = plans.dk_count_plan;
+    document.getElementById('dk_volume_plan').value = plans.dk_volume_plan;
+    document.getElementById('kvc_plan').value = plans.kvc_plan;
+    
+    console.log("Планы загружены в калькулятор:", plans);
+  } catch (error) {
+    console.error('Ошибка загрузки планов в калькулятор:', error);
+  }
+}
+
 // Инициализация Telegram Web App
 async function initTelegram() {
   try {
@@ -2172,6 +2225,9 @@ async function initializeApp() {
   
   // Настройка валидации ввода
   setupInputValidation();
+  
+  // Загружаем планы в калькулятор перед инициализацией
+  await loadPlansIntoCalculator();
   
   initializeMPPCalculator();
   initializeReports();
@@ -2929,20 +2985,29 @@ async function calculatePremium() {
   try {
     showLoader("Расчет премии...");
     
-    // Валидация ввода
-    const krhPlan = validateInput(document.getElementById('krh_plan').value, 0, 1000);
+    // Загружаем актуальные планы для текущего месяца
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    const currentPlans = await getPlansForMonth(currentMonthKey);
+    
+    // Используем планы из базы данных вместо значений из полей ввода
+    const krhPlan = currentPlans.krh_plan;
+    const vkladVolumePlan = currentPlans.vklad_volume_plan;
+    const vkladCountPlan = currentPlans.vklad_count_plan;
+    const dkCountPlan = currentPlans.dk_count_plan;
+    const dkVolumePlan = currentPlans.dk_volume_plan;
+    const kvcPlan = currentPlans.kvc_plan;
+
+    // Фактические значения берем из полей ввода
     const krhFact = validateInput(document.getElementById('krh_fact').value, 0, 1000);
     const krhPercent = krhPlan > 0 ? Math.round((krhFact / krhPlan) * 100) : (krhFact > 0 ? 100 : 0);
 
-    const vkladVolumePlan = validateInput(document.getElementById('vklad_volume_plan').value, 0, 100000000);
     const vkladVolumeFact = validateInput(document.getElementById('vklad_volume_fact').value, 0, 100000000);
     const vkladVolumePercent = vkladVolumePlan > 0 ? Math.round((vkladVolumeFact / vkladVolumePlan) * 100) : (vkladVolumeFact > 0 ? 100 : 0);
 
-    const dkVolumePlan = validateInput(document.getElementById('dk_volume_plan').value, 0, 100000000);
     const dkVolumeFact = validateInput(document.getElementById('dk_volume_fact').value, 0, 100000000);
     const dkVolumePercent = dkVolumePlan > 0 ? Math.round((dkVolumeFact / dkVolumePlan) * 100) : (dkVolumeFact > 0 ? 100 : 0);
 
-    const kvcPlan = validateInput(document.getElementById('kvc_plan').value, 0, 1000);
     const kvcFact = validateInput(document.getElementById('kvc_fact').value, 0, 1000);
     const kvcPercent = kvcPlan > 0 ? Math.round((kvcFact / kvcPlan) * 100) : (kvcFact > 0 ? 100 : 0);
 
@@ -3150,6 +3215,13 @@ async function saveWeeklyReport() {
   try {
     showLoader("Сохранение отчета...");
     
+    // Определяем месяц, к которому относится неделя
+    const weekMonth = new Date(selectedWeek.start);
+    const monthKey = `${weekMonth.getFullYear()}-${(weekMonth.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    // Загружаем планы для этого месяца
+    const plans = await getPlansForMonth(monthKey);
+    
     // Валидация ввода
     const kvc = validateInput(document.getElementById('report-kvc').value, 0, 1000);
     const krh = validateInput(document.getElementById('report-krh').value, 0, 1000);
@@ -3213,6 +3285,8 @@ async function saveWeeklyReport() {
         weekEnd: firebase.firestore.Timestamp.fromDate(selectedWeek.end),
         startDate: formatDate(selectedWeek.start),
         endDate: formatDate(selectedWeek.end),
+        monthKey: monthKey,
+        plans: plans, // Сохраняем планы, которые использовались при создании отчета
         kvc: kvc,
         krh: krh,
         dkVolume: dkVolume,
@@ -3285,6 +3359,9 @@ async function saveMonthlyReport() {
     
     const [year, month] = selectedMonth.split('-').map(Number);
 
+    // Загружаем планы для выбранного месяца
+    const plans = await getPlansForMonth(selectedMonth);
+
     // Валидация ввода
     const kvc = validateInput(document.getElementById('monthly-report-kvc').value, 0, 1000);
     const krh = validateInput(document.getElementById('monthly-report-krh').value, 0, 1000);
@@ -3330,8 +3407,8 @@ async function saveMonthlyReport() {
       }
     });
 
-    // Расчетная премия
-    const calculatedPremium = calculateTotalPremium({
+    // Расчетная премия с использованием планов из базы
+    const calculatedPremium = calculateTotalPremiumWithPlans({
       krh: krh,
       vkladCount: vkladCount,
       credits: credits,
@@ -3342,8 +3419,11 @@ async function saveMonthlyReport() {
       monthSubCount: monthSubCount,
       krhLimitCount: krhLimitCount,
       zpCardCount: zpCardCount,
-      cardTurnover: cardTurnover
-    });
+      cardTurnover: cardTurnover,
+      dkVolume: dkVolume,
+      vkladVolume: vkladVolume,
+      kvc: kvc
+    }, plans);
 
     // Фактическая премия (может быть скорректирована пользователем)
     const adjustedPremium = validateInput(document.getElementById('monthly-adjusted-premium').value, 0, 1000000) || calculatedPremium;
@@ -3375,6 +3455,7 @@ async function saveMonthlyReport() {
           cardTurnover: cardTurnover,
           skbCount: skbCount,
           crmCalls: crmCalls,
+          plans: plans, // Сохраняем планы, которые использовались при расчете
           calculatedPremium: calculatedPremium,
           adjustedPremium: adjustedPremium,
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -3407,6 +3488,7 @@ async function saveMonthlyReport() {
           cardTurnover: cardTurnover,
           skbCount: skbCount,
           crmCalls: crmCalls,
+          plans: plans, // Сохраняем планы, которые использовались при расчете
           calculatedPremium: calculatedPremium,
           adjustedPremium: adjustedPremium,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -3452,6 +3534,47 @@ async function saveMonthlyReport() {
     hideLoader();
     showError('Ошибка при сохранении отчета: ' + error.message);
   }
+}
+
+// Расчет премии с использованием планов
+function calculateTotalPremiumWithPlans(stats, plans) {
+  // Расчет процентов выполнения
+  const krhPercent = plans.krh_plan > 0 ? Math.round((stats.krh / plans.krh_plan) * 100) : (stats.krh > 0 ? 100 : 0);
+  const vkladVolumePercent = plans.vklad_volume_plan > 0 ? Math.round((stats.vkladVolume / plans.vklad_volume_plan) * 100) : (stats.vkladVolume > 0 ? 100 : 0);
+  const dkVolumePercent = plans.dk_volume_plan > 0 ? Math.round((stats.dkVolume / plans.dk_volume_plan) * 100) : (stats.dkVolume > 0 ? 100 : 0);
+  const kvcPercent = plans.kvc_plan > 0 ? Math.round((stats.kvc / plans.kvc_plan) * 100) : (stats.kvc > 0 ? 100 : 0);
+
+  // Получаем страты
+  const krhStrata = getStrataByPercent(krhPercent);
+  const vkladStrata = getStrataByPercent(vkladVolumePercent);
+  const dkStrata = getStrataByPercent(dkVolumePercent);
+  const kvcStrata = getStrataByPercent(kvcPercent);
+
+  // Расчет премии по кредитам
+  const creditsPremium = stats.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
+  const dkSumAfterMultiplier = creditsPremium * dkStrata.multiplier;
+
+  // Расчет премии по вкладам
+  const vkladySum = stats.vkladCount * 200;
+  const vkladySumAfterMultiplier = vkladySum * vkladStrata.multiplier;
+
+  // Расчет премии по КРХ
+  const startedKrhSum = stats.krh * 600;
+  const startedKrhSumAfterMultiplier = startedKrhSum * krhStrata.multiplier;
+
+  // Расчет премии по дополнительным продуктам
+  const additionalPremium =
+    (stats.ompCount * 50) +
+    (stats.zpNerezCount * 300) +
+    (stats.stickerCount * 50) +
+    (stats.yearSubCount * 500) +
+    (stats.monthSubCount * 200) +
+    (stats.krhLimitCount * 100) +
+    (stats.zpCardCount * 100) +
+    Math.min(stats.cardTurnover * 0.03, 100000);
+
+  // Итоговая премия
+  return dkSumAfterMultiplier + vkladySumAfterMultiplier + startedKrhSumAfterMultiplier + additionalPremium;
 }
 
 // 🔧 ФУНКЦИИ ДЛЯ ТОПА СОТРУДНИКОВ
@@ -3555,9 +3678,17 @@ async function loadLeaderboard(period = 'week') {
           }
         });
 
+        // Загружаем планы для расчета премии
+        const monthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+        const plans = await getPlansForMonth(monthKey);
+
+        // Рассчитываем премию с использованием планов
+        const premium = calculateTotalPremiumWithPlans(totalStats, plans);
+
         leaderboardData.push({
           user: user,
           stats: totalStats,
+          premium: premium,
           userId: userDoc.id
         });
       } catch (error) {
@@ -3642,9 +3773,7 @@ async function loadLastMonthLeaderboard() {
 // Обновление топа по премии
 function updatePremiumLeaderboard(leaderboardData) {
   const premiumSorted = [...leaderboardData].sort((a, b) => {
-    const premiumA = calculateTotalPremium(a.stats);
-    const premiumB = calculateTotalPremium(b.stats);
-    return premiumB - premiumA;
+    return (b.premium || 0) - (a.premium || 0);
   });
   
   const premiumLeaderboard = document.getElementById('premium-leaderboard');
@@ -3654,7 +3783,7 @@ function updatePremiumLeaderboard(leaderboardData) {
   }
   
   premiumLeaderboard.innerHTML = premiumSorted.slice(0, 10).map((item, index) => {
-    const premium = calculateTotalPremium(item.stats);
+    const premium = item.premium || 0;
     const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
     return `
       <div class="leaderboard-item">
@@ -3691,7 +3820,7 @@ function updateLastMonthPremiumLeaderboard(leaderboardData) {
   }).join('');
 }
 
-// Расчет общей премии на основе статистики
+// Расчет общей премии на основе статистики (старая версия для совместимости)
 function calculateTotalPremium(stats) {
   const creditsPremium = stats.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
   const additionalPremium =
@@ -4347,6 +4476,13 @@ async function saveAdminPlans() {
     
     hideLoader();
     showSuccess('Плановые показатели успешно сохранены!');
+    
+    // Обновляем планы в калькуляторе, если сохранен план на текущий месяц
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    if (selectedMonth === currentMonthKey) {
+      await loadPlansIntoCalculator();
+    }
   } catch (error) {
     console.error('Ошибка сохранения планов:', error);
     hideLoader();
