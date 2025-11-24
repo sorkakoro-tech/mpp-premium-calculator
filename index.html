@@ -1051,6 +1051,131 @@ input:focus, select:focus {
     min-width: auto;
   }
 }
+
+/* Стили для новой админ-панели */
+.admin-plans-form {
+  margin-top: 20px;
+}
+
+.plan-input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.plan-input {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.plan-input label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.plan-input input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 16px;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.admin-tab {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 16px;
+}
+
+.admin-tab.active {
+  background: var(--secondary);
+  color: white;
+}
+
+.admin-content {
+  display: none;
+}
+
+.admin-content.active {
+  display: block;
+}
+
+.visits-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.visit-stat-card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.visit-stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--secondary);
+  margin-bottom: 5px;
+}
+
+.visit-stat-label {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.reports-summary {
+  margin-top: 20px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.summary-card {
+  background: var(--card-bg);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.summary-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.summary-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--success);
+}
 </style>
 </head>
 <body>
@@ -1606,13 +1731,132 @@ input:focus, select:focus {
 </div>
 </div>
 
-<!-- Раздел админ-панели -->
+<!-- НОВАЯ АДМИН-ПАНЕЛЬ -->
 <div class="tab-content" id="admin-tab">
 <div class="calculator-container">
 <div class="section">
 <h2 class="section-title"><i class="fas fa-crown"></i> Панель администратора</h2>
-<div id="admin-dashboard">
-<!-- Данные будут загружаться динамически -->
+
+<div class="admin-tabs">
+<button class="admin-tab active" data-tab="admin-dashboard">Главная</button>
+<button class="admin-tab" data-tab="admin-plans">Планы</button>
+<button class="admin-tab" data-tab="admin-leaderboard">Топ</button>
+</div>
+
+<!-- Главная админ-панель -->
+<div class="admin-content active" id="admin-dashboard">
+<div class="admin-stats">
+<div class="stat-card">
+<div class="stat-value" id="admin-total-users">0</div>
+<div class="stat-label">Всего пользователей</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="admin-weekly-reports">0</div>
+<div class="stat-label">Еженедельных отчетов</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="admin-monthly-reports">0</div>
+<div class="stat-label">Ежемесячных отчетов</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="admin-month-visits">0</div>
+<div class="stat-label">Посещений за месяц</div>
+</div>
+</div>
+
+<div class="reports-summary">
+<h3 class="section-title"><i class="fas fa-chart-bar"></i> Статистика отчетов</h3>
+<div class="summary-grid">
+<div class="summary-card">
+<div class="summary-title">Отчеты за текущий месяц</div>
+<div class="summary-value" id="admin-current-month-reports">0</div>
+</div>
+<div class="summary-card">
+<div class="summary-title">Активные пользователи</div>
+<div class="summary-value" id="admin-active-users">0</div>
+</div>
+<div class="summary-card">
+<div class="summary-title">Новые пользователи</div>
+<div class="summary-value" id="admin-new-users">0</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Управление планами -->
+<div class="admin-content" id="admin-plans">
+<div class="section">
+<h3 class="section-title"><i class="fas fa-target"></i> Установка плановых показателей</h3>
+<p style="margin-bottom: 15px;">Установите плановые показатели для всех МПП на выбранный месяц</p>
+
+<div class="form-group">
+<label for="admin-plan-month">Выберите месяц:</label>
+<select id="admin-plan-month" class="month-select">
+<!-- Месяцы будут заполнены динамически -->
+</select>
+</div>
+
+<div class="admin-plans-form">
+<div class="plan-input-group">
+<div class="plan-input">
+<label for="admin-krh-plan">КРХ (план, шт.):</label>
+<input type="number" id="admin-krh-plan" min="0" max="1000" value="15">
+</div>
+<div class="plan-input">
+<label for="admin-vklad-volume-plan">Вклад объем (план, руб.):</label>
+<input type="number" id="admin-vklad-volume-plan" min="0" max="100000000" value="1920000">
+</div>
+</div>
+<div class="plan-input-group">
+<div class="plan-input">
+<label for="admin-dk-volume-plan">ДК объем (план, руб.):</label>
+<input type="number" id="admin-dk-volume-plan" min="0" max="100000000" value="960000">
+</div>
+<div class="plan-input">
+<label for="admin-kvc-plan">КВЦ (план, клиенты):</label>
+<input type="number" id="admin-kvc-plan" min="0" max="1000" value="30">
+</div>
+</div>
+</div>
+
+<button class="btn" id="save-plans-btn">
+<i class="fas fa-save"></i> Сохранить планы
+</button>
+</div>
+</div>
+
+<!-- Топ для админа -->
+<div class="admin-content" id="admin-leaderboard">
+<div class="section leaderboard-section">
+<h3 class="section-title"><i class="fas fa-crown"></i> Топ сотрудников</h3>
+<div class="leaderboard-period-selector">
+<button class="period-btn active" data-period="week">Топ недели</button>
+<button class="period-btn" data-period="month">Топ месяца</button>
+<button class="period-btn" data-period="last-month">Лучшие за прошлый месяц</button>
+</div>
+
+<div id="admin-current-period-leaderboard">
+<h3>🏆 Топ по премии</h3>
+<div id="admin-premium-leaderboard">
+<!-- Топ по премии будет здесь -->
+</div>
+<h3>📊 Топ по кредитам</h3>
+<div id="admin-credits-leaderboard">
+<!-- Топ по кредитам будет здесь -->
+</div>
+<h3>💰 Топ по вкладам</h3>
+<div id="admin-deposits-leaderboard">
+<!-- Топ по вкладам будет здесь -->
+</div>
+</div>
+
+<div class="last-month-leaderboard" id="admin-last-month-leaderboard" style="display: none;">
+<h3>🏆 Лучшие за прошлый месяц</h3>
+<div id="admin-last-month-premium-leaderboard">
+<!-- Топ по премии за прошлый месяц будет здесь -->
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1913,6 +2157,9 @@ async function initializeApp() {
   document.querySelector('.nav-tabs').style.display = 'flex';
   document.querySelector('.theme-toggle').style.display = 'flex';
   
+  // Настройка навигации в зависимости от роли
+  setupNavigation();
+  
   // Настройка валидации ввода
   setupInputValidation();
   
@@ -1923,7 +2170,41 @@ async function initializeApp() {
   loadMonthOptions();
   await loadLeaderboard('week');
   
+  // Инициализация для админа
+  if (checkAdminRights()) {
+    await initializeAdminPanel();
+  }
+  
   addCredit();
+}
+
+// Настройка навигации в зависимости от роли
+function setupNavigation() {
+  const isAdmin = checkAdminRights();
+  
+  // Скрываем все вкладки сначала
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  
+  if (isAdmin) {
+    // Показываем вкладки для админа
+    document.getElementById('admin-nav').style.display = 'flex';
+    document.querySelector('[data-tab="leaderboard-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="profile-tab"]').style.display = 'flex';
+    
+    // Активируем админ-панель по умолчанию
+    document.querySelector('.nav-tab.active').classList.remove('active');
+    document.querySelector('.tab-content.active').classList.remove('active');
+    document.getElementById('admin-nav').classList.add('active');
+    document.getElementById('admin-tab').classList.add('active');
+  } else {
+    // Показываем вкладки для МПП
+    document.querySelector('[data-tab="calculator-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="reports-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="leaderboard-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="profile-tab"]').style.display = 'flex';
+  }
 }
 
 // Настройка валидации ввода
@@ -1969,7 +2250,6 @@ async function loadUserData() {
       if (userData.role === 'admin') {
         userRole.style.color = '#e74c3c';
         userRole.style.fontWeight = 'bold';
-        document.getElementById('admin-nav').style.display = 'flex';
       }
       
       await db.collection('users').doc(String(currentUser.id)).set({
@@ -3822,399 +4102,265 @@ function showDemoProfileStats() {
   document.getElementById('total-deposits').textContent = totalDeposits;
 }
 
-// 🔧 ФУНКЦИИ АДМИН-ПАНЕЛИ
+// 🔧 НОВАЯ АДМИН-ПАНЕЛЬ
 
-// Загрузка данных для админ-панели
-async function loadAdminData() {
-  if (!firebaseInitialized) return;
+// Инициализация админ-панели
+async function initializeAdminPanel() {
+  if (!checkAdminRights()) return;
   
-  try {
-    showLoader("Загрузка админ-панели...");
-    
-    const usersSnapshot = await db.collection('users').get();
-    const reportsSnapshot = await db.collection('weeklyReports')
-      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)))
-      .get();
-    
-    const userStats = await calculateUserStats(usersSnapshot, reportsSnapshot);
-    updateAdminDashboard(userStats);
-    
-    hideLoader();
-  } catch (error) {
-    console.error('Ошибка загрузки админ-данных:', error);
-    hideLoader();
-    showError('Ошибка загрузки админ-панели');
-  }
-}
-
-// Расчет статистики пользователей
-async function calculateUserStats(usersSnapshot, reportsSnapshot) {
-  const users = [];
-  const reportsByUser = {};
+  // Загружаем данные для админ-панели
+  await loadAdminDashboard();
+  await loadAdminPlans();
   
-  reportsSnapshot.forEach(doc => {
-    const report = doc.data();
-    const userId = report.userId;
-    if (!reportsByUser[userId]) {
-      reportsByUser[userId] = [];
-    }
-    reportsByUser[userId].push(report);
-  });
-  
-  usersSnapshot.forEach(doc => {
-    const user = doc.data();
-    const userId = doc.id;
-    const userReports = reportsByUser[userId] || [];
-    
-    const stats = {
-      userId: userId,
-      name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Аноним',
-      role: user.role || 'mpp',
-      reportsCount: userReports.length,
-      totalPremium: 0,
-      creditsCount: 0,
-      depositsCount: 0,
-      krhCount: 0,
-      lastActivity: user.lastLogin || user.createdAt
-    };
-    
-    userReports.forEach(report => {
-      stats.creditsCount += report.dkCount || 0;
-      stats.depositsCount += report.vkladCount || 0;
-      stats.krhCount += report.krh || 0;
-      stats.totalPremium += calculateTotalPremium(report);
-    });
-    
-    users.push(stats);
-  });
-  
-  return users;
-}
-
-// Обновление админ-дашборда
-function updateAdminDashboard(userStats) {
-  const adminContainer = document.getElementById('admin-dashboard');
-  
-  const totalUsers = userStats.length;
-  const totalReports = userStats.reduce((sum, user) => sum + user.reportsCount, 0);
-  const totalPremium = userStats.reduce((sum, user) => sum + user.totalPremium, 0);
-  const totalCredits = userStats.reduce((sum, user) => sum + user.creditsCount, 0);
-  const adminUsers = userStats.filter(user => user.role === 'admin').length;
-  
-  adminContainer.innerHTML = `
-    <div class="section">
-      <h2 class="section-title"><i class="fas fa-chart-pie"></i> Общая статистика</h2>
-      <div class="admin-stats">
-        <div class="stat-card">
-          <div class="stat-value">${totalUsers}</div>
-          <div class="stat-label">Пользователей</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${adminUsers}</div>
-          <div class="stat-label">Администраторов</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${totalReports}</div>
-          <div class="stat-label">Отчетов</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${Math.round(totalPremium).toLocaleString()} ₽</div>
-          <div class="stat-label">Общая премия</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${totalCredits}</div>
-          <div class="stat-label">Кредитов</div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="section">
-      <h2 class="section-title"><i class="fas fa-users"></i> Управление пользователями</h2>
-      <div class="admin-table-container">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Пользователь</th>
-              <th>Роль</th>
-              <th>Отчеты</th>
-              <th>Кредиты</th>
-              <th>Вклады</th>
-              <th>КРХ</th>
-              <th>Премия</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${userStats.map(user => `
-              <tr>
-                <td>${user.name}</td>
-                <td>
-                  ${user.role}
-                  <span class="user-role-badge ${user.role === 'admin' ? 'role-admin' : 'role-mpp'}">
-                    ${user.role === 'admin' ? 'ADMIN' : 'MPP'}
-                  </span>
-                </td>
-                <td>${user.reportsCount}</td>
-                <td>${user.creditsCount}</td>
-                <td>${user.depositsCount}</td>
-                <td>${user.krhCount}</td>
-                <td>${Math.round(user.totalPremium).toLocaleString()} ₽</td>
-                <td>
-                  <div class="admin-user-controls">
-                    ${user.role !== 'admin' ? 
-                      `<button class="admin-user-btn btn-promote" onclick="promoteToAdmin('${user.userId}')">
-                        Сделать админом
-                      </button>` : 
-                      `<button class="admin-user-btn btn-demote" onclick="demoteToMpp('${user.userId}')">
-                        Убрать админа
-                      </button>`
-                    }
-                    <button class="admin-user-btn btn-danger" onclick="deleteUser('${user.userId}')">
-                      Удалить
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    
-    <div class="section">
-      <h2 class="section-title"><i class="fas fa-cog"></i> Управление системой</h2>
-      <div class="admin-controls">
-        <button class="btn" onclick="exportData()">
-          <i class="fas fa-download"></i> Экспорт данных
-        </button>
-        <button class="btn btn-warning" onclick="clearTestData()">
-          <i class="fas fa-trash"></i> Очистить тестовые данные
-        </button>
-        <button class="btn btn-danger" onclick="resetSystem()">
-          <i class="fas fa-exclamation-triangle"></i> Сброс системы
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-// Повышение пользователя до админа
-async function promoteToAdmin(userId) {
-  if (!checkAdminRights()) {
-    showError('Недостаточно прав для выполнения этой операции');
-    return;
-  }
-  
-  if (!confirm('Вы уверены, что хотите сделать этого пользователя администратором?')) {
-    return;
-  }
-  
-  if (!firebaseInitialized) return;
-  
-  try {
-    showLoader("Назначение администратора...");
-    await db.collection('users').doc(userId).update({
-      role: 'admin'
-    });
-    
-    hideLoader();
-    showSuccess('Пользователь успешно повышен до администратора!');
-    await loadAdminData();
-  } catch (error) {
-    console.error('Ошибка повышения пользователя:', error);
-    hideLoader();
-    showError('Ошибка при изменении роли пользователя');
-  }
-}
-
-// Понижение админа до МПП
-async function demoteToMpp(userId) {
-  if (!checkAdminRights()) {
-    showError('Недостаточно прав для выполнения этой операции');
-    return;
-  }
-  
-  if (!confirm('Вы уверены, что хотите убрать права администратора у этого пользователя?')) {
-    return;
-  }
-  
-  if (!firebaseInitialized) return;
-  
-  try {
-    showLoader("Изменение роли пользователя...");
-    await db.collection('users').doc(userId).update({
-      role: 'mpp'
-    });
-    
-    hideLoader();
-    showSuccess('Права администратора успешно сняты!');
-    await loadAdminData();
-  } catch (error) {
-    console.error('Ошибка понижения пользователя:', error);
-    hideLoader();
-    showError('Ошибка при изменении роли пользователя');
-  }
-}
-
-// Удаление пользователя
-async function deleteUser(userId) {
-  if (!checkAdminRights()) {
-    showError('Недостаточно прав для выполнения этой операции');
-    return;
-  }
-  
-  if (!confirm('ВНИМАНИЕ! Это действие удалит пользователя и все его данные. Вы уверены?')) {
-    return;
-  }
-  
-  if (!firebaseInitialized) return;
-  
-  try {
-    showLoader("Удаление пользователя...");
-    
-    await db.collection('users').doc(userId).delete();
-    
-    const reportsSnapshot = await db.collection('weeklyReports')
-      .where('userId', '==', userId)
-      .get();
-    
-    const batch = db.batch();
-    reportsSnapshot.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-    await batch.commit();
-    
-    hideLoader();
-    showSuccess('Пользователь и все его данные успешно удалены!');
-    await loadAdminData();
-  } catch (error) {
-    console.error('Ошибка удаления пользователя:', error);
-    hideLoader();
-    showError('Ошибка при удалении пользователя');
-  }
-}
-
-// Экспорт данных
-async function exportData() {
-  if (!firebaseInitialized) return;
-  
-  try {
-    showLoader("Экспорт данных...");
-    
-    const usersSnapshot = await db.collection('users').get();
-    const reportsSnapshot = await db.collection('weeklyReports').get();
-    
-    const data = {
-      users: [],
-      reports: [],
-      exportDate: new Date().toISOString()
-    };
-    
-    usersSnapshot.forEach(doc => {
-      data.users.push({ id: doc.id, ...doc.data() });
-    });
-    
-    reportsSnapshot.forEach(doc => {
-      data.reports.push({ id: doc.id, ...doc.data() });
-    });
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mpp-premium-data-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    hideLoader();
-    showSuccess('Данные успешно экспортированы!');
-  } catch (error) {
-    console.error('Ошибка экспорта:', error);
-    hideLoader();
-    showError('Ошибка при экспорте данных');
-  }
-}
-
-// Очистка тестовых данных
-async function clearTestData() {
-  if (!checkAdminRights()) {
-    showError('Недостаточно прав для выполнения этой операции');
-    return;
-  }
-  
-  if (!confirm('Вы уверены, что хотите удалить все тестовые данные? Это действие нельзя отменить.')) {
-    return;
-  }
-  
-  if (!firebaseInitialized) return;
-  
-  try {
-    showLoader("Очистка тестовых данных...");
-    
-    const usersSnapshot = await db.collection('users')
-      .where('telegramUserId', '==', 'demo')
-      .get();
-    
-    const batch = db.batch();
-    
-    usersSnapshot.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-    
-    await batch.commit();
-    
-    hideLoader();
-    showSuccess('Тестовые данные удалены!');
-    await loadAdminData();
-  } catch (error) {
-    console.error('Ошибка очистки данных:', error);
-    hideLoader();
-    showError('Ошибка при удалении данных');
-  }
-}
-
-// Сброс системы
-async function resetSystem() {
-  if (!checkAdminRights()) {
-    showError('Недостаточно прав для выполнения этой операции');
-    return;
-  }
-  
-  if (!confirm('ВНИМАНИЕ! Это действие удалит ВСЕ данные системы. Это необратимо. Вы уверены?')) {
-    return;
-  }
-  
-  if (!firebaseInitialized) return;
-  
-  try {
-    showLoader("Сброс системы...");
-    
-    const usersSnapshot = await db.collection('users').get();
-    const batch = db.batch();
-    
-    usersSnapshot.forEach(doc => {
-      if (doc.id !== String(currentUser.id)) {
-        batch.delete(doc.ref);
+  // Настраиваем обработчики для админ-вкладок
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+      
+      this.classList.add('active');
+      const tabId = this.getAttribute('data-tab');
+      document.getElementById(tabId).classList.add('active');
+      
+      if (tabId === 'admin-plans') {
+        loadAdminPlans();
+      } else if (tabId === 'admin-leaderboard') {
+        loadAdminLeaderboard('week');
       }
     });
+  });
+  
+  // Обработчик для сохранения планов
+  document.getElementById('save-plans-btn').addEventListener('click', saveAdminPlans);
+  
+  // Обработчики для топа в админ-панели
+  document.querySelectorAll('#admin-leaderboard .period-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#admin-leaderboard .period-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const period = this.getAttribute('data-period');
+      loadAdminLeaderboard(period);
+    });
+  });
+}
+
+// Загрузка главной админ-панели
+async function loadAdminDashboard() {
+  if (!firebaseInitialized) {
+    showDemoAdminDashboard();
+    return;
+  }
+  
+  try {
+    showLoader("Загрузка админ-статистики...");
     
-    const reportsSnapshot = await db.collection('weeklyReports').get();
-    reportsSnapshot.forEach(doc => {
-      batch.delete(doc.ref);
+    // Получаем общее количество пользователей
+    const usersSnapshot = await db.collection('users').get();
+    const totalUsers = usersSnapshot.size;
+    
+    // Получаем количество еженедельных отчетов
+    const weeklyReportsSnapshot = await db.collection('weeklyReports').get();
+    const weeklyReportsCount = weeklyReportsSnapshot.size;
+    
+    // Получаем количество ежемесячных отчетов
+    const monthlyReportsSnapshot = await db.collection('monthlyReports').get();
+    const monthlyReportsCount = monthlyReportsSnapshot.size;
+    
+    // Получаем количество посещений за последние 30 дней
+    const monthAgo = new Date();
+    monthAgo.setDate(monthAgo.getDate() - 30);
+    
+    const visitsSnapshot = await db.collection('users')
+      .where('lastLogin', '>=', firebase.firestore.Timestamp.fromDate(monthAgo))
+      .get();
+    const monthVisits = visitsSnapshot.size;
+    
+    // Получаем количество отчетов за текущий месяц
+    const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const currentMonthReportsSnapshot = await db.collection('weeklyReports')
+      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(currentMonthStart))
+      .get();
+    const currentMonthReports = currentMonthReportsSnapshot.size;
+    
+    // Получаем количество активных пользователей (тех, у кого есть отчеты за последние 30 дней)
+    const activeUsersSnapshot = await db.collection('weeklyReports')
+      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(monthAgo))
+      .get();
+    
+    const activeUserIds = new Set();
+    activeUsersSnapshot.forEach(doc => {
+      activeUserIds.add(doc.data().userId);
+    });
+    const activeUsers = activeUserIds.size;
+    
+    // Получаем количество новых пользователей за последние 30 дней
+    const newUsersSnapshot = await db.collection('users')
+      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(monthAgo))
+      .get();
+    const newUsers = newUsersSnapshot.size;
+    
+    // Обновляем интерфейс
+    document.getElementById('admin-total-users').textContent = totalUsers;
+    document.getElementById('admin-weekly-reports').textContent = weeklyReportsCount;
+    document.getElementById('admin-monthly-reports').textContent = monthlyReportsCount;
+    document.getElementById('admin-month-visits').textContent = monthVisits;
+    document.getElementById('admin-current-month-reports').textContent = currentMonthReports;
+    document.getElementById('admin-active-users').textContent = activeUsers;
+    document.getElementById('admin-new-users').textContent = newUsers;
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка загрузки админ-статистики:', error);
+    hideLoader();
+    showDemoAdminDashboard();
+  }
+}
+
+// Загрузка планов для админ-панели
+async function loadAdminPlans() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    // Загружаем опции месяцев для выбора
+    const planMonthSelect = document.getElementById('admin-plan-month');
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    planMonthSelect.innerHTML = '';
+    
+    // Генерируем 12 месяцев (текущий и следующие 11)
+    for (let i = 0; i < 12; i++) {
+      let year = currentYear;
+      let month = currentMonth + i;
+      
+      // Корректируем год и месяц если месяц больше 12
+      if (month > 12) {
+        month -= 12;
+        year += 1;
+      }
+      
+      const monthDate = new Date(year, month - 1, 1);
+      const option = document.createElement('option');
+      option.value = `${year}-${month.toString().padStart(2, '0')}`;
+      option.textContent = `${MONTHS_GENITIVE[month - 1]} ${year}`;
+      
+      // Если это текущий месяц, помечаем его как выбранный
+      if (i === 0) {
+        option.selected = true;
+      }
+      
+      planMonthSelect.appendChild(option);
+    }
+    
+    // Загружаем текущие планы для выбранного месяца
+    await loadCurrentPlans();
+    
+  } catch (error) {
+    console.error('Ошибка загрузки планов:', error);
+  }
+}
+
+// Загрузка текущих планов
+async function loadCurrentPlans() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    const planMonthSelect = document.getElementById('admin-plan-month');
+    const selectedMonth = planMonthSelect.value;
+    
+    const plansDoc = await db.collection('plans').doc(selectedMonth).get();
+    
+    if (plansDoc.exists) {
+      const plans = plansDoc.data();
+      document.getElementById('admin-krh-plan').value = plans.krh_plan || 15;
+      document.getElementById('admin-vklad-volume-plan').value = plans.vklad_volume_plan || 1920000;
+      document.getElementById('admin-dk-volume-plan').value = plans.dk_volume_plan || 960000;
+      document.getElementById('admin-kvc-plan').value = plans.kvc_plan || 30;
+    } else {
+      // Устанавливаем значения по умолчанию
+      document.getElementById('admin-krh-plan').value = 15;
+      document.getElementById('admin-vklad-volume-plan').value = 1920000;
+      document.getElementById('admin-dk-volume-plan').value = 960000;
+      document.getElementById('admin-kvc-plan').value = 30;
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки текущих планов:', error);
+  }
+}
+
+// Сохранение планов админом
+async function saveAdminPlans() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  if (!firebaseInitialized) return;
+  
+  try {
+    showLoader("Сохранение планов...");
+    
+    const planMonthSelect = document.getElementById('admin-plan-month');
+    const selectedMonth = planMonthSelect.value;
+    
+    const krhPlan = validateInput(document.getElementById('admin-krh-plan').value, 0, 1000);
+    const vkladVolumePlan = validateInput(document.getElementById('admin-vklad-volume-plan').value, 0, 100000000);
+    const dkVolumePlan = validateInput(document.getElementById('admin-dk-volume-plan').value, 0, 100000000);
+    const kvcPlan = validateInput(document.getElementById('admin-kvc-plan').value, 0, 1000);
+    
+    await db.collection('plans').doc(selectedMonth).set({
+      krh_plan: krhPlan,
+      vklad_volume_plan: vkladVolumePlan,
+      dk_volume_plan: dkVolumePlan,
+      kvc_plan: kvcPlan,
+      updatedBy: currentUser.id,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     
-    await batch.commit();
-    
     hideLoader();
-    showSuccess('Система успешно сброшена!');
-    await loadAdminData();
+    showSuccess('Плановые показатели успешно сохранены!');
   } catch (error) {
-    console.error('Ошибка сброса системы:', error);
+    console.error('Ошибка сохранения планов:', error);
     hideLoader();
-    showError('Ошибка при сбросе системы');
+    showError('Ошибка при сохранении планов');
   }
+}
+
+// Загрузка топа для админ-панели
+async function loadAdminLeaderboard(period = 'week') {
+  // Используем ту же логику, что и для обычного топа
+  await loadLeaderboard(period);
+  
+  // Копируем данные из обычного топа в админский
+  document.getElementById('admin-premium-leaderboard').innerHTML = 
+    document.getElementById('premium-leaderboard').innerHTML;
+  document.getElementById('admin-credits-leaderboard').innerHTML = 
+    document.getElementById('credits-leaderboard').innerHTML;
+  document.getElementById('admin-deposits-leaderboard').innerHTML = 
+    document.getElementById('deposits-leaderboard').innerHTML;
+  document.getElementById('admin-last-month-premium-leaderboard').innerHTML = 
+    document.getElementById('last-month-premium-leaderboard').innerHTML;
+  
+  // Управляем видимостью блоков
+  if (period === 'last-month') {
+    document.getElementById('admin-current-period-leaderboard').style.display = 'none';
+    document.getElementById('admin-last-month-leaderboard').style.display = 'block';
+  } else {
+    document.getElementById('admin-current-period-leaderboard').style.display = 'block';
+    document.getElementById('admin-last-month-leaderboard').style.display = 'none';
+  }
+}
+
+// Показать демо-данные для админ-панели
+function showDemoAdminDashboard() {
+  document.getElementById('admin-total-users').textContent = '25';
+  document.getElementById('admin-weekly-reports').textContent = '156';
+  document.getElementById('admin-monthly-reports').textContent = '45';
+  document.getElementById('admin-month-visits').textContent = '120';
+  document.getElementById('admin-current-month-reports').textContent = '35';
+  document.getElementById('admin-active-users').textContent = '18';
+  document.getElementById('admin-new-users').textContent = '3';
 }
 
 // 🔧 ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
@@ -4248,7 +4394,13 @@ document.addEventListener('DOMContentLoaded', async function() {
       } else if (tabId === 'profile-tab') {
         loadProfile();
       } else if (tabId === 'admin-tab') {
-        loadAdminData();
+        // Для админа активируем главную вкладку
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+        document.querySelector('.admin-tab[data-tab="admin-dashboard"]').classList.add('active');
+        document.getElementById('admin-dashboard').classList.add('active');
+        
+        loadAdminDashboard();
       }
     });
   });
