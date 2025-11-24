@@ -1231,7 +1231,7 @@ input:focus, select:focus {
 <div class="plan-fact-container">
 <div>
 <label for="krh_plan">КРХ (план, шт.):</label>
-<input type="number" id="krh_plan" min="0" max="1000" value="15">
+<input type="number" id="krh_plan" min="0" max="1000" value="14">
 </div>
 <div>
 <label for="krh_fact">КРХ (факт, шт.):</label>
@@ -1250,19 +1250,35 @@ input:focus, select:focus {
 </div>
 <div class="plan-fact-container">
 <div>
-<label for="dk_volume_plan">ДК объем (план, руб.):</label>
-<input type="number" id="dk_volume_plan" min="0" max="100000000" value="960000">
+<label for="vklad_count_plan">Вклады (план, шт.):</label>
+<input type="number" id="vklad_count_plan" min="0" max="1000" value="4">
 </div>
 <div>
-<label for="dk_volume_fact">ДК объем (факт, руб.):</label>
-<input type="number" id="dk_volume_fact" min="0" max="100000000" value="0" readonly style="background-color: #f0f8ff;">
+<label for="vklad_count_fact">Вклады (факт, шт.):</label>
+<input type="number" id="vklad_count_fact" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
 <div>
+<label for="dk_count_plan">ДК (план, шт.):</label>
+<input type="number" id="dk_count_plan" min="0" max="1000" value="2">
+</div>
+<div>
+<label for="dk_volume_plan">ДК объем (план, руб.):</label>
+<input type="number" id="dk_volume_plan" min="0" max="100000000" value="960000">
+</div>
+</div>
+<div class="plan-fact-container">
+<div>
+<label for="dk_volume_fact">ДК объем (факт, руб.):</label>
+<input type="number" id="dk_volume_fact" min="0" max="100000000" value="0" readonly style="background-color: #f0f8ff;">
+</div>
+<div>
 <label for="kvc_plan">КВЦ (план, клиенты):</label>
 <input type="number" id="kvc_plan" min="0" max="1000" value="30">
 </div>
+</div>
+<div class="plan-fact-container">
 <div>
 <label for="kvc_fact">КВЦ (факт, клиенты):</label>
 <input type="number" id="kvc_fact" min="0" max="1000" value="0">
@@ -1287,8 +1303,12 @@ input:focus, select:focus {
 <h2 class="section-title"><i class="fas fa-cube"></i> Дополнительные продукты</h2>
 <div class="plan-fact-container">
 <div>
-<label for="vklad_count_fact">Вклады (шт.):</label>
-<input type="number" id="vklad_count_fact" min="0" max="1000" value="0">
+<label for="omp_count">ОМП (шт.):</label>
+<input type="number" id="omp_count" min="0" max="1000" value="0">
+</div>
+<div>
+<label for="zp_nerez_count">ЗП нерез (шт.):</label>
+<input type="number" id="zp_nerez_count" min="0" max="1000" value="0">
 </div>
 </div>
 <div class="plan-fact-container">
@@ -1296,8 +1316,6 @@ input:focus, select:focus {
 <label for="sticker_count">Стикеры:</label>
 <input type="number" id="sticker_count" min="0" max="1000" value="0">
 </div>
-</div>
-<div class="plan-fact-container">
 <div>
 <label for="year_sub_count">Подписки годовые:</label>
 <input type="number" id="year_sub_count" min="0" max="1000" value="0">
@@ -1308,8 +1326,6 @@ input:focus, select:focus {
 <label for="month_sub_count">Подписки ежемесячные:</label>
 <input type="number" id="month_sub_count" min="0" max="1000" value="0">
 </div>
-</div>
-<div class="plan-fact-container">
 <div>
 <label for="krh_limit_count">КРХ Лимит:</label>
 <input type="number" id="krh_limit_count" min="0" max="1000" value="0">
@@ -1320,20 +1336,6 @@ input:focus, select:focus {
 <label for="zp_card_count">ЗП карты:</label>
 <input type="number" id="zp_card_count" min="0" max="1000" value="0">
 </div>
-</div>
-<div class="plan-fact-container">
-<div>
-<label for="omp_count">ОМП (шт.):</label>
-<input type="number" id="omp_count" min="0" max="1000" value="0">
-</div>
-</div>
-<div class="plan-fact-container">
-<div>
-<label for="zp_nerez_count">ЗП нерез (шт.):</label>
-<input type="number" id="zp_nerez_count" min="0" max="1000" value="0">
-</div>
-</div>
-<div class="plan-fact-container">
 <div>
 <label for="card_turnover">Оборот по картам (руб.):</label>
 <input type="number" id="card_turnover" min="0" max="100000000" value="0">
@@ -1349,8 +1351,6 @@ input:focus, select:focus {
 <label for="skb_count">СКБ (дебетовые с 2%):</label>
 <input type="number" id="skb_count" min="0" max="1000" value="0">
 </div>
-</div>
-<div class="plan-fact-container">
 <div>
 <label for="crm_calls">Дозвоны CRM:</label>
 <input type="number" id="crm_calls" min="0" max="1000" value="0">
@@ -1692,7 +1692,7 @@ input:focus, select:focus {
 </div>
 </div>
 
-<!-- Раздел профиля -->
+<!-- Раздел профиля (скрыт для админов) -->
 <div class="tab-content" id="profile-tab">
 <div class="calculator-container">
 <div class="section profile-section">
@@ -1800,11 +1800,21 @@ input:focus, select:focus {
 <div class="plan-input-group">
 <div class="plan-input">
 <label for="admin-krh-plan">КРХ (план, шт.):</label>
-<input type="number" id="admin-krh-plan" min="0" max="1000" value="15">
+<input type="number" id="admin-krh-plan" min="0" max="1000" value="14">
 </div>
 <div class="plan-input">
 <label for="admin-vklad-volume-plan">Вклад объем (план, руб.):</label>
 <input type="number" id="admin-vklad-volume-plan" min="0" max="100000000" value="1920000">
+</div>
+</div>
+<div class="plan-input-group">
+<div class="plan-input">
+<label for="admin-vklad-count-plan">Вклады (план, шт.):</label>
+<input type="number" id="admin-vklad-count-plan" min="0" max="1000" value="4">
+</div>
+<div class="plan-input">
+<label for="admin-dk-count-plan">ДК (план, шт.):</label>
+<input type="number" id="admin-dk-count-plan" min="0" max="1000" value="2">
 </div>
 </div>
 <div class="plan-input-group">
@@ -1882,7 +1892,7 @@ input:focus, select:focus {
 <i class="fas fa-crown"></i>
 <span>Топ</span>
 </a>
-<a href="#" class="nav-tab" data-tab="profile-tab">
+<a href="#" class="nav-tab" id="profile-nav" data-tab="profile-tab">
 <i class="fas fa-user"></i>
 <span>Профиль</span>
 </a>
@@ -2165,7 +2175,12 @@ async function initializeApp() {
   
   initializeMPPCalculator();
   initializeReports();
-  await loadProfile();
+  
+  // Загружаем профиль только для МПП
+  if (!checkAdminRights()) {
+    await loadProfile();
+  }
+  
   loadWeekOptions();
   loadMonthOptions();
   await loadLeaderboard('week');
@@ -2190,14 +2205,18 @@ function setupNavigation() {
   if (isAdmin) {
     // Показываем вкладки для админа
     document.getElementById('admin-nav').style.display = 'flex';
+    document.querySelector('[data-tab="calculator-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="reports-tab"]').style.display = 'flex';
     document.querySelector('[data-tab="leaderboard-tab"]').style.display = 'flex';
-    document.querySelector('[data-tab="profile-tab"]').style.display = 'flex';
     
-    // Активируем админ-панель по умолчанию
-    document.querySelector('.nav-tab.active').classList.remove('active');
-    document.querySelector('.tab-content.active').classList.remove('active');
-    document.getElementById('admin-nav').classList.add('active');
-    document.getElementById('admin-tab').classList.add('active');
+    // Скрываем вкладку профиля для админов
+    document.getElementById('profile-nav').style.display = 'none';
+    
+    // Активируем калькулятор по умолчанию
+    document.querySelector('.nav-tab.active')?.classList.remove('active');
+    document.querySelector('.tab-content.active')?.classList.remove('active');
+    document.querySelector('[data-tab="calculator-tab"]').classList.add('active');
+    document.getElementById('calculator-tab').classList.add('active');
   } else {
     // Показываем вкладки для МПП
     document.querySelector('[data-tab="calculator-tab"]').style.display = 'flex';
@@ -4273,14 +4292,18 @@ async function loadCurrentPlans() {
     
     if (plansDoc.exists) {
       const plans = plansDoc.data();
-      document.getElementById('admin-krh-plan').value = plans.krh_plan || 15;
+      document.getElementById('admin-krh-plan').value = plans.krh_plan || 14;
       document.getElementById('admin-vklad-volume-plan').value = plans.vklad_volume_plan || 1920000;
+      document.getElementById('admin-vklad-count-plan').value = plans.vklad_count_plan || 4;
+      document.getElementById('admin-dk-count-plan').value = plans.dk_count_plan || 2;
       document.getElementById('admin-dk-volume-plan').value = plans.dk_volume_plan || 960000;
       document.getElementById('admin-kvc-plan').value = plans.kvc_plan || 30;
     } else {
       // Устанавливаем значения по умолчанию
-      document.getElementById('admin-krh-plan').value = 15;
+      document.getElementById('admin-krh-plan').value = 14;
       document.getElementById('admin-vklad-volume-plan').value = 1920000;
+      document.getElementById('admin-vklad-count-plan').value = 4;
+      document.getElementById('admin-dk-count-plan').value = 2;
       document.getElementById('admin-dk-volume-plan').value = 960000;
       document.getElementById('admin-kvc-plan').value = 30;
     }
@@ -4306,12 +4329,16 @@ async function saveAdminPlans() {
     
     const krhPlan = validateInput(document.getElementById('admin-krh-plan').value, 0, 1000);
     const vkladVolumePlan = validateInput(document.getElementById('admin-vklad-volume-plan').value, 0, 100000000);
+    const vkladCountPlan = validateInput(document.getElementById('admin-vklad-count-plan').value, 0, 1000);
+    const dkCountPlan = validateInput(document.getElementById('admin-dk-count-plan').value, 0, 1000);
     const dkVolumePlan = validateInput(document.getElementById('admin-dk-volume-plan').value, 0, 100000000);
     const kvcPlan = validateInput(document.getElementById('admin-kvc-plan').value, 0, 1000);
     
     await db.collection('plans').doc(selectedMonth).set({
       krh_plan: krhPlan,
       vklad_volume_plan: vkladVolumePlan,
+      vklad_count_plan: vkladCountPlan,
+      dk_count_plan: dkCountPlan,
       dk_volume_plan: dkVolumePlan,
       kvc_plan: kvcPlan,
       updatedBy: currentUser.id,
