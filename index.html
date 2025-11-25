@@ -148,7 +148,7 @@ label {
   font-size: 14px;
 }
 
-input, select {
+input, select, textarea {
   width: 100%;
   padding: 12px;
   border: 1px solid var(--border-color);
@@ -159,7 +159,7 @@ input, select {
   color: var(--text-color);
 }
 
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   border-color: var(--secondary);
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
   outline: none;
@@ -1176,6 +1176,52 @@ input:focus, select:focus {
   font-weight: bold;
   color: var(--success);
 }
+
+/* Стили для уведомлений об изменениях */
+.changes-notification {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #333;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ffa500;
+  box-shadow: 0 3px 10px rgba(255, 165, 0, 0.2);
+}
+
+.changes-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.changes-header i {
+  font-size: 20px;
+  margin-right: 10px;
+  color: #333;
+}
+
+.changes-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.changes-content {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.changes-date {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 8px;
+  text-align: right;
+}
+
+/* Стили для вкладки изменений */
+.changes-form textarea {
+  min-height: 200px;
+  resize: vertical;
+}
 </style>
 </head>
 <body>
@@ -1199,6 +1245,16 @@ input:focus, select:focus {
 <span id="userRole" style="margin-left: 10px; font-size: 12px; opacity: 0.8;">МПП</span>
 </div>
 </header>
+
+<!-- Уведомление об изменениях (отображается у всех в калькуляторе) -->
+<div id="motivation-changes-notification" class="changes-notification" style="display: none;">
+  <div class="changes-header">
+    <i class="fas fa-exclamation-circle"></i>
+    <div class="changes-title">Важные изменения в мотивации</div>
+  </div>
+  <div class="changes-content" id="motivation-changes-content"></div>
+  <div class="changes-date" id="motivation-changes-date"></div>
+</div>
 
 <!-- Раздел калькулятора для МПП -->
 <div class="tab-content active" id="calculator-tab">
@@ -1416,7 +1472,7 @@ input:focus, select:focus {
 </div>
 </div>
 
-<!-- Раздел отчетов -->
+<!-- Раздел отчетов (только для МПП) -->
 <div class="tab-content" id="reports-tab">
 <div class="calculator-container">
 <div class="section reports-section">
@@ -1656,7 +1712,7 @@ input:focus, select:focus {
 </div>
 </div>
 
-<!-- Раздел топа сотрудников -->
+<!-- Раздел топа сотрудников (только для МПП) -->
 <div class="tab-content" id="leaderboard-tab">
 <div class="calculator-container">
 <div class="section leaderboard-section">
@@ -1692,7 +1748,7 @@ input:focus, select:focus {
 </div>
 </div>
 
-<!-- Раздел профиля (скрыт для админов) -->
+<!-- Раздел профиля (только для МПП) -->
 <div class="tab-content" id="profile-tab">
 <div class="calculator-container">
 <div class="section profile-section">
@@ -1738,53 +1794,12 @@ input:focus, select:focus {
 <h2 class="section-title"><i class="fas fa-crown"></i> Панель администратора</h2>
 
 <div class="admin-tabs">
-<button class="admin-tab active" data-tab="admin-dashboard">Главная</button>
-<button class="admin-tab" data-tab="admin-plans">Планы</button>
-<button class="admin-tab" data-tab="admin-leaderboard">Топ</button>
-</div>
-
-<!-- Главная админ-панель -->
-<div class="admin-content active" id="admin-dashboard">
-<div class="admin-stats">
-<div class="stat-card">
-<div class="stat-value" id="admin-total-users">0</div>
-<div class="stat-label">Всего пользователей</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" id="admin-weekly-reports">0</div>
-<div class="stat-label">Еженедельных отчетов</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" id="admin-monthly-reports">0</div>
-<div class="stat-label">Ежемесячных отчетов</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" id="admin-month-visits">0</div>
-<div class="stat-label">Посещений за месяц</div>
-</div>
-</div>
-
-<div class="reports-summary">
-<h3 class="section-title"><i class="fas fa-chart-bar"></i> Статистика отчетов</h3>
-<div class="summary-grid">
-<div class="summary-card">
-<div class="summary-title">Отчеты за текущий месяц</div>
-<div class="summary-value" id="admin-current-month-reports">0</div>
-</div>
-<div class="summary-card">
-<div class="summary-title">Активные пользователи</div>
-<div class="summary-value" id="admin-active-users">0</div>
-</div>
-<div class="summary-card">
-<div class="summary-title">Новые пользователи</div>
-<div class="summary-value" id="admin-new-users">0</div>
-</div>
-</div>
-</div>
+<button class="admin-tab active" data-tab="admin-plans">Планы</button>
+<button class="admin-tab" data-tab="admin-changes">Изменения</button>
 </div>
 
 <!-- Управление планами -->
-<div class="admin-content" id="admin-plans">
+<div class="admin-content active" id="admin-plans">
 <div class="section">
 <h3 class="section-title"><i class="fas fa-target"></i> Установка плановых показателей</h3>
 <p style="margin-bottom: 15px;">Установите плановые показатели для всех МПП на выбранный месяц</p>
@@ -1835,37 +1850,18 @@ input:focus, select:focus {
 </div>
 </div>
 
-<!-- Топ для админа -->
-<div class="admin-content" id="admin-leaderboard">
-<div class="section leaderboard-section">
-<h3 class="section-title"><i class="fas fa-crown"></i> Топ сотрудников</h3>
-<div class="leaderboard-period-selector">
-<button class="period-btn active" data-period="week">Топ недели</button>
-<button class="period-btn" data-period="month">Топ месяца</button>
-<button class="period-btn" data-period="last-month">Лучшие за прошлый месяц</button>
+<!-- Вкладка изменений для админа -->
+<div class="admin-content" id="admin-changes">
+<div class="section changes-form">
+<h3 class="section-title"><i class="fas fa-exclamation-circle"></i> Изменения в мотивации</h3>
+<p style="margin-bottom: 15px;">Внесите изменения в мотивацию для текущего месяца. Это сообщение увидят все МПП во вкладке "Калькулятор".</p>
+<div class="form-group">
+<label for="changes-text">Текст изменений:</label>
+<textarea id="changes-text" rows="10" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);"></textarea>
 </div>
-
-<div id="admin-current-period-leaderboard">
-<h3>🏆 Топ по премии</h3>
-<div id="admin-premium-leaderboard">
-<!-- Топ по премии будет здесь -->
-</div>
-<h3>📊 Топ по кредитам</h3>
-<div id="admin-credits-leaderboard">
-<!-- Топ по кредитам будет здесь -->
-</div>
-<h3>💰 Топ по вкладам</h3>
-<div id="admin-deposits-leaderboard">
-<!-- Топ по вкладам будет здесь -->
-</div>
-</div>
-
-<div class="last-month-leaderboard" id="admin-last-month-leaderboard" style="display: none;">
-<h3>🏆 Лучшие за прошлый месяц</h3>
-<div id="admin-last-month-premium-leaderboard">
-<!-- Топ по премии за прошлый месяц будет здесь -->
-</div>
-</div>
+<button class="btn" id="save-changes-btn">
+<i class="fas fa-save"></i> Сохранить изменения
+</button>
 </div>
 </div>
 </div>
@@ -1888,7 +1884,7 @@ input:focus, select:focus {
 <i class="fas fa-chart-bar"></i>
 <span>Отчеты</span>
 </a>
-<a href="#" class="nav-tab" data-tab="leaderboard-tab">
+<a href="#" class="nav-tab" id="leaderboard-nav" data-tab="leaderboard-tab">
 <i class="fas fa-crown"></i>
 <span>Топ</span>
 </a>
@@ -2154,6 +2150,94 @@ async function loadPlansIntoCalculator() {
   }
 }
 
+// Загрузка изменений мотивации
+async function loadMotivationChanges() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    const changesDoc = await db.collection('motivation_changes').doc(currentMonthKey).get();
+    
+    if (changesDoc.exists) {
+      const changesData = changesDoc.data();
+      const notificationElement = document.getElementById('motivation-changes-notification');
+      const contentElement = document.getElementById('motivation-changes-content');
+      const dateElement = document.getElementById('motivation-changes-date');
+      
+      if (changesData.text && changesData.text.trim() !== '') {
+        contentElement.innerHTML = changesData.text.replace(/\n/g, '<br>');
+        dateElement.textContent = `Обновлено: ${new Date(changesData.updatedAt?.toDate()).toLocaleDateString('ru-RU')}`;
+        notificationElement.style.display = 'block';
+      } else {
+        notificationElement.style.display = 'none';
+      }
+    } else {
+      document.getElementById('motivation-changes-notification').style.display = 'none';
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки изменений мотивации:', error);
+    document.getElementById('motivation-changes-notification').style.display = 'none';
+  }
+}
+
+// Загрузка изменений для админ-панели
+async function loadAdminMotivationChanges() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    const changesDoc = await db.collection('motivation_changes').doc(currentMonthKey).get();
+    
+    if (changesDoc.exists) {
+      const changesData = changesDoc.data();
+      document.getElementById('changes-text').value = changesData.text || '';
+    } else {
+      document.getElementById('changes-text').value = '';
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки изменений для админ-панели:', error);
+  }
+}
+
+// Сохранение изменений мотивации
+async function saveMotivationChanges() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  if (!firebaseInitialized) return;
+  
+  try {
+    showLoader("Сохранение изменений...");
+    
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    const changesText = document.getElementById('changes-text').value;
+    
+    await db.collection('motivation_changes').doc(currentMonthKey).set({
+      text: changesText,
+      monthKey: currentMonthKey,
+      updatedBy: currentUser.id,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    hideLoader();
+    showSuccess('Изменения успешно сохранены!');
+    
+    // Обновляем уведомление для всех пользователей
+    await loadMotivationChanges();
+  } catch (error) {
+    console.error('Ошибка сохранения изменений:', error);
+    hideLoader();
+    showError('Ошибка при сохранении изменений');
+  }
+}
+
 // Инициализация Telegram Web App
 async function initTelegram() {
   try {
@@ -2229,6 +2313,9 @@ async function initializeApp() {
   // Загружаем планы в калькулятор перед инициализацией
   await loadPlansIntoCalculator();
   
+  // Загружаем изменения мотивации
+  await loadMotivationChanges();
+  
   initializeMPPCalculator();
   initializeReports();
   
@@ -2239,7 +2326,10 @@ async function initializeApp() {
   
   loadWeekOptions();
   loadMonthOptions();
-  await loadLeaderboard('week');
+  
+  if (!checkAdminRights()) {
+    await loadLeaderboard('week');
+  }
   
   // Инициализация для админа
   if (checkAdminRights()) {
@@ -2259,13 +2349,13 @@ function setupNavigation() {
   });
   
   if (isAdmin) {
-    // Показываем вкладки для админа
+    // Показываем вкладки для админа: только Калькулятор и Админ
     document.getElementById('admin-nav').style.display = 'flex';
     document.querySelector('[data-tab="calculator-tab"]').style.display = 'flex';
-    document.querySelector('[data-tab="reports-tab"]').style.display = 'flex';
-    document.querySelector('[data-tab="leaderboard-tab"]').style.display = 'flex';
     
-    // Скрываем вкладку профиля для админов
+    // Скрываем вкладки отчетов, топа и профиля для админов
+    document.getElementById('reports-nav').style.display = 'none';
+    document.getElementById('leaderboard-nav').style.display = 'none';
     document.getElementById('profile-nav').style.display = 'none';
     
     // Активируем калькулятор по умолчанию
@@ -4257,8 +4347,8 @@ async function initializeAdminPanel() {
   if (!checkAdminRights()) return;
   
   // Загружаем данные для админ-панели
-  await loadAdminDashboard();
   await loadAdminPlans();
+  await loadAdminMotivationChanges();
   
   // Настраиваем обработчики для админ-вкладок
   document.querySelectorAll('.admin-tab').forEach(tab => {
@@ -4272,8 +4362,8 @@ async function initializeAdminPanel() {
       
       if (tabId === 'admin-plans') {
         loadAdminPlans();
-      } else if (tabId === 'admin-leaderboard') {
-        loadAdminLeaderboard('week');
+      } else if (tabId === 'admin-changes') {
+        loadAdminMotivationChanges();
       }
     });
   });
@@ -4281,87 +4371,8 @@ async function initializeAdminPanel() {
   // Обработчик для сохранения планов
   document.getElementById('save-plans-btn').addEventListener('click', saveAdminPlans);
   
-  // Обработчики для топа в админ-панели
-  document.querySelectorAll('#admin-leaderboard .period-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('#admin-leaderboard .period-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      const period = this.getAttribute('data-period');
-      loadAdminLeaderboard(period);
-    });
-  });
-}
-
-// Загрузка главной админ-панели
-async function loadAdminDashboard() {
-  if (!firebaseInitialized) {
-    showDemoAdminDashboard();
-    return;
-  }
-  
-  try {
-    showLoader("Загрузка админ-статистики...");
-    
-    // Получаем общее количество пользователей
-    const usersSnapshot = await db.collection('users').get();
-    const totalUsers = usersSnapshot.size;
-    
-    // Получаем количество еженедельных отчетов
-    const weeklyReportsSnapshot = await db.collection('weeklyReports').get();
-    const weeklyReportsCount = weeklyReportsSnapshot.size;
-    
-    // Получаем количество ежемесячных отчетов
-    const monthlyReportsSnapshot = await db.collection('monthlyReports').get();
-    const monthlyReportsCount = monthlyReportsSnapshot.size;
-    
-    // Получаем количество посещений за последние 30 дней
-    const monthAgo = new Date();
-    monthAgo.setDate(monthAgo.getDate() - 30);
-    
-    const visitsSnapshot = await db.collection('users')
-      .where('lastLogin', '>=', firebase.firestore.Timestamp.fromDate(monthAgo))
-      .get();
-    const monthVisits = visitsSnapshot.size;
-    
-    // Получаем количество отчетов за текущий месяц
-    const currentMonthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const currentMonthReportsSnapshot = await db.collection('weeklyReports')
-      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(currentMonthStart))
-      .get();
-    const currentMonthReports = currentMonthReportsSnapshot.size;
-    
-    // Получаем количество активных пользователей (тех, у кого есть отчеты за последние 30 дней)
-    const activeUsersSnapshot = await db.collection('weeklyReports')
-      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(monthAgo))
-      .get();
-    
-    const activeUserIds = new Set();
-    activeUsersSnapshot.forEach(doc => {
-      activeUserIds.add(doc.data().userId);
-    });
-    const activeUsers = activeUserIds.size;
-    
-    // Получаем количество новых пользователей за последние 30 дней
-    const newUsersSnapshot = await db.collection('users')
-      .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(monthAgo))
-      .get();
-    const newUsers = newUsersSnapshot.size;
-    
-    // Обновляем интерфейс
-    document.getElementById('admin-total-users').textContent = totalUsers;
-    document.getElementById('admin-weekly-reports').textContent = weeklyReportsCount;
-    document.getElementById('admin-monthly-reports').textContent = monthlyReportsCount;
-    document.getElementById('admin-month-visits').textContent = monthVisits;
-    document.getElementById('admin-current-month-reports').textContent = currentMonthReports;
-    document.getElementById('admin-active-users').textContent = activeUsers;
-    document.getElementById('admin-new-users').textContent = newUsers;
-    
-    hideLoader();
-  } catch (error) {
-    console.error('Ошибка загрузки админ-статистики:', error);
-    hideLoader();
-    showDemoAdminDashboard();
-  }
+  // Обработчик для сохранения изменений
+  document.getElementById('save-changes-btn').addEventListener('click', saveMotivationChanges);
 }
 
 // Загрузка планов для админ-панели
@@ -4490,42 +4501,6 @@ async function saveAdminPlans() {
   }
 }
 
-// Загрузка топа для админ-панели
-async function loadAdminLeaderboard(period = 'week') {
-  // Используем ту же логику, что и для обычного топа
-  await loadLeaderboard(period);
-  
-  // Копируем данные из обычного топа в админский
-  document.getElementById('admin-premium-leaderboard').innerHTML = 
-    document.getElementById('premium-leaderboard').innerHTML;
-  document.getElementById('admin-credits-leaderboard').innerHTML = 
-    document.getElementById('credits-leaderboard').innerHTML;
-  document.getElementById('admin-deposits-leaderboard').innerHTML = 
-    document.getElementById('deposits-leaderboard').innerHTML;
-  document.getElementById('admin-last-month-premium-leaderboard').innerHTML = 
-    document.getElementById('last-month-premium-leaderboard').innerHTML;
-  
-  // Управляем видимостью блоков
-  if (period === 'last-month') {
-    document.getElementById('admin-current-period-leaderboard').style.display = 'none';
-    document.getElementById('admin-last-month-leaderboard').style.display = 'block';
-  } else {
-    document.getElementById('admin-current-period-leaderboard').style.display = 'block';
-    document.getElementById('admin-last-month-leaderboard').style.display = 'none';
-  }
-}
-
-// Показать демо-данные для админ-панели
-function showDemoAdminDashboard() {
-  document.getElementById('admin-total-users').textContent = '25';
-  document.getElementById('admin-weekly-reports').textContent = '156';
-  document.getElementById('admin-monthly-reports').textContent = '45';
-  document.getElementById('admin-month-visits').textContent = '120';
-  document.getElementById('admin-current-month-reports').textContent = '35';
-  document.getElementById('admin-active-users').textContent = '18';
-  document.getElementById('admin-new-users').textContent = '3';
-}
-
 // 🔧 ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -4557,13 +4532,13 @@ document.addEventListener('DOMContentLoaded', async function() {
       } else if (tabId === 'profile-tab') {
         loadProfile();
       } else if (tabId === 'admin-tab') {
-        // Для админа активируем главную вкладку
+        // Для админа активируем вкладку планы по умолчанию
         document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
-        document.querySelector('.admin-tab[data-tab="admin-dashboard"]').classList.add('active');
-        document.getElementById('admin-dashboard').classList.add('active');
+        document.querySelector('.admin-tab[data-tab="admin-plans"]').classList.add('active');
+        document.getElementById('admin-plans').classList.add('active');
         
-        loadAdminDashboard();
+        loadAdminPlans();
       }
     });
   });
