@@ -1222,6 +1222,121 @@ input:focus, select:focus, textarea:focus {
   min-height: 200px;
   resize: vertical;
 }
+
+/* Стили для рекордов продаж */
+.records-container {
+  margin-top: 20px;
+}
+
+.record-item {
+  background: var(--card-bg);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.record-title {
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--primary);
+}
+
+.record-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--success);
+}
+
+.record-user {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-top: 5px;
+}
+
+.record-form {
+  background: var(--card-bg);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.record-form-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.record-input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.record-input {
+  margin-bottom: 10px;
+}
+
+.record-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.record-input input, .record-input select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 14px;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.record-btn {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.record-btn:hover {
+  background: #2980b9;
+}
+
+.record-btn i {
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .record-input-group {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -1721,6 +1836,7 @@ input:focus, select:focus, textarea:focus {
 <button class="period-btn active" data-period="week">Топ недели</button>
 <button class="period-btn" data-period="month">Топ месяца</button>
 <button class="period-btn" data-period="last-month">Лучшие за прошлый месяц</button>
+<button class="period-btn" data-period="records">Рекорды продаж</button>
 </div>
 
 <div id="current-period-leaderboard">
@@ -1742,6 +1858,64 @@ input:focus, select:focus, textarea:focus {
 <h3>🏆 Лучшие за прошлый месяц</h3>
 <div id="last-month-premium-leaderboard">
 <!-- Топ по премии за прошлый месяц будет здесь -->
+</div>
+</div>
+
+<!-- НОВАЯ СЕКЦИЯ: РЕКОРДЫ ПРОДАЖ -->
+<div class="records-container" id="records-leaderboard" style="display: none;">
+<h3>🏅 Рекорды продаж</h3>
+
+<!-- Форма для установки рекордов (только для админа) -->
+<div class="record-form" id="record-form" style="display: none;">
+<div class="record-form-title">Установить рекорд</div>
+<div class="record-input-group">
+<div class="record-input">
+<label for="record-user">Сотрудник:</label>
+<select id="record-user">
+<!-- Список сотрудников будет заполнен динамически -->
+</select>
+</div>
+<div class="record-input">
+<label for="record-type">Тип рекорда:</label>
+<select id="record-type">
+<option value="credits">Кредиты (кол-во)</option>
+<option value="deposits">Вклады (кол-во)</option>
+<option value="krh">Старт (кол-во)</option>
+</select>
+</div>
+</div>
+<div class="record-input">
+<label for="record-value">Значение:</label>
+<input type="number" id="record-value" min="0" max="1000" value="0">
+</div>
+<button class="record-btn" id="save-record-btn">
+<i class="fas fa-trophy"></i> Сохранить рекорд
+</button>
+</div>
+
+<!-- Отображение рекордов -->
+<div class="record-item">
+<div class="record-header">
+<div class="record-title">Кредиты (кол-во)</div>
+<div class="record-value" id="credits-record-value">0</div>
+</div>
+<div class="record-user" id="credits-record-user">Рекорд еще не установлен</div>
+</div>
+
+<div class="record-item">
+<div class="record-header">
+<div class="record-title">Вклады (кол-во)</div>
+<div class="record-value" id="deposits-record-value">0</div>
+</div>
+<div class="record-user" id="deposits-record-user">Рекорд еще не установлен</div>
+</div>
+
+<div class="record-item">
+<div class="record-header">
+<div class="record-title">Старт (кол-во)</div>
+<div class="record-value" id="krh-record-value">0</div>
+</div>
+<div class="record-user" id="krh-record-user">Рекорд еще не установлен</div>
 </div>
 </div>
 </div>
@@ -3694,6 +3868,7 @@ async function loadLeaderboard(period = 'week') {
       
       document.getElementById('current-period-leaderboard').style.display = 'block';
       document.getElementById('last-month-leaderboard').style.display = 'none';
+      document.getElementById('records-leaderboard').style.display = 'none';
     } else if (period === 'month') {
       startDate = new Date(now.getFullYear(), now.getMonth(), 1);
       endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -3701,8 +3876,13 @@ async function loadLeaderboard(period = 'week') {
       
       document.getElementById('current-period-leaderboard').style.display = 'block';
       document.getElementById('last-month-leaderboard').style.display = 'none';
+      document.getElementById('records-leaderboard').style.display = 'none';
     } else if (period === 'last-month') {
       await loadLastMonthLeaderboard();
+      hideLoader();
+      return;
+    } else if (period === 'records') {
+      await loadSalesRecords();
       hideLoader();
       return;
     }
@@ -3849,6 +4029,7 @@ async function loadLastMonthLeaderboard() {
     
     document.getElementById('current-period-leaderboard').style.display = 'none';
     document.getElementById('last-month-leaderboard').style.display = 'block';
+    document.getElementById('records-leaderboard').style.display = 'none';
     
     updateLastMonthPremiumLeaderboard(leaderboardData);
     hideLoader();
@@ -4004,6 +4185,19 @@ function showDemoLeaderboard(period) {
     
     document.getElementById('current-period-leaderboard').style.display = 'none';
     document.getElementById('last-month-leaderboard').style.display = 'block';
+    document.getElementById('records-leaderboard').style.display = 'none';
+  } else if (period === 'records') {
+    // Показываем демо-данные для рекордов
+    document.getElementById('current-period-leaderboard').style.display = 'none';
+    document.getElementById('last-month-leaderboard').style.display = 'none';
+    document.getElementById('records-leaderboard').style.display = 'block';
+    
+    document.getElementById('credits-record-value').textContent = '12';
+    document.getElementById('credits-record-user').textContent = 'Иванов Иван';
+    document.getElementById('deposits-record-value').textContent = '8';
+    document.getElementById('deposits-record-user').textContent = 'Петров Петр';
+    document.getElementById('krh-record-value').textContent = '24';
+    document.getElementById('krh-record-user').textContent = 'Сидоров Алексей';
   } else {
     premiumLeaderboard.innerHTML = `
       <div class="leaderboard-item">
@@ -4061,6 +4255,7 @@ function showDemoLeaderboard(period) {
     
     document.getElementById('current-period-leaderboard').style.display = 'block';
     document.getElementById('last-month-leaderboard').style.display = 'none';
+    document.getElementById('records-leaderboard').style.display = 'none';
   }
 }
 
@@ -4501,6 +4696,155 @@ async function saveAdminPlans() {
   }
 }
 
+// 🔧 НОВЫЕ ФУНКЦИИ ДЛЯ РЕКОРДОВ ПРОДАЖ
+
+// Загрузка рекордов продаж
+async function loadSalesRecords() {
+  document.getElementById('current-period-leaderboard').style.display = 'none';
+  document.getElementById('last-month-leaderboard').style.display = 'none';
+  document.getElementById('records-leaderboard').style.display = 'block';
+  
+  // Показываем или скрываем форму для админа
+  const isAdmin = checkAdminRights();
+  document.getElementById('record-form').style.display = isAdmin ? 'block' : 'none';
+  
+  if (!firebaseInitialized) {
+    showDemoLeaderboard('records');
+    return;
+  }
+  
+  try {
+    showLoader("Загрузка рекордов...");
+    
+    // Загружаем рекорды из базы данных
+    const recordsSnapshot = await db.collection('salesRecords').get();
+    
+    // Инициализируем значения рекордов по умолчанию
+    const records = {
+      credits: { value: 0, userName: 'Рекорд еще не установлен', userId: null },
+      deposits: { value: 0, userName: 'Рекорд еще не установлен', userId: null },
+      krh: { value: 0, userName: 'Рекорд еще не установлен', userId: null }
+    };
+    
+    // Заполняем данные из базы
+    recordsSnapshot.forEach(doc => {
+      const record = doc.data();
+      const recordType = record.type;
+      
+      if (records[recordType] && record.value > records[recordType].value) {
+        records[recordType] = {
+          value: record.value,
+          userName: record.userName || 'Неизвестный сотрудник',
+          userId: record.userId
+        };
+      }
+    });
+    
+    // Обновляем интерфейс
+    document.getElementById('credits-record-value').textContent = records.credits.value;
+    document.getElementById('credits-record-user').textContent = records.credits.userName;
+    
+    document.getElementById('deposits-record-value').textContent = records.deposits.value;
+    document.getElementById('deposits-record-user').textContent = records.deposits.userName;
+    
+    document.getElementById('krh-record-value').textContent = records.krh.value;
+    document.getElementById('krh-record-user').textContent = records.krh.userName;
+    
+    // Если админ, загружаем список пользователей для выбора
+    if (isAdmin) {
+      await loadUsersForRecords();
+    }
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка загрузки рекордов:', error);
+    hideLoader();
+    showDemoLeaderboard('records');
+  }
+}
+
+// Загрузка пользователей для выбора в форме рекордов (для админа)
+async function loadUsersForRecords() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    const usersSnapshot = await db.collection('users')
+      .where('role', '==', 'mpp')
+      .get();
+    
+    const userSelect = document.getElementById('record-user');
+    userSelect.innerHTML = '';
+    
+    usersSnapshot.forEach(doc => {
+      const user = doc.data();
+      const option = document.createElement('option');
+      option.value = doc.id;
+      option.textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Аноним';
+      userSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки пользователей:', error);
+  }
+}
+
+// Сохранение рекорда (для админа)
+async function saveRecord() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  if (!firebaseInitialized) return;
+  
+  try {
+    showLoader("Сохранение рекорда...");
+    
+    const userId = document.getElementById('record-user').value;
+    const recordType = document.getElementById('record-type').value;
+    const recordValue = validateInput(document.getElementById('record-value').value, 0, 1000);
+    
+    if (!userId) {
+      hideLoader();
+      showError('Выберите сотрудника');
+      return;
+    }
+    
+    // Получаем информацию о пользователе
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      hideLoader();
+      showError('Пользователь не найден');
+      return;
+    }
+    
+    const user = userDoc.data();
+    const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Аноним';
+    
+    // Сохраняем рекорд в базу данных
+    await db.collection('salesRecords').add({
+      userId: userId,
+      userName: userName,
+      type: recordType,
+      value: recordValue,
+      updatedBy: currentUser.id,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    hideLoader();
+    showSuccess('Рекорд успешно сохранен!');
+    
+    // Обновляем отображение рекордов
+    await loadSalesRecords();
+    
+    // Очищаем форму
+    document.getElementById('record-value').value = '0';
+  } catch (error) {
+    console.error('Ошибка сохранения рекорда:', error);
+    hideLoader();
+    showError('Ошибка при сохранении рекорда');
+  }
+}
+
 // 🔧 ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -4551,6 +4895,9 @@ document.addEventListener('DOMContentLoaded', async function() {
       loadLeaderboard(period);
     });
   });
+
+  // Обработчик для сохранения рекордов
+  document.getElementById('save-record-btn').addEventListener('click', saveRecord);
 
   console.log("Все обработчики событий установлены");
 });
