@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-/* Существующие стили остаются без изменений */
+/* Стили остаются без изменений */
 :root {
   --primary: #2c3e50;
   --secondary: #3498db;
@@ -73,52 +73,14 @@ header {
   text-align: center;
   position: relative;
   z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
-.header-left {
-  flex: 1;
-  text-align: left;
-}
-
-.header-center {
-  flex: 2;
-  text-align: center;
-}
-
-.header-right {
-  flex: 1;
-  text-align: right;
-}
-
-.menu-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 5px;
-  transition: all 0.3s;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.header-center h1 {
+header h1 {
   font-size: 20px;
   margin-bottom: 5px;
 }
 
-.header-center p {
+header p {
   opacity: 0.9;
   font-size: 12px;
 }
@@ -145,589 +107,6 @@ header {
   font-size: 16px;
 }
 
-/* Меню */
-.menu-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2000;
-  animation: fadeIn 0.3s ease;
-}
-
-.menu-container {
-  position: fixed;
-  top: 0;
-  right: -300px;
-  width: 280px;
-  height: 100%;
-  background: var(--card-bg);
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-  z-index: 2001;
-  transition: right 0.3s ease;
-  overflow-y: auto;
-  padding: 20px 0;
-}
-
-.menu-container.active {
-  right: 0;
-}
-
-.menu-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 15px;
-}
-
-.menu-user-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.menu-user-details h3 {
-  font-size: 16px;
-  margin-bottom: 2px;
-  color: var(--text-color);
-}
-
-.menu-user-details p {
-  font-size: 12px;
-  opacity: 0.8;
-  color: var(--text-color);
-}
-
-.menu-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
-  color: var(--text-color);
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.menu-items {
-  list-style: none;
-  padding: 0;
-}
-
-.menu-item {
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-color);
-  text-decoration: none;
-  transition: all 0.3s;
-  border-left: 4px solid transparent;
-  cursor: pointer;
-}
-
-.menu-item:hover {
-  background: rgba(52, 152, 219, 0.1);
-  border-left-color: var(--secondary);
-}
-
-.menu-item.active {
-  background: rgba(52, 152, 219, 0.2);
-  border-left-color: var(--secondary);
-  font-weight: bold;
-}
-
-.menu-item i {
-  width: 24px;
-  text-align: center;
-  font-size: 18px;
-}
-
-.menu-divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: 10px 20px;
-}
-
-.menu-footer {
-  padding: 20px;
-  margin-top: 20px;
-  border-top: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.theme-switch {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 20px;
-  cursor: pointer;
-}
-
-.theme-switch:hover {
-  background: rgba(52, 152, 219, 0.1);
-}
-
-.theme-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.theme-label i {
-  width: 24px;
-  text-align: center;
-  font-size: 18px;
-}
-
-.theme-toggle-switch {
-  position: relative;
-  width: 50px;
-  height: 24px;
-}
-
-.theme-toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 24px;
-}
-
-.theme-toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-.theme-toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.theme-toggle-switch input:checked + .theme-toggle-slider {
-  background-color: var(--secondary);
-}
-
-.theme-toggle-switch input:checked + .theme-toggle-slider:before {
-  transform: translateX(26px);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@media (max-width: 768px) {
-  .menu-container {
-    width: 100%;
-    right: -100%;
-  }
-  
-  .header-center h1 {
-    font-size: 18px;
-  }
-  
-  .header-center p {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 480px) {
-  .header-center h1 {
-    font-size: 16px;
-  }
-  
-  .header-center p {
-    display: none;
-  }
-}
-
-/* НОВЫЕ СТИЛИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ */
-.home-welcome-card {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  padding: 25px 20px;
-  border-radius: 15px;
-  margin: 15px 10px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.home-welcome-title {
-  font-size: 28px;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-.home-welcome-text {
-  font-size: 16px;
-  opacity: 0.9;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.quote-card {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: 12px;
-  margin: 15px 10px;
-  text-align: center;
-  border: 1px solid var(--border-color);
-  position: relative;
-}
-
-.quote-text {
-  font-size: 16px;
-  font-style: italic;
-  margin-bottom: 10px;
-  color: var(--text-color);
-  line-height: 1.4;
-}
-
-.quote-author {
-  font-size: 14px;
-  color: var(--secondary);
-  font-weight: 600;
-}
-
-.quote-icon {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  color: var(--secondary);
-  font-size: 20px;
-  opacity: 0.5;
-}
-
-.premium-forecast-card {
-  background: linear-gradient(135deg, var(--success), #2ecc71);
-  color: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin: 15px 10px;
-  text-align: center;
-}
-
-.premium-forecast-title {
-  font-size: 18px;
-  margin-bottom: 15px;
-  font-weight: 600;
-}
-
-.premium-forecast-amount {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.premium-forecast-period {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 15px;
-}
-
-.premium-forecast-progress {
-  background: rgba(255, 255, 255, 0.2);
-  height: 8px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
-.premium-forecast-progress-bar {
-  height: 100%;
-  background: white;
-  border-radius: 4px;
-  transition: width 1s ease;
-}
-
-.premium-forecast-comparison {
-  font-size: 14px;
-  margin-top: 10px;
-  opacity: 0.9;
-}
-
-.quick-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin: 15px 10px;
-}
-
-.quick-stat-card {
-  background: var(--card-bg);
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid var(--border-color);
-  transition: all 0.3s;
-}
-
-.quick-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.quick-stat-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
-  color: var(--secondary);
-}
-
-.quick-stat-value {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: var(--text-color);
-}
-
-.quick-stat-label {
-  font-size: 12px;
-  color: var(--text-color);
-  opacity: 0.7;
-}
-
-.start-calculation-btn {
-  display: block;
-  margin: 20px 10px;
-  padding: 18px;
-  background: linear-gradient(135deg, var(--secondary), #2980b9);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-align: center;
-  text-decoration: none;
-}
-
-.start-calculation-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
-}
-
-.start-calculation-btn i {
-  margin-right: 10px;
-}
-
-/* НОВЫЕ СТИЛИ ДЛЯ ЗОНЫ РОСТА */
-.growth-zone-section {
-  margin-top: 25px;
-  padding-top: 20px;
-  border-top: 2px solid var(--border-color);
-}
-
-.growth-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.growth-stat-card {
-  background: var(--card-bg);
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid var(--border-color);
-}
-
-.growth-stat-title {
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: var(--text-color);
-  opacity: 0.8;
-}
-
-.growth-stat-value {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.growth-stat-value.positive {
-  color: var(--success);
-}
-
-.growth-stat-value.negative {
-  color: var(--accent);
-}
-
-.growth-stat-value.neutral {
-  color: var(--warning);
-}
-
-.growth-stat-comparison {
-  font-size: 12px;
-  color: var(--text-color);
-  opacity: 0.7;
-}
-
-.weak-spots-container {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-  border: 1px solid var(--border-color);
-}
-
-.weak-spots-title {
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-}
-
-.weak-spots-title i {
-  margin-right: 10px;
-  color: var(--accent);
-}
-
-.weak-spot-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.weak-spot-item:last-child {
-  border-bottom: none;
-}
-
-.weak-spot-info {
-  flex: 1;
-}
-
-.weak-spot-name {
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 3px;
-}
-
-.weak-spot-description {
-  font-size: 12px;
-  color: var(--text-color);
-  opacity: 0.7;
-}
-
-.weak-spot-value {
-  font-weight: bold;
-  margin-left: 15px;
-  color: var(--accent);
-}
-
-.weak-spot-percent {
-  font-size: 12px;
-  color: var(--accent);
-  margin-left: 5px;
-}
-
-.recommendations-container {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-  border: 1px solid var(--border-color);
-}
-
-.recommendations-title {
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-}
-
-.recommendations-title i {
-  margin-right: 10px;
-  color: var(--success);
-}
-
-.recommendation-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.recommendation-item:last-child {
-  border-bottom: none;
-}
-
-.recommendation-icon {
-  font-size: 16px;
-  color: var(--success);
-  margin-right: 12px;
-  margin-top: 2px;
-}
-
-.recommendation-text {
-  flex: 1;
-  color: var(--text-color);
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.growth-chart-container {
-  height: 200px;
-  margin: 20px 0;
-  position: relative;
-}
-
-.profile-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 10px;
-  overflow-x: auto;
-}
-
-.profile-tab {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background: var(--card-bg);
-  color: var(--text-color);
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 16px;
-  white-space: nowrap;
-}
-
-.profile-tab.active {
-  background: var(--secondary);
-  color: white;
-}
-
-.profile-content {
-  display: none;
-}
-
-.profile-content.active {
-  display: block;
-}
-
-/* Остальные существующие стили остаются без изменений */
 .calculator-container {
   padding: 15px 10px;
 }
@@ -910,7 +289,40 @@ input:focus, select:focus, textarea:focus {
 }
 
 .nav-tabs {
-  display: none; /* Скрываем старую навигацию */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  display: none;
+  justify-content: space-around;
+  padding: 10px 5px;
+  border-top: 1px solid var(--border-color);
+  z-index: 1000;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 12px;
+  transition: all 0.3s;
+  flex: 1;
+  margin: 0 5px;
+}
+
+.nav-tab.active {
+  background: var(--secondary);
+  color: white;
+}
+
+.nav-tab i {
+  font-size: 18px;
+  margin-bottom: 4px;
 }
 
 .tab-content {
@@ -919,6 +331,31 @@ input:focus, select:focus, textarea:focus {
 
 .tab-content.active {
   display: block;
+}
+
+.theme-toggle {
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.theme-toggle:hover {
+  background: #2980b9;
+  transform: scale(1.1);
 }
 
 .loader {
@@ -1440,7 +877,7 @@ input:focus, select:focus, textarea:focus {
   color: white;
 }
 
-/* Отчеты и профиль */
+/* Новые стили для ежемесячных отчетов и профиля */
 .report-type-selector {
   display: flex;
   gap: 10px;
@@ -1565,7 +1002,7 @@ input:focus, select:focus, textarea:focus {
   border-top: 2px solid var(--border-color);
 }
 
-/* Редактирование премии */
+/* Стили для редактирования премии */
 .edit-premium-btn {
   background: none;
   border: none;
@@ -1615,7 +1052,7 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
-/* Админ-панель */
+/* Стили для новой админ-панели */
 .admin-plans-form {
   margin-top: 20px;
 }
@@ -1740,7 +1177,7 @@ input:focus, select:focus, textarea:focus {
   color: var(--success);
 }
 
-/* Уведомления об изменениях */
+/* Стили для уведомлений об изменениях */
 .changes-notification {
   background: linear-gradient(135deg, #ffd700, #ffa500);
   color: #333;
@@ -1780,7 +1217,13 @@ input:focus, select:focus, textarea:focus {
   text-align: right;
 }
 
-/* Рекорды продаж */
+/* Стили для вкладки изменений */
+.changes-form textarea {
+  min-height: 200px;
+  resize: vertical;
+}
+
+/* Стили для рекордов продаж */
 .records-container {
   margin-top: 20px;
 }
@@ -1889,7 +1332,7 @@ input:focus, select:focus, textarea:focus {
   margin-right: 8px;
 }
 
-/* Поиск сотрудников */
+/* НОВЫЕ СТИЛИ ДЛЯ ПОИСКА СОТРУДНИКОВ */
 .custom-select-wrapper {
   position: relative;
   width: 100%;
@@ -1971,24 +1414,6 @@ input:focus, select:focus, textarea:focus {
   .record-input-group {
     grid-template-columns: 1fr;
   }
-  
-  .quick-stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .growth-stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-  }
-  
-  .profile-tab {
-    padding: 8px 12px;
-    font-size: 14px;
-  }
 }
 </style>
 </head>
@@ -2003,163 +1428,18 @@ input:focus, select:focus, textarea:focus {
 <div class="error-message" id="errorMessage"></div>
 <div class="success-message" id="successMessage"></div>
 
-<!-- Выпадающее меню -->
-<div class="menu-overlay" id="menuOverlay"></div>
-<div class="menu-container" id="menuContainer">
-  <div class="menu-header">
-    <div class="menu-user-info">
-      <div class="user-avatar" id="menuUserAvatar">U</div>
-      <div class="menu-user-details">
-        <h3 id="menuUserName">Пользователь</h3>
-        <p id="menuUserRole">МПП</p>
-      </div>
-    </div>
-  </div>
-  
-  <button class="menu-close" id="menuClose">
-    <i class="fas fa-times"></i>
-  </button>
-  
-  <ul class="menu-items">
-    <li class="menu-item active" data-tab="home-tab">
-      <i class="fas fa-home"></i>
-      <span>🏠 Главная</span>
-    </li>
-    <li class="menu-item" data-tab="calculator-tab">
-      <i class="fas fa-calculator"></i>
-      <span>🧮 Калькулятор</span>
-    </li>
-    <li class="menu-item" data-tab="reports-tab">
-      <i class="fas fa-chart-bar"></i>
-      <span>📊 Отчеты</span>
-    </li>
-    <li class="menu-item" data-tab="leaderboard-tab">
-      <i class="fas fa-crown"></i>
-      <span>🏆 Топ сотрудников</span>
-    </li>
-    <li class="menu-item" data-tab="profile-tab">
-      <i class="fas fa-user"></i>
-      <span>👤 Профиль</span>
-    </li>
-    <li class="menu-item admin-only" data-tab="admin-tab" style="display: none;">
-      <i class="fas fa-cog"></i>
-      <span>⚙️ Админ-панель</span>
-    </li>
-    
-    <li class="menu-divider"></li>
-    
-    <li class="theme-switch" id="themeSwitch">
-      <div class="theme-label">
-        <i class="fas fa-moon"></i>
-        <span>🌓 Переключить тему</span>
-      </div>
-      <label class="theme-toggle-switch">
-        <input type="checkbox" id="themeToggleInput">
-        <span class="theme-toggle-slider"></span>
-      </label>
-    </li>
-  </ul>
-  
-  <div class="menu-footer">
-    <small>Калькулятор премии МПП v2.1</small>
-  </div>
-</div>
-
 <div class="container">
 <header>
-<div class="header-left">
-  <button class="menu-button" id="menuButton">
-    <i class="fas fa-bars"></i>
-  </button>
-</div>
-<div class="header-center">
-  <h1 id="headerTitle">Главная</h1>
-  <p id="headerSubtitle">Мотивация и прогноз премии</p>
-</div>
-<div class="header-right">
-  <div class="user-info" id="userInfo">
-    <div class="user-avatar" id="userAvatar">U</div>
-  </div>
+<h1><i class="fas fa-calculator" id="headerIcon"></i> <span id="headerTitle">Калькулятор премии МПП</span></h1>
+<p id="headerSubtitle">Рассчитайте вашу премию по новым правилам</p>
+<div class="user-info" id="userInfo">
+<div class="user-avatar" id="userAvatar">U</div>
+<span id="userName">Загрузка...</span>
+<span id="userRole" style="margin-left: 10px; font-size: 12px; opacity: 0.8;">МПП</span>
 </div>
 </header>
 
-<!-- НОВАЯ ВКЛАДКА: ГЛАВНАЯ СТРАНИЦА -->
-<div class="tab-content active" id="home-tab">
-  <div class="calculator-container">
-    <!-- Карточка приветствия -->
-    <div class="home-welcome-card">
-      <div class="home-welcome-title" id="welcome-title">Добро пожаловать!</div>
-      <div class="home-welcome-text" id="welcome-text">
-        Это ваш персональный помощник по расчету премии. Здесь вы можете быстро рассчитать премию, отслеживать прогресс и получать рекомендации по улучшению показателей.
-      </div>
-    </div>
-    
-    <!-- Карточка с цитатой -->
-    <div class="quote-card">
-      <i class="fas fa-quote-left quote-icon"></i>
-      <div class="quote-text" id="daily-quote">
-        Успех — это движение от неудачи к неудаче без потери энтузиазма.
-      </div>
-      <div class="quote-author" id="quote-author">Уинстон Черчилль</div>
-    </div>
-    
-    <!-- Виджет прогноза премии -->
-    <div class="premium-forecast-card">
-      <div class="premium-forecast-title">Прогноз премии на месяц</div>
-      <div class="premium-forecast-amount" id="premium-forecast-amount">0 ₽</div>
-      <div class="premium-forecast-period" id="premium-forecast-period">Текущий месяц</div>
-      <div class="premium-forecast-progress">
-        <div class="premium-forecast-progress-bar" id="premium-forecast-progress" style="width: 0%"></div>
-      </div>
-      <div class="premium-forecast-comparison" id="premium-forecast-comparison">
-        Загружаем данные...
-      </div>
-    </div>
-    
-    <!-- Быстрая статистика -->
-    <div class="quick-stats-grid">
-      <div class="quick-stat-card">
-        <div class="quick-stat-icon">
-          <i class="fas fa-credit-card"></i>
-        </div>
-        <div class="quick-stat-value" id="quick-credits">0</div>
-        <div class="quick-stat-label">Кредиты в этом месяце</div>
-      </div>
-      <div class="quick-stat-card">
-        <div class="quick-stat-icon">
-          <i class="fas fa-piggy-bank"></i>
-        </div>
-        <div class="quick-stat-value" id="quick-deposits">0</div>
-        <div class="quick-stat-label">Вклады в этом месяце</div>
-      </div>
-      <div class="quick-stat-card">
-        <div class="quick-stat-icon">
-          <i class="fas fa-rocket"></i>
-        </div>
-        <div class="quick-stat-value" id="quick-krh">0</div>
-        <div class="quick-stat-label">Старт в этом месяце</div>
-      </div>
-      <div class="quick-stat-card">
-        <div class="quick-stat-icon">
-          <i class="fas fa-chart-line"></i>
-        </div>
-        <div class="quick-stat-value" id="quick-strata">0</div>
-        <div class="quick-stat-label">Текущая страта</div>
-      </div>
-    </div>
-    
-    <!-- Кнопка начала расчета -->
-    <button class="start-calculation-btn" id="start-calculation-btn">
-      <i class="fas fa-calculator"></i> Начать расчет премии
-    </button>
-  </div>
-</div>
-
-<!-- Раздел калькулятора для МПП -->
-<div class="tab-content" id="calculator-tab">
-<div class="calculator-container" id="mpp-calculator">
-<!-- Существующее содержимое калькулятора -->
-<!-- Уведомление об изменениях -->
+<!-- Уведомление об изменениях (отображается у всех в калькуляторе) -->
 <div id="motivation-changes-notification" class="changes-notification" style="display: none;">
   <div class="changes-header">
     <i class="fas fa-exclamation-circle"></i>
@@ -2169,6 +1449,9 @@ input:focus, select:focus, textarea:focus {
   <div class="changes-date" id="motivation-changes-date"></div>
 </div>
 
+<!-- Раздел калькулятора для МПП -->
+<div class="tab-content active" id="calculator-tab">
+<div class="calculator-container" id="mpp-calculator">
 <!-- Секция 1: Коэффициент и должность -->
 <div class="section">
 <h2 class="section-title"><i class="fas fa-user-tie"></i> Основные настройки</h2>
@@ -2384,7 +1667,6 @@ input:focus, select:focus, textarea:focus {
 
 <!-- Раздел отчетов (только для МПП) -->
 <div class="tab-content" id="reports-tab">
-<!-- Существующее содержимое отчетов -->
 <div class="calculator-container">
 <div class="section reports-section">
 <h2 class="section-title"><i class="fas fa-chart-bar"></i> Отчеты</h2>
@@ -2625,7 +1907,6 @@ input:focus, select:focus, textarea:focus {
 
 <!-- Раздел топа сотрудников (только для МПП) -->
 <div class="tab-content" id="leaderboard-tab">
-<!-- Существующее содержимое топа сотрудников -->
 <div class="calculator-container">
 <div class="section leaderboard-section">
 <h2 class="section-title"><i class="fas fa-crown"></i> Топ сотрудников</h2>
@@ -2737,17 +2018,6 @@ input:focus, select:focus, textarea:focus {
 <div class="calculator-container">
 <div class="section profile-section">
 <h2 class="section-title"><i class="fas fa-user"></i> Мой профиль</h2>
-  
-<!-- Вкладки профиля -->
-<div class="profile-tabs">
-<button class="profile-tab active" data-tab="profile-stats-tab">Общая статистика</button>
-<button class="profile-tab" data-tab="profile-growth-tab">Зона роста</button>
-<button class="profile-tab" data-tab="profile-history-tab">История премий</button>
-<button class="profile-tab" data-tab="profile-badges-tab">Достижения</button>
-</div>
-
-<!-- Вкладка общей статистики -->
-<div class="profile-content active" id="profile-stats-tab">
 <div class="profile-stats">
 <div class="profile-stat">
 <div class="profile-stat-value" id="total-premium">0 ₽</div>
@@ -2768,116 +2038,12 @@ input:focus, select:focus, textarea:focus {
 </div>
 
 <div class="premium-history">
-<h3>Последние премии</h3>
+<h3>История премий</h3>
 <div id="premium-history-list">
 <!-- История премий будет здесь -->
 </div>
 </div>
-</div>
 
-<!-- НОВАЯ ВКЛАДКА: ЗОНА РОСТА -->
-<div class="profile-content" id="profile-growth-tab">
-<div class="growth-zone-section">
-<h3 class="section-title"><i class="fas fa-seedling"></i> Зона роста</h3>
-<p style="margin-bottom: 20px; color: var(--text-color); opacity: 0.8;">
-Анализ ваших показателей по сравнению с другими сотрудниками. Выявите слабые места и получите рекомендации по улучшению.
-</p>
-
-<!-- Сравнительная статистика -->
-<div class="growth-stats-grid">
-<div class="growth-stat-card">
-<div class="growth-stat-title">Премия vs Средняя</div>
-<div class="growth-stat-value positive" id="growth-premium-comparison">+0%</div>
-<div class="growth-stat-comparison">По сравнению со средним по отделу</div>
-</div>
-
-<div class="growth-stat-card">
-<div class="growth-stat-title">Кредиты vs Средние</div>
-<div class="growth-stat-value" id="growth-credits-comparison">0%</div>
-<div class="growth-stat-comparison">По сравнению со средним по отделу</div>
-</div>
-
-<div class="growth-stat-card">
-<div class="growth-stat-title">Вклады vs Средние</div>
-<div class="growth-stat-value" id="growth-deposits-comparison">0%</div>
-<div class="growth-stat-comparison">По сравнению со средним по отделу</div>
-</div>
-
-<div class="growth-stat-card">
-<div class="growth-stat-title">КРХ vs Средние</div>
-<div class="growth-stat-value" id="growth-krh-comparison">0%</div>
-<div class="growth-stat-comparison">По сравнению со средним по отделу</div>
-</div>
-</div>
-
-<!-- Слабые места -->
-<div class="weak-spots-container">
-<div class="weak-spots-title">
-<i class="fas fa-exclamation-triangle"></i>
-Слабые места
-</div>
-<div id="weak-spots-list">
-<div class="weak-spot-item">
-<div class="weak-spot-info">
-<div class="weak-spot-name">КВЦ клиенты</div>
-<div class="weak-spot-description">На 30% ниже среднего показателя</div>
-</div>
-<div class="weak-spot-value">
-15<span class="weak-spot-percent">(-30%)</span>
-</div>
-</div>
-<div class="weak-spot-item">
-<div class="weak-spot-info">
-<div class="weak-spot-name">Доп. продукты</div>
-<div class="weak-spot-description">На 25% ниже среднего показателя</div>
-</div>
-<div class="weak-spot-value">
-8<span class="weak-spot-percent">(-25%)</span>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Рекомендации по улучшению -->
-<div class="recommendations-container">
-<div class="recommendations-title">
-<i class="fas fa-lightbulb"></i>
-Рекомендации по улучшению
-</div>
-<div id="recommendations-list">
-<div class="recommendation-item">
-<div class="recommendation-icon"><i class="fas fa-check-circle"></i></div>
-<div class="recommendation-text">Увеличьте количество КВЦ клиентов. Целевой показатель: 25+ в неделю</div>
-</div>
-<div class="recommendation-item">
-<div class="recommendation-icon"><i class="fas fa-check-circle"></i></div>
-<div class="recommendation-text">Активнее предлагайте дополнительные продукты (стикеры, подписки)</div>
-</div>
-<div class="recommendation-item">
-<div class="recommendation-icon"><i class="fas fa-check-circle"></i></div>
-<div class="recommendation-text">Сосредоточьтесь на оформлении 3+ кредитов в месяц для получения экстрабонуса</div>
-</div>
-<div class="recommendation-item">
-<div class="recommendation-icon"><i class="fas fa-check-circle"></i></div>
-<div class="recommendation-text">Улучшите качество дозвонов CRM до 50+ в неделю</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Вкладка истории премий -->
-<div class="profile-content" id="profile-history-tab">
-<div class="premium-history">
-<h3>Полная история премий</h3>
-<div id="full-premium-history-list">
-<!-- Полная история премий будет здесь -->
-</div>
-</div>
-</div>
-
-<!-- Вкладка достижений -->
-<div class="profile-content" id="profile-badges-tab">
 <h3>Мои достижения</h3>
 <div class="badge-grid" id="badge-grid">
 <!-- Бейджи будут добавляться динамически -->
@@ -2885,9 +2051,8 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </div>
-</div>
 
-<!-- АДМИН-ПАНЕЛЬ -->
+<!-- НОВАЯ АДМИН-ПАНЕЛЬ -->
 <div class="tab-content" id="admin-tab">
 <div class="calculator-container">
 <div class="section">
@@ -2966,7 +2131,7 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 
-<!-- Вкладка управления рекордами -->
+<!-- НОВАЯ ВКЛАДКА: УПРАВЛЕНИЕ РЕКОРДАМИ -->
 <div class="admin-content" id="admin-records">
 <div class="section">
 <h3 class="section-title"><i class="fas fa-trophy"></i> Управление рекордами продаж</h3>
@@ -3053,6 +2218,35 @@ input:focus, select:focus, textarea:focus {
 </div>
 </div>
 </div>
+</div>
+
+<!-- Кнопка переключения темы -->
+<button class="theme-toggle" id="themeToggle">
+<i class="fas fa-moon"></i>
+</button>
+
+<!-- Навигация -->
+<div class="nav-tabs">
+<a href="#" class="nav-tab active" data-tab="calculator-tab">
+<i class="fas fa-calculator"></i>
+<span>Калькулятор</span>
+</a>
+<a href="#" class="nav-tab" id="reports-nav" data-tab="reports-tab">
+<i class="fas fa-chart-bar"></i>
+<span>Отчеты</span>
+</a>
+<a href="#" class="nav-tab" id="leaderboard-nav" data-tab="leaderboard-tab">
+<i class="fas fa-crown"></i>
+<span>Топ</span>
+</a>
+<a href="#" class="nav-tab" id="profile-nav" data-tab="profile-tab">
+<i class="fas fa-user"></i>
+<span>Профиль</span>
+</a>
+<a href="#" class="nav-tab" id="admin-nav" data-tab="admin-tab" style="display: none;">
+<i class="fas fa-cog"></i>
+<span>Админ</span>
+</a>
 </div>
 
 <script>
@@ -3166,50 +2360,6 @@ const CHART_COLORS = [
   '#d35400', // темно-оранжевый
   '#c0392b', // темно-красный
   '#7f8c8d' // серый
-];
-
-// 🔧 НОВЫЕ КОНСТАНТЫ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
-const MOTIVATIONAL_QUOTES = [
-  {
-    text: "Успех — это движение от неудачи к неудаче без потери энтузиазма.",
-    author: "Уинстон Черчилль"
-  },
-  {
-    text: "Единственный способ сделать что-то очень хорошо — любить то, что ты делаешь.",
-    author: "Стив Джобс"
-  },
-  {
-    text: "Не бойтесь совершенства. Вам его никогда не достичь.",
-    author: "Сальвадор Дали"
-  },
-  {
-    text: "Ваше время ограничено, не тратьте его, живя чужой жизнью.",
-    author: "Стив Джобс"
-  },
-  {
-    text: "Лучший способ предсказать будущее — создать его.",
-    author: "Питер Друкер"
-  },
-  {
-    text: "Сложнее всего начать действовать, все остальное зависит только от упорства.",
-    author: "Амелия Эрхарт"
-  },
-  {
-    text: "Цель — это мечта с дедлайном.",
-    author: "Наполеон Хилл"
-  },
-  {
-    text: "Не ждите. Время никогда не будет подходящим.",
-    author: "Наполеон Хилл"
-  },
-  {
-    text: "Секрет успеха в том, чтобы начать.",
-    author: "Марк Твен"
-  },
-  {
-    text: "Победа — это еще не все, но желание победить — это все.",
-    author: "Винс Ломбарди"
-  }
 ];
 
 // 🔧 ТЕЛЕГРАМ ИНИЦИАЛИЗАЦИЯ
@@ -3439,842 +2589,7 @@ async function saveMotivationChanges() {
   }
 }
 
-// НОВЫЕ ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ МЕНЮ
-function initMenu() {
-  const menuButton = document.getElementById('menuButton');
-  const menuOverlay = document.getElementById('menuOverlay');
-  const menuContainer = document.getElementById('menuContainer');
-  const menuClose = document.getElementById('menuClose');
-  const menuItems = document.querySelectorAll('.menu-item');
-  
-  // Открытие меню
-  menuButton.addEventListener('click', function(e) {
-    e.stopPropagation();
-    openMenu();
-  });
-  
-  // Закрытие меню
-  menuClose.addEventListener('click', closeMenu);
-  menuOverlay.addEventListener('click', closeMenu);
-  
-  // Закрытие меню при клике на пункт
-  menuItems.forEach(item => {
-    item.addEventListener('click', function() {
-      const tabId = this.getAttribute('data-tab');
-      if (tabId) {
-        switchTab(tabId);
-      }
-      closeMenu();
-    });
-  });
-  
-  // Закрытие меню при нажатии Escape
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeMenu();
-    }
-  });
-  
-  // Настройка переключения темы в меню
-  const themeToggleInput = document.getElementById('themeToggleInput');
-  themeToggleInput.addEventListener('change', toggleThemeFromMenu);
-  
-  // Установка начального состояния переключателя темы
-  updateThemeToggle();
-}
-
-function openMenu() {
-  const menuOverlay = document.getElementById('menuOverlay');
-  const menuContainer = document.getElementById('menuContainer');
-  
-  menuOverlay.style.display = 'block';
-  setTimeout(() => {
-    menuContainer.classList.add('active');
-  }, 10);
-  
-  // Блокировка прокрутки фона
-  document.body.style.overflow = 'hidden';
-}
-
-function closeMenu() {
-  const menuOverlay = document.getElementById('menuOverlay');
-  const menuContainer = document.getElementById('menuContainer');
-  
-  menuContainer.classList.remove('active');
-  setTimeout(() => {
-    menuOverlay.style.display = 'none';
-  }, 300);
-  
-  // Разблокировка прокрутки фона
-  document.body.style.overflow = '';
-}
-
-function switchTab(tabId) {
-  // Сброс активных классов у всех пунктов меню
-  document.querySelectorAll('.menu-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  
-  // Установка активного класса выбранному пункту
-  document.querySelector(`.menu-item[data-tab="${tabId}"]`).classList.add('active');
-  
-  // Скрыть все вкладки
-  document.querySelectorAll('.tab-content').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  
-  // Показать выбранную вкладку
-  document.getElementById(tabId).classList.add('active');
-  
-  // Обновление заголовка
-  updateHeaderTitle(tabId);
-  
-  // Загрузка данных для выбранной вкладки
-  loadTabData(tabId);
-}
-
-function updateHeaderTitle(tabId) {
-  const headerTitle = document.getElementById('headerTitle');
-  const headerSubtitle = document.getElementById('headerSubtitle');
-  
-  switch(tabId) {
-    case 'home-tab':
-      headerTitle.textContent = 'Главная';
-      headerSubtitle.textContent = 'Мотивация и прогноз премии';
-      break;
-    case 'calculator-tab':
-      headerTitle.textContent = 'Калькулятор премии МПП';
-      headerSubtitle.textContent = 'Рассчитайте вашу премию по новым правилам';
-      break;
-    case 'reports-tab':
-      headerTitle.textContent = 'Отчеты';
-      headerSubtitle.textContent = 'Еженедельные и ежемесячные отчеты';
-      break;
-    case 'leaderboard-tab':
-      headerTitle.textContent = 'Топ сотрудников';
-      headerSubtitle.textContent = 'Рейтинги и рекорды продаж';
-      break;
-    case 'profile-tab':
-      headerTitle.textContent = 'Мой профиль';
-      headerSubtitle.textContent = 'Статистика и достижения';
-      break;
-    case 'admin-tab':
-      headerTitle.textContent = 'Админ-панель';
-      headerSubtitle.textContent = 'Управление настройками';
-      break;
-  }
-}
-
-function loadTabData(tabId) {
-  switch(tabId) {
-    case 'home-tab':
-      loadHomePageData();
-      break;
-    case 'leaderboard-tab':
-      loadLeaderboard('week');
-      break;
-    case 'reports-tab':
-      loadWeekOptions();
-      loadMonthOptions();
-      break;
-    case 'profile-tab':
-      loadProfile();
-      break;
-    case 'admin-tab':
-      loadAdminPlans();
-      break;
-  }
-}
-
-function toggleThemeFromMenu() {
-  toggleTheme();
-  updateThemeToggle();
-}
-
-function updateThemeToggle() {
-  const themeToggleInput = document.getElementById('themeToggleInput');
-  themeToggleInput.checked = currentTheme === 'dark';
-}
-
-// 🔧 НОВЫЕ ФУНКЦИИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
-function loadHomePageData() {
-  // Устанавливаем приветствие
-  updateWelcomeMessage();
-  
-  // Устанавливаем случайную цитату
-  setRandomQuote();
-  
-  // Загружаем прогноз премии
-  loadPremiumForecast();
-  
-  // Загружаем быструю статистику
-  loadQuickStats();
-  
-  // Настраиваем обработчик для кнопки
-  document.getElementById('start-calculation-btn').addEventListener('click', function() {
-    switchTab('calculator-tab');
-  });
-}
-
-function updateWelcomeMessage() {
-  const now = new Date();
-  const hour = now.getHours();
-  let greeting;
-  
-  if (hour >= 5 && hour < 12) {
-    greeting = 'Доброе утро';
-  } else if (hour >= 12 && hour < 18) {
-    greeting = 'Добрый день';
-  } else if (hour >= 18 && hour < 23) {
-    greeting = 'Добрый вечер';
-  } else {
-    greeting = 'Доброй ночи';
-  }
-  
-  const userName = currentUser ? currentUser.firstName : 'Коллега';
-  document.getElementById('welcome-title').textContent = `${greeting}, ${userName}!`;
-  
-  // Обновляем текст в зависимости от времени суток
-  const welcomeTexts = [
-    `Сегодня отличный день для достижения новых результатов!`,
-    `Ваша целеустремленность ведет к успеху. Продолжайте в том же духе!`,
-    `Каждый день — это новая возможность улучшить свои показатели.`,
-    `Уверены, сегодня вы сможете достичь отличных результатов!`
-  ];
-  
-  const randomText = welcomeTexts[Math.floor(Math.random() * welcomeTexts.length)];
-  document.getElementById('welcome-text').textContent = randomText;
-}
-
-function setRandomQuote() {
-  const randomIndex = Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length);
-  const quote = MOTIVATIONAL_QUOTES[randomIndex];
-  
-  document.getElementById('daily-quote').textContent = quote.text;
-  document.getElementById('quote-author').textContent = quote.author;
-}
-
-async function loadPremiumForecast() {
-  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
-    showDemoPremiumForecast();
-    return;
-  }
-  
-  try {
-    const now = new Date();
-    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-    
-    // Получаем отчет за текущий месяц
-    const monthlyReportQuery = await db.collection('monthlyReports')
-      .where('userId', '==', String(currentUser.id))
-      .where('monthKey', '==', currentMonthKey)
-      .get();
-    
-    let currentPremium = 0;
-    let forecastPremium = 0;
-    
-    if (!monthlyReportQuery.empty) {
-      const report = monthlyReportQuery.docs[0].data();
-      currentPremium = report.adjustedPremium || report.calculatedPremium || 0;
-      forecastPremium = currentPremium;
-    } else {
-      // Если отчета нет, пытаемся рассчитать на основе недельных отчетов
-      const weeklyReportsQuery = await db.collection('weeklyReports')
-        .where('userId', '==', String(currentUser.id))
-        .where('monthKey', '==', currentMonthKey)
-        .get();
-      
-      let totalStats = {
-        krh: 0,
-        vkladCount: 0,
-        dkCount: 0,
-        credits: []
-      };
-      
-      weeklyReportsQuery.forEach(doc => {
-        const report = doc.data();
-        totalStats.krh += report.krh || 0;
-        totalStats.vkladCount += report.vkladCount || 0;
-        totalStats.dkCount += report.dkCount || 0;
-        
-        if (report.credits) {
-          totalStats.credits = totalStats.credits.concat(report.credits);
-        }
-      });
-      
-      // Рассчитываем прогноз на основе текущих недельных данных
-      const weekCount = weeklyReportsQuery.size;
-      const weeksInMonth = 4; // Примерное количество недель в месяце
-      
-      if (weekCount > 0) {
-        // Экстраполируем данные на весь месяц
-        const multiplier = weeksInMonth / weekCount;
-        const estimatedKrh = totalStats.krh * multiplier;
-        const estimatedVkladCount = totalStats.vkladCount * multiplier;
-        const estimatedDkCount = totalStats.dkCount * multiplier;
-        
-        // Получаем планы для расчета
-        const plans = await getPlansForMonth(currentMonthKey);
-        
-        // Рассчитываем прогнозную премию
-        forecastPremium = calculateEstimatedPremium({
-          krh: estimatedKrh,
-          vkladCount: estimatedVkladCount,
-          dkCount: estimatedDkCount,
-          creditsCount: totalStats.credits.length * multiplier
-        }, plans);
-        
-        currentPremium = calculateEstimatedPremium({
-          krh: totalStats.krh,
-          vkladCount: totalStats.vkladCount,
-          dkCount: totalStats.dkCount,
-          creditsCount: totalStats.credits.length
-        }, plans);
-      }
-    }
-    
-    // Обновляем интерфейс
-    document.getElementById('premium-forecast-amount').textContent = Math.round(forecastPremium).toLocaleString() + ' ₽';
-    document.getElementById('premium-forecast-period').textContent = `${MONTHS_GENITIVE[now.getMonth()]} ${now.getFullYear()}`;
-    
-    // Рассчитываем прогресс (предполагая, что максимальная премия 100,000₽)
-    const maxPremium = 100000;
-    const progressPercent = Math.min((currentPremium / maxPremium) * 100, 100);
-    document.getElementById('premium-forecast-progress').style.width = `${progressPercent}%`;
-    
-    // Получаем среднюю премию по отделу для сравнения
-    const averagePremium = await getAverageDepartmentPremium();
-    let comparisonText = '';
-    
-    if (averagePremium > 0) {
-      const difference = forecastPremium - averagePremium;
-      const percentDiff = Math.round((difference / averagePremium) * 100);
-      
-      if (difference > 0) {
-        comparisonText = `На ${Math.round(difference).toLocaleString()}₽ (${percentDiff}%) выше среднего по отделу`;
-      } else if (difference < 0) {
-        comparisonText = `На ${Math.abs(Math.round(difference)).toLocaleString()}₽ (${Math.abs(percentDiff)}%) ниже среднего по отделу`;
-      } else {
-        comparisonText = `На уровне среднего по отделу`;
-      }
-    } else {
-      comparisonText = `Это ваш первый расчет в этом месяце`;
-    }
-    
-    document.getElementById('premium-forecast-comparison').textContent = comparisonText;
-    
-  } catch (error) {
-    console.error('Ошибка загрузки прогноза премии:', error);
-    showDemoPremiumForecast();
-  }
-}
-
-// Вспомогательная функция для расчета примерной премии
-function calculateEstimatedPremium(stats, plans) {
-  // Упрощенный расчет для прогноза
-  const krhBonus = stats.krh * 600;
-  const vkladBonus = stats.vkladCount * 200;
-  const dkBonus = stats.dkCount * 1500; // Примерная средняя стоимость кредита
-  
-  // Дополнительные бонусы
-  const extraBonus = stats.creditsCount >= 3 ? 5000 : 0;
-  
-  return krhBonus + vkladBonus + dkBonus + extraBonus;
-}
-
-async function getAverageDepartmentPremium() {
-  if (!firebaseInitialized) return 0;
-  
-  try {
-    const now = new Date();
-    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-    
-    // Получаем всех пользователей МПП
-    const usersSnapshot = await db.collection('users')
-      .where('role', '==', 'mpp')
-      .get();
-    
-    if (usersSnapshot.empty) return 0;
-    
-    let totalPremium = 0;
-    let userCount = 0;
-    
-    // Для каждого пользователя получаем премию за текущий месяц
-    for (const userDoc of usersSnapshot.docs) {
-      const monthlyReportQuery = await db.collection('monthlyReports')
-        .where('userId', '==', userDoc.id)
-        .where('monthKey', '==', currentMonthKey)
-        .get();
-      
-      if (!monthlyReportQuery.empty) {
-        const report = monthlyReportQuery.docs[0].data();
-        const premium = report.adjustedPremium || report.calculatedPremium || 0;
-        totalPremium += premium;
-        userCount++;
-      }
-    }
-    
-    return userCount > 0 ? totalPremium / userCount : 0;
-  } catch (error) {
-    console.error('Ошибка расчета средней премии:', error);
-    return 0;
-  }
-}
-
-async function loadQuickStats() {
-  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
-    showDemoQuickStats();
-    return;
-  }
-  
-  try {
-    const now = new Date();
-    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-    
-    // Получаем отчет за текущий месяц
-    const monthlyReportQuery = await db.collection('monthlyReports')
-      .where('userId', '==', String(currentUser.id))
-      .where('monthKey', '==', currentMonthKey)
-      .get();
-    
-    let credits = 0;
-    let deposits = 0;
-    let krh = 0;
-    let strata = 0;
-    
-    if (!monthlyReportQuery.empty) {
-      const report = monthlyReportQuery.docs[0].data();
-      credits = report.dkCount || 0;
-      deposits = report.vkladCount || 0;
-      krh = report.krh || 0;
-      
-      // Рассчитываем примерную страту на основе данных
-      const plans = await getPlansForMonth(currentMonthKey);
-      const krhPercent = plans.krh_plan > 0 ? Math.round((krh / plans.krh_plan) * 100) : (krh > 0 ? 100 : 0);
-      strata = getStrataByPercent(krhPercent).strata;
-    }
-    
-    // Обновляем интерфейс
-    document.getElementById('quick-credits').textContent = credits;
-    document.getElementById('quick-deposits').textContent = deposits;
-    document.getElementById('quick-krh').textContent = krh;
-    document.getElementById('quick-strata').textContent = strata;
-    
-  } catch (error) {
-    console.error('Ошибка загрузки быстрой статистики:', error);
-    showDemoQuickStats();
-  }
-}
-
-function showDemoPremiumForecast() {
-  const now = new Date();
-  const forecastPremium = 35000 + Math.floor(Math.random() * 15000);
-  const currentPremium = 25000 + Math.floor(Math.random() * 10000);
-  
-  document.getElementById('premium-forecast-amount').textContent = forecastPremium.toLocaleString() + ' ₽';
-  document.getElementById('premium-forecast-period').textContent = `${MONTHS_GENITIVE[now.getMonth()]} ${now.getFullYear()}`;
-  
-  const progressPercent = Math.min((currentPremium / 100000) * 100, 100);
-  document.getElementById('premium-forecast-progress').style.width = `${progressPercent}%`;
-  
-  const comparisonText = `На ${Math.floor(Math.random() * 5000)}₽ (+${Math.floor(Math.random() * 15)}%) выше среднего по отделу`;
-  document.getElementById('premium-forecast-comparison').textContent = comparisonText;
-}
-
-function showDemoQuickStats() {
-  document.getElementById('quick-credits').textContent = Math.floor(Math.random() * 10);
-  document.getElementById('quick-deposits').textContent = Math.floor(Math.random() * 8);
-  document.getElementById('quick-krh').textContent = Math.floor(Math.random() * 15);
-  document.getElementById('quick-strata').textContent = Math.floor(Math.random() * 5) + 1;
-}
-
-// 🔧 НОВЫЕ ФУНКЦИИ ДЛЯ ЗОНЫ РОСТА
-async function loadGrowthZone() {
-  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
-    showDemoGrowthZone();
-    return;
-  }
-  
-  try {
-    showLoader("Анализ показателей...");
-    
-    const now = new Date();
-    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-    
-    // Получаем данные текущего пользователя
-    const userMonthlyReportQuery = await db.collection('monthlyReports')
-      .where('userId', '==', String(currentUser.id))
-      .where('monthKey', '==', currentMonthKey)
-      .get();
-    
-    let userStats = {
-      premium: 0,
-      credits: 0,
-      deposits: 0,
-      krh: 0,
-      kvc: 0,
-      additionalProducts: 0
-    };
-    
-    if (!userMonthlyReportQuery.empty) {
-      const report = userMonthlyReportQuery.docs[0].data();
-      userStats.premium = report.adjustedPremium || report.calculatedPremium || 0;
-      userStats.credits = report.dkCount || 0;
-      userStats.deposits = report.vkladCount || 0;
-      userStats.krh = report.krh || 0;
-      userStats.kvc = report.kvc || 0;
-      
-      // Расчет дополнительных продуктов
-      userStats.additionalProducts = 
-        (report.stickerCount || 0) +
-        (report.yearSubCount || 0) +
-        (report.monthSubCount || 0) +
-        (report.krhLimitCount || 0) +
-        (report.zpCardCount || 0) +
-        (report.ompCount || 0) +
-        (report.zpNerezCount || 0);
-    }
-    
-    // Получаем средние показатели по отделу
-    const departmentAverages = await getDepartmentAverages(currentMonthKey);
-    
-    // Обновляем сравнительную статистику
-    updateComparisonStats(userStats, departmentAverages);
-    
-    // Обновляем слабые места
-    updateWeakSpots(userStats, departmentAverages);
-    
-    hideLoader();
-  } catch (error) {
-    console.error('Ошибка загрузки зоны роста:', error);
-    hideLoader();
-    showDemoGrowthZone();
-  }
-}
-
-async function getDepartmentAverages(monthKey) {
-  if (!firebaseInitialized) {
-    return {
-      premium: 35000,
-      credits: 5,
-      deposits: 6,
-      krh: 12,
-      kvc: 20,
-      additionalProducts: 15
-    };
-  }
-  
-  try {
-    // Получаем всех пользователей МПП
-    const usersSnapshot = await db.collection('users')
-      .where('role', '==', 'mpp')
-      .get();
-    
-    if (usersSnapshot.empty) return null;
-    
-    let totals = {
-      premium: 0,
-      credits: 0,
-      deposits: 0,
-      krh: 0,
-      kvc: 0,
-      additionalProducts: 0
-    };
-    
-    let reportCount = 0;
-    
-    // Для каждого пользователя получаем отчет за текущий месяц
-    for (const userDoc of usersSnapshot.docs) {
-      const monthlyReportQuery = await db.collection('monthlyReports')
-        .where('userId', '==', userDoc.id)
-        .where('monthKey', '==', monthKey)
-        .get();
-      
-      if (!monthlyReportQuery.empty) {
-        const report = monthlyReportQuery.docs[0].data();
-        
-        totals.premium += report.adjustedPremium || report.calculatedPremium || 0;
-        totals.credits += report.dkCount || 0;
-        totals.deposits += report.vkladCount || 0;
-        totals.krh += report.krh || 0;
-        totals.kvc += report.kvc || 0;
-        
-        // Расчет дополнительных продуктов
-        totals.additionalProducts += 
-          (report.stickerCount || 0) +
-          (report.yearSubCount || 0) +
-          (report.monthSubCount || 0) +
-          (report.krhLimitCount || 0) +
-          (report.zpCardCount || 0) +
-          (report.ompCount || 0) +
-          (report.zpNerezCount || 0);
-        
-        reportCount++;
-      }
-    }
-    
-    if (reportCount === 0) return null;
-    
-    // Рассчитываем средние значения
-    return {
-      premium: totals.premium / reportCount,
-      credits: totals.credits / reportCount,
-      deposits: totals.deposits / reportCount,
-      krh: totals.krh / reportCount,
-      kvc: totals.kvc / reportCount,
-      additionalProducts: totals.additionalProducts / reportCount
-    };
-  } catch (error) {
-    console.error('Ошибка расчета средних показателей:', error);
-    return null;
-  }
-}
-
-function updateComparisonStats(userStats, departmentAverages) {
-  if (!departmentAverages) {
-    // Если нет данных по отделу, показываем демо-данные
-    showDemoGrowthZone();
-    return;
-  }
-  
-  // Функция для форматирования сравнения
-  function formatComparison(userValue, avgValue) {
-    if (avgValue === 0) return "0%";
-    
-    const diff = userValue - avgValue;
-    const percentDiff = Math.round((diff / avgValue) * 100);
-    
-    return `${diff >= 0 ? '+' : ''}${percentDiff}%`;
-  }
-  
-  // Функция для определения класса (положительный/отрицательный/нейтральный)
-  function getComparisonClass(userValue, avgValue) {
-    if (avgValue === 0) return "neutral";
-    
-    const diff = userValue - avgValue;
-    const percentDiff = Math.round((diff / avgValue) * 100);
-    
-    if (percentDiff > 10) return "positive";
-    if (percentDiff < -10) return "negative";
-    return "neutral";
-  }
-  
-  // Обновляем значения сравнения
-  const premiumComparison = formatComparison(userStats.premium, departmentAverages.premium);
-  const premiumClass = getComparisonClass(userStats.premium, departmentAverages.premium);
-  
-  const creditsComparison = formatComparison(userStats.credits, departmentAverages.credits);
-  const creditsClass = getComparisonClass(userStats.credits, departmentAverages.credits);
-  
-  const depositsComparison = formatComparison(userStats.deposits, departmentAverages.deposits);
-  const depositsClass = getComparisonClass(userStats.deposits, departmentAverages.deposits);
-  
-  const krhComparison = formatComparison(userStats.krh, departmentAverages.krh);
-  const krhClass = getComparisonClass(userStats.krh, departmentAverages.krh);
-  
-  // Обновляем интерфейс
-  const premiumElement = document.getElementById('growth-premium-comparison');
-  premiumElement.textContent = premiumComparison;
-  premiumElement.className = `growth-stat-value ${premiumClass}`;
-  
-  const creditsElement = document.getElementById('growth-credits-comparison');
-  creditsElement.textContent = creditsComparison;
-  creditsElement.className = `growth-stat-value ${creditsClass}`;
-  
-  const depositsElement = document.getElementById('growth-deposits-comparison');
-  depositsElement.textContent = depositsComparison;
-  depositsElement.className = `growth-stat-value ${depositsClass}`;
-  
-  const krhElement = document.getElementById('growth-krh-comparison');
-  krhElement.textContent = krhComparison;
-  krhElement.className = `growth-stat-value ${krhClass}`;
-}
-
-function updateWeakSpots(userStats, departmentAverages) {
-  if (!departmentAverages) return;
-  
-  // Определяем слабые места (показатели ниже среднего на 20% или больше)
-  const weakSpots = [];
-  
-  if (departmentAverages.kvc > 0 && userStats.kvc < departmentAverages.kvc * 0.8) {
-    const percentDiff = Math.round(((userStats.kvc - departmentAverages.kvc) / departmentAverages.kvc) * 100);
-    weakSpots.push({
-      name: 'КВЦ клиенты',
-      description: `На ${Math.abs(percentDiff)}% ниже среднего показателя`,
-      value: Math.round(userStats.kvc),
-      percent: percentDiff
-    });
-  }
-  
-  if (departmentAverages.additionalProducts > 0 && userStats.additionalProducts < departmentAverages.additionalProducts * 0.8) {
-    const percentDiff = Math.round(((userStats.additionalProducts - departmentAverages.additionalProducts) / departmentAverages.additionalProducts) * 100);
-    weakSpots.push({
-      name: 'Доп. продукты',
-      description: `На ${Math.abs(percentDiff)}% ниже среднего показателя`,
-      value: Math.round(userStats.additionalProducts),
-      percent: percentDiff
-    });
-  }
-  
-  if (departmentAverages.credits > 0 && userStats.credits < departmentAverages.credits * 0.8) {
-    const percentDiff = Math.round(((userStats.credits - departmentAverages.credits) / departmentAverages.credits) * 100);
-    weakSpots.push({
-      name: 'Кредиты',
-      description: `На ${Math.abs(percentDiff)}% ниже среднего показателя`,
-      value: Math.round(userStats.credits),
-      percent: percentDiff
-    });
-  }
-  
-  // Обновляем интерфейс
-  const weakSpotsList = document.getElementById('weak-spots-list');
-  
-  if (weakSpots.length === 0) {
-    weakSpotsList.innerHTML = `
-      <div class="weak-spot-item">
-        <div class="weak-spot-info">
-          <div class="weak-spot-name">Все показатели в норме</div>
-          <div class="weak-spot-description">Ваши показатели соответствуют или превышают средние значения по отделу</div>
-        </div>
-        <div class="weak-spot-value" style="color: var(--success);">
-          Отлично!
-        </div>
-      </div>
-    `;
-  } else {
-    weakSpotsList.innerHTML = weakSpots.map(spot => `
-      <div class="weak-spot-item">
-        <div class="weak-spot-info">
-          <div class="weak-spot-name">${spot.name}</div>
-          <div class="weak-spot-description">${spot.description}</div>
-        </div>
-        <div class="weak-spot-value">
-          ${spot.value}<span class="weak-spot-percent">(${spot.percent}%)</span>
-        </div>
-      </div>
-    `).join('');
-  }
-  
-  // Обновляем рекомендации на основе слабых мест
-  updateRecommendations(weakSpots);
-}
-
-function updateRecommendations(weakSpots) {
-  const recommendationsList = document.getElementById('recommendations-list');
-  
-  const allRecommendations = [
-    "Увеличьте количество КВЦ клиентов. Целевой показатель: 25+ в неделю",
-    "Активнее предлагайте дополнительные продукты (стикеры, подписки)",
-    "Сосредоточьтесь на оформлении 3+ кредитов в месяц для получения экстрабонуса",
-    "Улучшите качество дозвонов CRM до 50+ в неделю",
-    "Увеличьте объем продаж кредитов - предлагайте пакеты защиты",
-    "Работайте над увеличением количества вкладов - минимум 1 в неделю",
-    "Следите за выполнением планов по основным показателям",
-    "Анализируйте свои слабые места и ставьте конкретные цели по их улучшению"
-  ];
-  
-  // Фильтруем рекомендации на основе слабых мест
-  let filteredRecommendations = [...allRecommendations];
-  
-  weakSpots.forEach(spot => {
-    if (spot.name === 'КВЦ клиенты') {
-      filteredRecommendations = filteredRecommendations.filter(rec => 
-        rec.includes('КВЦ') || rec.includes('клиент')
-      );
-    } else if (spot.name === 'Доп. продукты') {
-      filteredRecommendations = filteredRecommendations.filter(rec => 
-        rec.includes('дополнительные продукты') || rec.includes('стикеры') || rec.includes('подписки')
-      );
-    } else if (spot.name === 'Кредиты') {
-      filteredRecommendations = filteredRecommendations.filter(rec => 
-        rec.includes('кредит') || rec.includes('пакеты защиты')
-      );
-    }
-  });
-  
-  // Берем 4 самые релевантные рекомендации
-  const selectedRecommendations = filteredRecommendations.slice(0, 4);
-  
-  // Если рекомендаций недостаточно, добавляем общие
-  if (selectedRecommendations.length < 4) {
-    const generalRecommendations = allRecommendations.filter(rec => 
-      !selectedRecommendations.includes(rec)
-    );
-    selectedRecommendations.push(...generalRecommendations.slice(0, 4 - selectedRecommendations.length));
-  }
-  
-  // Обновляем интерфейс
-  recommendationsList.innerHTML = selectedRecommendations.map(rec => `
-    <div class="recommendation-item">
-      <div class="recommendation-icon"><i class="fas fa-check-circle"></i></div>
-      <div class="recommendation-text">${rec}</div>
-    </div>
-  `).join('');
-}
-
-function showDemoGrowthZone() {
-  // Демо-данные для зоны роста
-  document.getElementById('growth-premium-comparison').textContent = '+15%';
-  document.getElementById('growth-premium-comparison').className = 'growth-stat-value positive';
-  
-  document.getElementById('growth-credits-comparison').textContent = '-5%';
-  document.getElementById('growth-credits-comparison').className = 'growth-stat-value neutral';
-  
-  document.getElementById('growth-deposits-comparison').textContent = '+22%';
-  document.getElementById('growth-deposits-comparison').className = 'growth-stat-value positive';
-  
-  document.getElementById('growth-krh-comparison').textContent = '-30%';
-  document.getElementById('growth-krh-comparison').className = 'growth-stat-value negative';
-}
-
-// 🔧 ФУНКЦИИ ДЛЯ ВКЛАДОК ПРОФИЛЯ
-function initProfileTabs() {
-  const profileTabs = document.querySelectorAll('.profile-tab');
-  
-  profileTabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      // Сброс активных классов
-      profileTabs.forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.profile-content').forEach(c => c.classList.remove('active'));
-      
-      // Установка активного класса
-      this.classList.add('active');
-      const tabId = this.getAttribute('data-tab');
-      document.getElementById(tabId).classList.add('active');
-      
-      // Загрузка данных для активной вкладки
-      if (tabId === 'profile-growth-tab') {
-        loadGrowthZone();
-      } else if (tabId === 'profile-history-tab') {
-        loadFullPremiumHistory();
-      } else if (tabId === 'profile-badges-tab') {
-        loadAchievements();
-      }
-    });
-  });
-}
-
-async function loadFullPremiumHistory() {
-  // Используем ту же функцию, что и для краткой истории
-  await loadPremiumHistory();
-  
-  // Копируем содержимое в полную историю
-  const shortHistory = document.getElementById('premium-history-list').innerHTML;
-  document.getElementById('full-premium-history-list').innerHTML = shortHistory;
-  
-  // Обновляем обработчики для кнопок редактирования
-  document.querySelectorAll('#full-premium-history-list .edit-premium-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const reportId = this.getAttribute('data-report-id');
-      const monthName = this.getAttribute('data-month');
-      if (reportId) {
-        editMonthlyPremium(reportId, monthName);
-      }
-    });
-  });
-}
-
-// 🔧 ИНИЦИАЛИЗАЦИЯ ТЕЛЕГРАМ И ПРИЛОЖЕНИЯ
+// Инициализация Telegram Web App
 async function initTelegram() {
   try {
     tg = window.Telegram.WebApp;
@@ -4321,43 +2636,24 @@ async function initTelegram() {
   }
 }
 
+// Показать информацию пользователя
 function showUserInfo() {
   const userAvatar = document.getElementById('userAvatar');
-  const menuUserAvatar = document.getElementById('menuUserAvatar');
-  const menuUserName = document.getElementById('menuUserName');
-  const menuUserRole = document.getElementById('menuUserRole');
+  const userName = document.getElementById('userName');
+  const userRole = document.getElementById('userRole');
   
   const displayName = currentUser.firstName + (currentUser.lastName ? ' ' + currentUser.lastName : '');
   const firstLetter = currentUser.firstName ? currentUser.firstName.charAt(0).toUpperCase() : 'U';
   
-  if (userAvatar) userAvatar.textContent = firstLetter;
-  if (menuUserAvatar) menuUserAvatar.textContent = firstLetter;
-  if (menuUserName) menuUserName.textContent = displayName;
+  userAvatar.textContent = firstLetter;
+  userName.textContent = displayName;
 }
 
-function updateThemeIcon() {
-  const themeIcon = document.querySelector('#themeToggle i');
-  if (themeIcon) {
-    themeIcon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-  }
-}
-
-function toggleTheme() {
-  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-  localStorage.setItem('theme', currentTheme);
-  document.documentElement.setAttribute('data-theme', currentTheme);
-  updateThemeIcon();
-  updateThemeToggle();
-}
-
+// Инициализация приложения
 async function initializeApp() {
   document.querySelector('.container').style.display = 'block';
-  
-  // Инициализация меню
-  initMenu();
-  
-  // Инициализация вкладок профиля
-  initProfileTabs();
+  document.querySelector('.nav-tabs').style.display = 'flex';
+  document.querySelector('.theme-toggle').style.display = 'flex';
   
   // Настройка навигации в зависимости от роли
   setupNavigation();
@@ -4392,38 +2688,42 @@ async function initializeApp() {
   }
   
   addCredit();
-  
-  // Обновление информации о роли пользователя в меню
-  updateUserRoleInMenu();
-  
-  // Загружаем данные для главной страницы
-  await loadHomePageData();
 }
 
+// Настройка навигации в зависимости от роли
 function setupNavigation() {
   const isAdmin = checkAdminRights();
   
-  // Показываем или скрываем пункт админ-панели в меню
-  const adminMenuItem = document.querySelector('.menu-item.admin-only');
-  if (adminMenuItem) {
-    adminMenuItem.style.display = isAdmin ? 'flex' : 'none';
-  }
+  // Скрываем все вкладки сначала
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.style.display = 'none';
+  });
   
-  // Обновление роли пользователя в меню
-  updateUserRoleInMenu();
-}
-
-function updateUserRoleInMenu() {
-  const menuUserRole = document.getElementById('menuUserRole');
-  if (menuUserRole) {
-    menuUserRole.textContent = userData.role === 'admin' ? 'Администратор' : 'МПП';
-    if (userData.role === 'admin') {
-      menuUserRole.style.color = '#e74c3c';
-      menuUserRole.style.fontWeight = 'bold';
-    }
+  if (isAdmin) {
+    // АДМИН ВИДИТ ВСЕ ВКЛАДКИ, ВКЛЮЧАЯ ТОП
+    document.getElementById('admin-nav').style.display = 'flex';
+    document.querySelector('[data-tab="calculator-tab"]').style.display = 'flex';
+    document.getElementById('leaderboard-nav').style.display = 'flex'; // ВКЛЮЧАЕМ ТОП ДЛЯ АДМИНА
+    
+    // Скрываем вкладки отчетов и профиля для админов
+    document.getElementById('reports-nav').style.display = 'none';
+    document.getElementById('profile-nav').style.display = 'none';
+    
+    // Активируем калькулятор по умолчанию
+    document.querySelector('.nav-tab.active')?.classList.remove('active');
+    document.querySelector('.tab-content.active')?.classList.remove('active');
+    document.querySelector('[data-tab="calculator-tab"]').classList.add('active');
+    document.getElementById('calculator-tab').classList.add('active');
+  } else {
+    // Показываем вкладки для МПП
+    document.querySelector('[data-tab="calculator-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="reports-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="leaderboard-tab"]').style.display = 'flex';
+    document.querySelector('[data-tab="profile-tab"]').style.display = 'flex';
   }
 }
 
+// Настройка валидации ввода
 function setupInputValidation() {
   document.querySelectorAll('input[type="number"]').forEach(input => {
     input.addEventListener('change', function() {
@@ -4446,6 +2746,7 @@ function setupInputValidation() {
   });
 }
 
+// Загрузка данных пользователя
 async function loadUserData() {
   if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
     initializeApp();
@@ -4460,7 +2761,12 @@ async function loadUserData() {
       userData.role = data.role || 'mpp';
       
       // Обновляем отображение роли
-      updateUserRoleInMenu();
+      const userRole = document.getElementById('userRole');
+      userRole.textContent = userData.role === 'admin' ? 'Администратор' : 'МПП';
+      if (userData.role === 'admin') {
+        userRole.style.color = '#e74c3c';
+        userRole.style.fontWeight = 'bold';
+      }
       
       await db.collection('users').doc(String(currentUser.id)).set({
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
@@ -4477,7 +2783,6 @@ async function loadUserData() {
       }, { merge: true });
       
       userData.role = 'mpp';
-      updateUserRoleInMenu();
     }
     hideLoader();
     initializeApp();
@@ -4487,6 +2792,546 @@ async function loadUserData() {
     showError('Ошибка загрузки данных пользователя');
     initializeApp();
   }
+}
+
+// Получение рабочих недель месяца
+function getWorkWeeks(year, month) {
+  const weeks = [];
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  
+  let currentDate = new Date(firstDay);
+  while (currentDate.getDay() !== 1 && currentDate <= lastDay) {
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  
+  if (currentDate > lastDay) {
+    currentDate = new Date(firstDay);
+  }
+  
+  while (currentDate <= lastDay) {
+    const weekStart = new Date(currentDate);
+    let weekEnd = new Date(currentDate);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    if (weekEnd > lastDay) {
+      weekEnd = new Date(lastDay);
+    }
+    
+    weeks.push({
+      start: new Date(weekStart),
+      end: new Date(weekEnd)
+    });
+    
+    currentDate.setDate(currentDate.getDate() + 7);
+  }
+  return weeks;
+}
+
+// Загрузка опций недель для выбора
+function loadWeekOptions() {
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  const weeks = getWorkWeeks(currentYear, currentMonth);
+  const weekOptions = document.getElementById('week-options');
+  weekOptions.innerHTML = '';
+  
+  weeks.forEach((week, index) => {
+    const weekElement = document.createElement('div');
+    weekElement.className = 'week-option';
+    weekElement.innerHTML = `
+      <div class="week-range">Неделя ${index + 1}: ${formatDate(week.start)} - ${formatDate(week.end)}</div>
+      <div class="week-days">${getWeekDays(week.start, week.end)}</div>
+    `;
+    weekElement.addEventListener('click', () => {
+      document.querySelectorAll('.week-option').forEach(opt => opt.classList.remove('selected'));
+      weekElement.classList.add('selected');
+      selectedWeek = week;
+    });
+    weekOptions.appendChild(weekElement);
+  });
+  
+  if (weeks.length > 0) {
+    weekOptions.firstChild.click();
+  }
+}
+
+// Загрузка опций месяцев для выбора - ИСПРАВЛЕННАЯ ВЕРСИЯ
+function loadMonthOptions() {
+  const monthSelect = document.getElementById('month-select');
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1; // 1-12
+  
+  monthSelect.innerHTML = '';
+  
+  // Генерируем 12 последних месяцев (текущий месяц и 11 предыдущих)
+  for (let i = 0; i < 12; i++) {
+    let year = currentYear;
+    let month = currentMonth - i;
+    
+    // Корректируем год и месяц если месяц меньше 1
+    if (month < 1) {
+      month += 12;
+      year -= 1;
+    }
+    
+    const monthDate = new Date(year, month - 1, 1);
+    const option = document.createElement('option');
+    option.value = `${year}-${month.toString().padStart(2, '0')}`;
+    option.textContent = `${MONTHS_GENITIVE[month - 1]} ${year}`;
+    
+    // Если это текущий месяц, помечаем его как выбранный
+    if (i === 0) {
+      option.selected = true;
+    }
+    
+    monthSelect.appendChild(option);
+  }
+}
+
+// Форматирование даты
+function formatDate(date) {
+  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
+}
+
+// Получение дней недели
+function getWeekDays(start, end) {
+  const days = [];
+  const current = new Date(start);
+  while (current <= end) {
+    days.push(current.toLocaleDateString('ru-RU', { weekday: 'short' }));
+    current.setDate(current.getDate() + 1);
+  }
+  return days.join(', ');
+}
+
+// Инициализация калькулятора для МПП
+function initializeMPPCalculator() {
+  document.getElementById('add-credit-btn').addEventListener('click', addCredit);
+  document.getElementById('calculate-btn').addEventListener('click', calculatePremium);
+}
+
+// Инициализация отчетов
+function initializeReports() {
+  document.getElementById('save-weekly-report-btn').addEventListener('click', saveWeeklyReport);
+  document.getElementById('report-add-credit-btn').addEventListener('click', addReportCredit);
+  document.getElementById('save-monthly-report-btn').addEventListener('click', saveMonthlyReport);
+  document.getElementById('monthly-report-add-credit-btn').addEventListener('click', addMonthlyReportCredit);
+  
+  // Обработчики для переключения типа отчета
+  document.querySelectorAll('.report-type-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.report-form').forEach(f => f.classList.remove('active'));
+      
+      this.classList.add('active');
+      const reportType = this.getAttribute('data-type');
+      document.querySelector(`.${reportType}-report`).classList.add('active');
+    });
+  });
+}
+
+// 🔧 ОСНОВНЫЕ ФУНКЦИИ
+
+// Инициализация темы
+function initTheme() {
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  updateThemeIcon();
+}
+
+// Обновление иконки темы
+function updateThemeIcon() {
+  const themeIcon = document.querySelector('#themeToggle i');
+  if (themeIcon) {
+    themeIcon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+  }
+}
+
+// Переключение темы
+function toggleTheme() {
+  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+  localStorage.setItem('theme', currentTheme);
+  initTheme();
+}
+
+// 🔧 ФУНКЦИИ ДЛЯ РАБОТЫ С КРЕДИТАМИ (МПП)
+
+// Добавление кредита
+function addCredit() {
+  const creditId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  creditIds.push(creditId);
+  const container = document.getElementById('credits-container');
+  const creditRow = document.createElement('div');
+  creditRow.className = 'credit-row';
+  creditRow.id = `credit-${creditId}`;
+  creditRow.innerHTML = `
+    <div>
+      <label>Тип кредита:</label>
+      <select id="credit-type-${creditId}" class="credit-type">
+        <option value="zp">Зарплатный</option>
+        <option value="prime">Прайм</option>
+        <option value="autocredit">Автокредит/ДКПЗА</option>
+        <option value="ipoteka">Ипотека</option>
+        <option value="dkpzn">ДКПЗН</option>
+        <option value="mkk_no_fz">МКК без ФЗ</option>
+        <option value="mkk_with_fz">МКК с ФЗ</option>
+        <option value="halva_refinance">Рефинансирование Халвой</option>
+      </select>
+    </div>
+    <div>
+      <label>Пакет защиты:</label>
+      <select id="credit-package-${creditId}" class="credit-package">
+        ${PACKAGES.map(pkg => `<option value="${pkg.value}">${pkg.name}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <label>ФЗ:</label>
+      <select id="credit-fz-${creditId}" class="credit-fz">
+        <option value="true">Да</option>
+        <option value="false">Нет</option>
+      </select>
+    </div>
+    <div>
+      <label>Сумма кредита (₽):</label>
+      <input type="number" id="credit-amount-${creditId}" min="0" max="100000000" value="0" class="credit-amount">
+    </div>
+    <div>
+      <label>Премия:</label>
+      <input type="text" id="credit-premium-${creditId}" readonly>
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <button class="btn btn-remove remove-credit" data-id="${creditId}">
+        <i class="fas fa-trash"></i> Удалить
+      </button>
+    </div>
+  `;
+  container.appendChild(creditRow);
+  
+  const typeSelect = document.getElementById(`credit-type-${creditId}`);
+  const packageSelect = document.getElementById(`credit-package-${creditId}`);
+  const fzSelect = document.getElementById(`credit-fz-${creditId}`);
+  const amountInput = document.getElementById(`credit-amount-${creditId}`);
+  const removeBtn = document.querySelector(`.remove-credit[data-id="${creditId}"]`);
+  
+  typeSelect.addEventListener('change', () => updateCreditPremium(creditId));
+  packageSelect.addEventListener('change', () => updateCreditPremium(creditId));
+  fzSelect.addEventListener('change', () => updateCreditPremium(creditId));
+  amountInput.addEventListener('input', () => {
+    amountInput.value = validateInput(amountInput.value, 0, 100000000);
+    updateCreditPremium(creditId);
+    updateDKIndicators();
+  });
+  
+  removeBtn.addEventListener('click', function() {
+    const creditIdToRemove = this.getAttribute('data-id');
+    if (confirm('Вы уверены, что хотите удалить этот кредит?')) {
+      removeCredit(creditIdToRemove);
+    }
+  });
+  
+  updateCreditPremium(creditId);
+  updateDKIndicators();
+}
+
+// Добавление кредита в отчет
+function addReportCredit() {
+  const creditId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  reportCreditIds.push(creditId);
+  const container = document.getElementById('report-credits-container');
+  const creditRow = document.createElement('div');
+  creditRow.className = 'credit-row';
+  creditRow.id = `report-credit-${creditId}`;
+  creditRow.innerHTML = `
+    <div>
+      <label>Тип кредита:</label>
+      <select id="report-credit-type-${creditId}" class="report-credit-type">
+        <option value="zp">Зарплатный</option>
+        <option value="prime">Прайм</option>
+        <option value="autocredit">Автокредит/ДКПЗА</option>
+        <option value="ipoteka">Ипотека</option>
+        <option value="dkpzn">ДКПЗН</option>
+        <option value="mkk_no_fz">МКК без ФЗ</option>
+        <option value="mkk_with_fz">МКК с ФЗ</option>
+        <option value="halva_refinance">Рефинансирование Халвой</option>
+      </select>
+    </div>
+    <div>
+      <label>Пакет защиты:</label>
+      <select id="report-credit-package-${creditId}" class="report-credit-package">
+        ${PACKAGES.map(pkg => `<option value="${pkg.value}">${pkg.name}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <label>ФЗ:</label>
+      <select id="report-credit-fz-${creditId}" class="report-credit-fz">
+        <option value="true">Да</option>
+        <option value="false">Нет</option>
+      </select>
+    </div>
+    <div>
+      <label>Сумма кредита (₽):</label>
+      <input type="number" id="report-credit-amount-${creditId}" min="0" max="100000000" value="0" class="report-credit-amount">
+    </div>
+    <div>
+      <label>Премия:</label>
+      <input type="text" id="report-credit-premium-${creditId}" readonly>
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <button class="btn btn-remove remove-report-credit" data-id="${creditId}">
+        <i class="fas fa-trash"></i> Удалить
+      </button>
+    </div>
+  `;
+  container.appendChild(creditRow);
+  
+  const typeSelect = document.getElementById(`report-credit-type-${creditId}`);
+  const packageSelect = document.getElementById(`report-credit-package-${creditId}`);
+  const fzSelect = document.getElementById(`report-credit-fz-${creditId}`);
+  const amountInput = document.getElementById(`report-credit-amount-${creditId}`);
+  const removeBtn = document.querySelector(`.remove-report-credit[data-id="${creditId}"]`);
+  
+  typeSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
+  packageSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
+  fzSelect.addEventListener('change', () => updateReportCreditPremium(creditId));
+  amountInput.addEventListener('input', () => {
+    amountInput.value = validateInput(amountInput.value, 0, 100000000);
+    updateReportCreditPremium(creditId);
+  });
+  
+  removeBtn.addEventListener('click', function() {
+    const creditIdToRemove = this.getAttribute('data-id');
+    if (confirm('Вы уверены, что хотите удалить этот кредит?')) {
+      removeReportCredit(creditIdToRemove);
+    }
+  });
+  
+  updateReportCreditPremium(creditId);
+}
+
+// Добавление кредита в ежемесячный отчет
+function addMonthlyReportCredit() {
+  const creditId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  monthlyReportCreditIds.push(creditId);
+  const container = document.getElementById('monthly-report-credits-container');
+  const creditRow = document.createElement('div');
+  creditRow.className = 'credit-row';
+  creditRow.id = `monthly-report-credit-${creditId}`;
+  creditRow.innerHTML = `
+    <div>
+      <label>Тип кредита:</label>
+      <select id="monthly-report-credit-type-${creditId}" class="monthly-report-credit-type">
+        <option value="zp">Зарплатный</option>
+        <option value="prime">Прайм</option>
+        <option value="autocredit">Автокредит/ДКПЗА</option>
+        <option value="ipoteka">Ипотека</option>
+        <option value="dkpzn">ДКПЗН</option>
+        <option value="mkk_no_fz">МКК без ФЗ</option>
+        <option value="mkk_with_fz">МКК с ФЗ</option>
+        <option value="halva_refinance">Рефинансирование Халвой</option>
+      </select>
+    </div>
+    <div>
+      <label>Пакет защиты:</label>
+      <select id="monthly-report-credit-package-${creditId}" class="monthly-report-credit-package">
+        ${PACKAGES.map(pkg => `<option value="${pkg.value}">${pkg.name}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <label>ФЗ:</label>
+      <select id="monthly-report-credit-fz-${creditId}" class="monthly-report-credit-fz">
+        <option value="true">Да</option>
+        <option value="false">Нет</option>
+      </select>
+    </div>
+    <div>
+      <label>Сумма кредита (₽):</label>
+      <input type="number" id="monthly-report-credit-amount-${creditId}" min="0" max="100000000" value="0" class="monthly-report-credit-amount">
+    </div>
+    <div>
+      <label>Премия:</label>
+      <input type="text" id="monthly-report-credit-premium-${creditId}" readonly>
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <button class="btn btn-remove remove-monthly-report-credit" data-id="${creditId}">
+        <i class="fas fa-trash"></i> Удалить
+      </button>
+    </div>
+  `;
+  container.appendChild(creditRow);
+  
+  const typeSelect = document.getElementById(`monthly-report-credit-type-${creditId}`);
+  const packageSelect = document.getElementById(`monthly-report-credit-package-${creditId}`);
+  const fzSelect = document.getElementById(`monthly-report-credit-fz-${creditId}`);
+  const amountInput = document.getElementById(`monthly-report-credit-amount-${creditId}`);
+  const removeBtn = document.querySelector(`.remove-monthly-report-credit[data-id="${creditId}"]`);
+  
+  typeSelect.addEventListener('change', () => updateMonthlyReportCreditPremium(creditId));
+  packageSelect.addEventListener('change', () => updateMonthlyReportCreditPremium(creditId));
+  fzSelect.addEventListener('change', () => updateMonthlyReportCreditPremium(creditId));
+  amountInput.addEventListener('input', () => {
+    amountInput.value = validateInput(amountInput.value, 0, 100000000);
+    updateMonthlyReportCreditPremium(creditId);
+  });
+  
+  removeBtn.addEventListener('click', function() {
+    const creditIdToRemove = this.getAttribute('data-id');
+    if (confirm('Вы уверены, что хотите удалить этот кредит?')) {
+      removeMonthlyReportCredit(creditIdToRemove);
+    }
+  });
+  
+  updateMonthlyReportCreditPremium(creditId);
+}
+
+// Обновление премии за кредит
+function updateCreditPremium(id) {
+  const typeSelect = document.getElementById(`credit-type-${id}`);
+  const packageSelect = document.getElementById(`credit-package-${id}`);
+  const fzSelect = document.getElementById(`credit-fz-${id}`);
+  const amountInput = document.getElementById(`credit-amount-${id}`);
+  const premiumInput = document.getElementById(`credit-premium-${id}`);
+  
+  if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+    const creditType = typeSelect.value;
+    const packageValue = parseInt(packageSelect.value) || 0;
+    const hasFZ = fzSelect.value === 'true';
+    const creditAmount = parseInt(amountInput.value) || 0;
+    const creditConfig = CREDIT_TYPES[creditType];
+    
+    let creditSum = creditConfig.base;
+    
+    if (creditType === 'prime') {
+      creditSum += Math.min(creditAmount * 0.005, 5000);
+    }
+    
+    if (creditType === 'halva_refinance') {
+      creditSum = Math.min(creditAmount * 0.03, 600);
+    }
+    
+    creditSum += packageValue * creditConfig.packageMultiplier;
+    
+    if (!hasFZ && creditConfig.fzRequired) {
+      creditSum = 0;
+    }
+    
+    premiumInput.value = creditSum.toLocaleString() + ' ₽';
+  }
+}
+
+// Обновление премии за кредит в отчете
+function updateReportCreditPremium(id) {
+  const typeSelect = document.getElementById(`report-credit-type-${id}`);
+  const packageSelect = document.getElementById(`report-credit-package-${id}`);
+  const fzSelect = document.getElementById(`report-credit-fz-${id}`);
+  const amountInput = document.getElementById(`report-credit-amount-${id}`);
+  const premiumInput = document.getElementById(`report-credit-premium-${id}`);
+  
+  if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+    const creditType = typeSelect.value;
+    const packageValue = parseInt(packageSelect.value) || 0;
+    const hasFZ = fzSelect.value === 'true';
+    const creditAmount = parseInt(amountInput.value) || 0;
+    const creditConfig = CREDIT_TYPES[creditType];
+    
+    let creditSum = creditConfig.base;
+    
+    if (creditType === 'prime') {
+      creditSum += Math.min(creditAmount * 0.005, 5000);
+    }
+    
+    if (creditType === 'halva_refinance') {
+      creditSum = Math.min(creditAmount * 0.03, 600);
+    }
+    
+    creditSum += packageValue * creditConfig.packageMultiplier;
+    
+    if (!hasFZ && creditConfig.fzRequired) {
+      creditSum = 0;
+    }
+    
+    premiumInput.value = creditSum.toLocaleString() + ' ₽';
+  }
+}
+
+// Обновление премии за кредит в ежемесячном отчете
+function updateMonthlyReportCreditPremium(id) {
+  const typeSelect = document.getElementById(`monthly-report-credit-type-${id}`);
+  const packageSelect = document.getElementById(`monthly-report-credit-package-${id}`);
+  const fzSelect = document.getElementById(`monthly-report-credit-fz-${id}`);
+  const amountInput = document.getElementById(`monthly-report-credit-amount-${id}`);
+  const premiumInput = document.getElementById(`monthly-report-credit-premium-${id}`);
+  
+  if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+    const creditType = typeSelect.value;
+    const packageValue = parseInt(packageSelect.value) || 0;
+    const hasFZ = fzSelect.value === 'true';
+    const creditAmount = parseInt(amountInput.value) || 0;
+    const creditConfig = CREDIT_TYPES[creditType];
+    
+    let creditSum = creditConfig.base;
+    
+    if (creditType === 'prime') {
+      creditSum += Math.min(creditAmount * 0.005, 5000);
+    }
+    
+    if (creditType === 'halva_refinance') {
+      creditSum = Math.min(creditAmount * 0.03, 600);
+    }
+    
+    creditSum += packageValue * creditConfig.packageMultiplier;
+    
+    if (!hasFZ && creditConfig.fzRequired) {
+      creditSum = 0;
+    }
+    
+    premiumInput.value = creditSum.toLocaleString() + ' ₽';
+  }
+}
+
+// Удаление кредита
+function removeCredit(id) {
+  const creditRow = document.getElementById(`credit-${id}`);
+  if (creditRow) {
+    creditRow.remove();
+    creditIds = creditIds.filter(creditId => creditId !== id);
+    updateDKIndicators();
+  }
+}
+
+// Удаление кредита из отчета
+function removeReportCredit(id) {
+  const creditRow = document.getElementById(`report-credit-${id}`);
+  if (creditRow) {
+    creditRow.remove();
+    reportCreditIds = reportCreditIds.filter(creditId => creditId !== id);
+  }
+}
+
+// Удаление кредита из ежемесячного отчета
+function removeMonthlyReportCredit(id) {
+  const creditRow = document.getElementById(`monthly-report-credit-${id}`);
+  if (creditRow) {
+    creditRow.remove();
+    monthlyReportCreditIds = monthlyReportCreditIds.filter(creditId => creditId !== id);
+  }
+}
+
+// Обновление индикаторов ДК
+function updateDKIndicators() {
+  let totalCreditAmount = 0;
+  const creditAmountInputs = document.querySelectorAll('.credit-amount');
+  creditAmountInputs.forEach(input => {
+    const creditAmount = parseInt(input.value) || 0;
+    if (creditAmount > 0) {
+      totalCreditAmount += creditAmount;
+    }
+  });
+  document.getElementById('dk_volume_fact').value = totalCreditAmount;
 }
 
 // 🔧 ФУНКЦИИ ДЛЯ РАСЧЕТА ПРЕМИИ (МПП)
@@ -4799,6 +3644,1651 @@ async function calculatePremium() {
   }
 }
 
+// 🔧 ФУНКЦИИ ДЛЯ ОТЧЕТОВ (МПП)
+
+// Сохранение еженедельного отчета
+async function saveWeeklyReport() {
+  if (!selectedWeek) {
+    showError('Выберите неделю для отчета');
+    return;
+  }
+
+  try {
+    showLoader("Сохранение отчета...");
+    
+    // Определяем месяц, к которому относится неделя
+    const weekMonth = new Date(selectedWeek.start);
+    const monthKey = `${weekMonth.getFullYear()}-${(weekMonth.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    // Загружаем планы для этого месяца
+    const plans = await getPlansForMonth(monthKey);
+    
+    // Валидация ввода
+    const kvc = validateInput(document.getElementById('report-kvc').value, 0, 1000);
+    const krh = validateInput(document.getElementById('report-krh').value, 0, 1000);
+    const dkVolume = validateInput(document.getElementById('report-dk-volume').value, 0, 100000000);
+    const vkladVolume = validateInput(document.getElementById('report-vklad-volume').value, 0, 100000000);
+    const dkCount = validateInput(document.getElementById('report-dk-count').value, 0, 1000);
+    const vkladCount = validateInput(document.getElementById('report-vklad-count').value, 0, 1000);
+    
+    const stickerCount = validateInput(document.getElementById('report-sticker-count').value, 0, 1000);
+    const yearSubCount = validateInput(document.getElementById('report-year-sub-count').value, 0, 1000);
+    const monthSubCount = validateInput(document.getElementById('report-month-sub-count').value, 0, 1000);
+    const krhLimitCount = validateInput(document.getElementById('report-krh-limit-count').value, 0, 1000);
+    const zpCardCount = validateInput(document.getElementById('report-zp-card-count').value, 0, 1000);
+    const ompCount = validateInput(document.getElementById('report-omp-count').value, 0, 1000);
+    const zpNerezCount = validateInput(document.getElementById('report-zp-nerez-count').value, 0, 1000);
+    const cardTurnover = validateInput(document.getElementById('report-card-turnover').value, 0, 100000000);
+    
+    const skbCount = validateInput(document.getElementById('report-skb-count').value, 0, 1000);
+    const crmCalls = validateInput(document.getElementById('report-crm-calls').value, 0, 1000);
+
+    const credits = [];
+    reportCreditIds.forEach(id => {
+      const typeSelect = document.getElementById(`report-credit-type-${id}`);
+      const packageSelect = document.getElementById(`report-credit-package-${id}`);
+      const fzSelect = document.getElementById(`report-credit-fz-${id}`);
+      const amountInput = document.getElementById(`report-credit-amount-${id}`);
+      const premiumInput = document.getElementById(`report-credit-premium-${id}`);
+
+      if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+        const creditType = typeSelect.value;
+        const packageValue = packageSelect.value;
+        const hasFZ = fzSelect.value === 'true';
+        const creditAmount = parseInt(amountInput.value) || 0;
+        const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
+        
+        credits.push({
+          type: creditType,
+          package: packageValue,
+          fz: hasFZ,
+          amount: creditAmount,
+          premium: creditPremium
+        });
+      }
+    });
+
+    if (currentUser && currentUser.id !== 'demo' && firebaseInitialized) {
+      const existingReportQuery = await db.collection('weeklyReports')
+        .where('userId', '==', String(currentUser.id))
+        .where('weekStart', '==', firebase.firestore.Timestamp.fromDate(selectedWeek.start))
+        .get();
+
+      if (!existingReportQuery.empty) {
+        hideLoader();
+        showError('Отчет за эту неделю уже существует');
+        return;
+      }
+
+      await db.collection('weeklyReports').add({
+        userId: String(currentUser.id),
+        weekStart: firebase.firestore.Timestamp.fromDate(selectedWeek.start),
+        weekEnd: firebase.firestore.Timestamp.fromDate(selectedWeek.end),
+        startDate: formatDate(selectedWeek.start),
+        endDate: formatDate(selectedWeek.end),
+        monthKey: monthKey,
+        plans: plans, // Сохраняем планы, которые использовались при создании отчета
+        kvc: kvc,
+        krh: krh,
+        dkVolume: dkVolume,
+        vkladVolume: vkladVolume,
+        dkCount: dkCount,
+        vkladCount: vkladCount,
+        credits: credits,
+        stickerCount: stickerCount,
+        yearSubCount: yearSubCount,
+        monthSubCount: monthSubCount,
+        krhLimitCount: krhLimitCount,
+        zpCardCount: zpCardCount,
+        ompCount: ompCount,
+        zpNerezCount: zpNerezCount,
+        cardTurnover: cardTurnover,
+        skbCount: skbCount,
+        crmCalls: crmCalls,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      hideLoader();
+      showSuccess('Отчет сохранен!');
+      
+      // Очищаем форму
+      document.getElementById('report-kvc').value = '0';
+      document.getElementById('report-krh').value = '0';
+      document.getElementById('report-dk-volume').value = '0';
+      document.getElementById('report-vklad-volume').value = '0';
+      document.getElementById('report-dk-count').value = '0';
+      document.getElementById('report-vklad-count').value = '0';
+      document.getElementById('report-sticker-count').value = '0';
+      document.getElementById('report-year-sub-count').value = '0';
+      document.getElementById('report-month-sub-count').value = '0';
+      document.getElementById('report-krh-limit-count').value = '0';
+      document.getElementById('report-zp-card-count').value = '0';
+      document.getElementById('report-omp-count').value = '0';
+      document.getElementById('report-zp-nerez-count').value = '0';
+      document.getElementById('report-card-turnover').value = '0';
+      document.getElementById('report-skb-count').value = '0';
+      document.getElementById('report-crm-calls').value = '0';
+      
+      reportCreditIds.forEach(id => {
+        const creditRow = document.getElementById(`report-credit-${id}`);
+        if (creditRow) creditRow.remove();
+      });
+      reportCreditIds = [];
+    } else {
+      hideLoader();
+      showError('Нет подключения к базе данных или вы в демо-режиме');
+    }
+  } catch (error) {
+    console.error('Ошибка сохранения отчета:', error);
+    hideLoader();
+    showError('Ошибка при сохранении отчета: ' + error.message);
+  }
+}
+
+// Сохранение ежемесячного отчета - ИСПРАВЛЕННАЯ ВЕРСИЯ
+async function saveMonthlyReport() {
+  const monthSelect = document.getElementById('month-select');
+  const selectedMonth = monthSelect.value;
+  
+  if (!selectedMonth) {
+    showError('Выберите месяц для отчета');
+    return;
+  }
+
+  try {
+    showLoader("Сохранение отчета...");
+    
+    const [year, month] = selectedMonth.split('-').map(Number);
+
+    // Загружаем планы для выбранного месяца
+    const plans = await getPlansForMonth(selectedMonth);
+
+    // Валидация ввода
+    const kvc = validateInput(document.getElementById('monthly-report-kvc').value, 0, 1000);
+    const krh = validateInput(document.getElementById('monthly-report-krh').value, 0, 1000);
+    const dkVolume = validateInput(document.getElementById('monthly-report-dk-volume').value, 0, 100000000);
+    const vkladVolume = validateInput(document.getElementById('monthly-report-vklad-volume').value, 0, 100000000);
+    const dkCount = validateInput(document.getElementById('monthly-report-dk-count').value, 0, 1000);
+    const vkladCount = validateInput(document.getElementById('monthly-report-vklad-count').value, 0, 1000);
+    
+    const stickerCount = validateInput(document.getElementById('monthly-report-sticker-count').value, 0, 1000);
+    const yearSubCount = validateInput(document.getElementById('monthly-report-year-sub-count').value, 0, 1000);
+    const monthSubCount = validateInput(document.getElementById('monthly-report-month-sub-count').value, 0, 1000);
+    const krhLimitCount = validateInput(document.getElementById('monthly-report-krh-limit-count').value, 0, 1000);
+    const zpCardCount = validateInput(document.getElementById('monthly-report-zp-card-count').value, 0, 1000);
+    const ompCount = validateInput(document.getElementById('monthly-report-omp-count').value, 0, 1000);
+    const zpNerezCount = validateInput(document.getElementById('monthly-report-zp-nerez-count').value, 0, 1000);
+    const cardTurnover = validateInput(document.getElementById('monthly-report-card-turnover').value, 0, 100000000);
+    
+    const skbCount = validateInput(document.getElementById('monthly-report-skb-count').value, 0, 1000);
+    const crmCalls = validateInput(document.getElementById('monthly-report-crm-calls').value, 0, 1000);
+
+    const credits = [];
+    monthlyReportCreditIds.forEach(id => {
+      const typeSelect = document.getElementById(`monthly-report-credit-type-${id}`);
+      const packageSelect = document.getElementById(`monthly-report-credit-package-${id}`);
+      const fzSelect = document.getElementById(`monthly-report-credit-fz-${id}`);
+      const amountInput = document.getElementById(`monthly-report-credit-amount-${id}`);
+      const premiumInput = document.getElementById(`monthly-report-credit-premium-${id}`);
+
+      if (typeSelect && packageSelect && fzSelect && amountInput && premiumInput) {
+        const creditType = typeSelect.value;
+        const packageValue = packageSelect.value;
+        const hasFZ = fzSelect.value === 'true';
+        const creditAmount = parseInt(amountInput.value) || 0;
+        const creditPremium = parseInt(premiumInput.value.replace(/\s/g, '').replace('₽', '')) || 0;
+        
+        credits.push({
+          type: creditType,
+          package: packageValue,
+          fz: hasFZ,
+          amount: creditAmount,
+          premium: creditPremium
+        });
+      }
+    });
+
+    // Расчетная премия с использованием планов из базы
+    const calculatedPremium = calculateTotalPremiumWithPlans({
+      krh: krh,
+      vkladCount: vkladCount,
+      credits: credits,
+      ompCount: ompCount,
+      zpNerezCount: zpNerezCount,
+      stickerCount: stickerCount,
+      yearSubCount: yearSubCount,
+      monthSubCount: monthSubCount,
+      krhLimitCount: krhLimitCount,
+      zpCardCount: zpCardCount,
+      cardTurnover: cardTurnover,
+      dkVolume: dkVolume,
+      vkladVolume: vkladVolume,
+      kvc: kvc
+    }, plans);
+
+    // Фактическая премия (может быть скорректирована пользователем)
+    const adjustedPremium = validateInput(document.getElementById('monthly-adjusted-premium').value, 0, 1000000) || calculatedPremium;
+
+    if (currentUser && currentUser.id !== 'demo' && firebaseInitialized) {
+      const existingReportQuery = await db.collection('monthlyReports')
+        .where('userId', '==', String(currentUser.id))
+        .where('monthKey', '==', selectedMonth)
+        .get();
+
+      if (!existingReportQuery.empty) {
+        // Если отчет уже существует, обновляем его
+        const existingReportDoc = existingReportQuery.docs[0];
+        await db.collection('monthlyReports').doc(existingReportDoc.id).update({
+          kvc: kvc,
+          krh: krh,
+          dkVolume: dkVolume,
+          vkladVolume: vkladVolume,
+          dkCount: dkCount,
+          vkladCount: vkladCount,
+          credits: credits,
+          stickerCount: stickerCount,
+          yearSubCount: yearSubCount,
+          monthSubCount: monthSubCount,
+          krhLimitCount: krhLimitCount,
+          zpCardCount: zpCardCount,
+          ompCount: ompCount,
+          zpNerezCount: zpNerezCount,
+          cardTurnover: cardTurnover,
+          skbCount: skbCount,
+          crmCalls: crmCalls,
+          plans: plans, // Сохраняем планы, которые использовались при расчете
+          calculatedPremium: calculatedPremium,
+          adjustedPremium: adjustedPremium,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        hideLoader();
+        showSuccess('Ежемесячный отчет обновлен!');
+      } else {
+        // Создаем новый отчет
+        await db.collection('monthlyReports').add({
+          userId: String(currentUser.id),
+          monthKey: selectedMonth,
+          year: year,
+          month: month,
+          monthName: `${MONTHS_GENITIVE[month-1]} ${year}`,
+          kvc: kvc,
+          krh: krh,
+          dkVolume: dkVolume,
+          vkladVolume: vkladVolume,
+          dkCount: dkCount,
+          vkladCount: vkladCount,
+          credits: credits,
+          stickerCount: stickerCount,
+          yearSubCount: yearSubCount,
+          monthSubCount: monthSubCount,
+          krhLimitCount: krhLimitCount,
+          zpCardCount: zpCardCount,
+          ompCount: ompCount,
+          zpNerezCount: zpNerezCount,
+          cardTurnover: cardTurnover,
+          skbCount: skbCount,
+          crmCalls: crmCalls,
+          plans: plans, // Сохраняем планы, которые использовались при расчете
+          calculatedPremium: calculatedPremium,
+          adjustedPremium: adjustedPremium,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        hideLoader();
+        showSuccess('Ежемесячный отчет сохранен!');
+      }
+      
+      // Очищаем форму
+      document.getElementById('monthly-report-kvc').value = '0';
+      document.getElementById('monthly-report-krh').value = '0';
+      document.getElementById('monthly-report-dk-volume').value = '0';
+      document.getElementById('monthly-report-vklad-volume').value = '0';
+      document.getElementById('monthly-report-dk-count').value = '0';
+      document.getElementById('monthly-report-vklad-count').value = '0';
+      document.getElementById('monthly-report-sticker-count').value = '0';
+      document.getElementById('monthly-report-year-sub-count').value = '0';
+      document.getElementById('monthly-report-month-sub-count').value = '0';
+      document.getElementById('monthly-report-krh-limit-count').value = '0';
+      document.getElementById('monthly-report-zp-card-count').value = '0';
+      document.getElementById('monthly-report-omp-count').value = '0';
+      document.getElementById('monthly-report-zp-nerez-count').value = '0';
+      document.getElementById('monthly-report-card-turnover').value = '0';
+      document.getElementById('monthly-report-skb-count').value = '0';
+      document.getElementById('monthly-report-crm-calls').value = '0';
+      document.getElementById('monthly-adjusted-premium').value = '0';
+      
+      monthlyReportCreditIds.forEach(id => {
+        const creditRow = document.getElementById(`monthly-report-credit-${id}`);
+        if (creditRow) creditRow.remove();
+      });
+      monthlyReportCreditIds = [];
+      
+      // Обновляем профиль
+      await loadProfile();
+    } else {
+      hideLoader();
+      showError('Нет подключения к базе данных или вы в демо-режиме');
+    }
+  } catch (error) {
+    console.error('Ошибка сохранения ежемесячного отчета:', error);
+    hideLoader();
+    showError('Ошибка при сохранении отчета: ' + error.message);
+  }
+}
+
+// Расчет премии с использованием планов
+function calculateTotalPremiumWithPlans(stats, plans) {
+  // Расчет процентов выполнения
+  const krhPercent = plans.krh_plan > 0 ? Math.round((stats.krh / plans.krh_plan) * 100) : (stats.krh > 0 ? 100 : 0);
+  const vkladVolumePercent = plans.vklad_volume_plan > 0 ? Math.round((stats.vkladVolume / plans.vklad_volume_plan) * 100) : (stats.vkladVolume > 0 ? 100 : 0);
+  const dkVolumePercent = plans.dk_volume_plan > 0 ? Math.round((stats.dkVolume / plans.dk_volume_plan) * 100) : (stats.dkVolume > 0 ? 100 : 0);
+  const kvcPercent = plans.kvc_plan > 0 ? Math.round((stats.kvc / plans.kvc_plan) * 100) : (stats.kvc > 0 ? 100 : 0);
+
+  // Получаем страты
+  const krhStrata = getStrataByPercent(krhPercent);
+  const vkladStrata = getStrataByPercent(vkladVolumePercent);
+  const dkStrata = getStrataByPercent(dkVolumePercent);
+  const kvcStrata = getStrataByPercent(kvcPercent);
+
+  // Расчет премии по кредитам
+  const creditsPremium = stats.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
+  const dkSumAfterMultiplier = creditsPremium * dkStrata.multiplier;
+
+  // Расчет премии по вкладам
+  const vkladySum = stats.vkladCount * 200;
+  const vkladySumAfterMultiplier = vkladySum * vkladStrata.multiplier;
+
+  // Расчет премии по КРХ
+  const startedKrhSum = stats.krh * 600;
+  const startedKrhSumAfterMultiplier = startedKrhSum * krhStrata.multiplier;
+
+  // Расчет премии по дополнительным продуктам
+  const additionalPremium =
+    (stats.ompCount * 50) +
+    (stats.zpNerezCount * 300) +
+    (stats.stickerCount * 50) +
+    (stats.yearSubCount * 500) +
+    (stats.monthSubCount * 200) +
+    (stats.krhLimitCount * 100) +
+    (stats.zpCardCount * 100) +
+    Math.min(stats.cardTurnover * 0.03, 100000);
+
+  // Итоговая премия
+  return dkSumAfterMultiplier + vkladySumAfterMultiplier + startedKrhSumAfterMultiplier + additionalPremium;
+}
+
+// 🔧 ФУНКЦИИ ДЛЯ ТОПА СОТРУДНИКОВ
+
+// Загрузка топа сотрудников
+async function loadLeaderboard(period = 'week') {
+  if (!firebaseInitialized) {
+    showDemoLeaderboard(period);
+    return;
+  }
+
+  try {
+    showLoader("Загрузка топа...");
+    
+    let startDate, endDate;
+    const now = new Date();
+    
+    if (period === 'week') {
+      const dayOfWeek = now.getDay();
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() + diffToMonday);
+      startDate.setHours(0, 0, 0, 0);
+      endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 6);
+      endDate.setHours(23, 59, 59, 999);
+      
+      document.getElementById('current-period-leaderboard').style.display = 'block';
+      document.getElementById('last-month-leaderboard').style.display = 'none';
+      document.getElementById('records-leaderboard').style.display = 'none';
+    } else if (period === 'month') {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      endDate.setHours(23, 59, 59, 999);
+      
+      document.getElementById('current-period-leaderboard').style.display = 'block';
+      document.getElementById('last-month-leaderboard').style.display = 'none';
+      document.getElementById('records-leaderboard').style.display = 'none';
+    } else if (period === 'last-month') {
+      await loadLastMonthLeaderboard();
+      hideLoader();
+      return;
+    } else if (period === 'records') {
+      await loadSalesRecords();
+      hideLoader();
+      return;
+    }
+
+    const usersSnapshot = await db.collection('users')
+      .where('role', '==', 'mpp')
+      .get();
+
+    if (usersSnapshot.empty) {
+      hideLoader();
+      showDemoLeaderboard(period);
+      return;
+    }
+
+    const leaderboardData = [];
+
+    for (const userDoc of usersSnapshot.docs) {
+      const user = userDoc.data();
+      try {
+        const reportsQuery = await db.collection('weeklyReports')
+          .where('userId', '==', String(userDoc.id))
+          .where('createdAt', '>=', firebase.firestore.Timestamp.fromDate(startDate))
+          .where('createdAt', '<=', firebase.firestore.Timestamp.fromDate(endDate))
+          .get();
+        
+        let totalStats = {
+          kvc: 0,
+          dkVolume: 0,
+          dkCount: 0,
+          vkladVolume: 0,
+          vkladCount: 0,
+          krh: 0,
+          credits: [],
+          ompCount: 0,
+          zpNerezCount: 0,
+          stickerCount: 0,
+          yearSubCount: 0,
+          monthSubCount: 0,
+          krhLimitCount: 0,
+          zpCardCount: 0,
+          cardTurnover: 0
+        };
+        
+        reportsQuery.forEach(doc => {
+          const report = doc.data();
+          totalStats.kvc += report.kvc || 0;
+          totalStats.dkVolume += report.dkVolume || 0;
+          totalStats.dkCount += report.dkCount || 0;
+          totalStats.vkladVolume += report.vkladVolume || 0;
+          totalStats.vkladCount += report.vkladCount || 0;
+          totalStats.krh += report.krh || 0;
+          totalStats.ompCount += report.ompCount || 0;
+          totalStats.zpNerezCount += report.zpNerezCount || 0;
+          totalStats.stickerCount += report.stickerCount || 0;
+          totalStats.yearSubCount += report.yearSubCount || 0;
+          totalStats.monthSubCount += report.monthSubCount || 0;
+          totalStats.krhLimitCount += report.krhLimitCount || 0;
+          totalStats.zpCardCount += report.zpCardCount || 0;
+          totalStats.cardTurnover += report.cardTurnover || 0;
+          
+          if (report.credits) {
+            totalStats.credits = totalStats.credits.concat(report.credits);
+          }
+        });
+
+        // Загружаем планы для расчета премии
+        const monthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+        const plans = await getPlansForMonth(monthKey);
+
+        // Рассчитываем премию с использованием планов
+        const premium = calculateTotalPremiumWithPlans(totalStats, plans);
+
+        leaderboardData.push({
+          user: user,
+          stats: totalStats,
+          premium: premium,
+          userId: userDoc.id
+        });
+      } catch (error) {
+        console.error(`Ошибка загрузки отчетов для пользователя ${userDoc.id}:`, error);
+      }
+    }
+
+    updatePremiumLeaderboard(leaderboardData);
+    updateCreditsLeaderboard(leaderboardData);
+    updateDepositsLeaderboard(leaderboardData);
+    hideLoader();
+
+  } catch (error) {
+    console.error('Ошибка загрузки топа:', error);
+    hideLoader();
+    showDemoLeaderboard(period);
+  }
+}
+
+// Загрузка топа за прошлый месяц - ИСПРАВЛЕННАЯ ВЕРСИЯ
+async function loadLastMonthLeaderboard() {
+  try {
+    showLoader("Загрузка топа за прошлый месяц...");
+    
+    const now = new Date();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const monthKey = `${lastMonth.getFullYear()}-${(lastMonth.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    // Получаем всех пользователей МПП
+    const usersSnapshot = await db.collection('users')
+      .where('role', '==', 'mpp')
+      .get();
+
+    if (usersSnapshot.empty) {
+      document.getElementById('last-month-premium-leaderboard').innerHTML = '<p>Нет данных за прошлый месяц</p>';
+      hideLoader();
+      return;
+    }
+
+    const leaderboardData = [];
+    
+    // Для каждого пользователя получаем отчет за прошлый месяц
+    for (const userDoc of usersSnapshot.docs) {
+      const user = userDoc.data();
+      
+      try {
+        const monthlyReportQuery = await db.collection('monthlyReports')
+          .where('userId', '==', userDoc.id)
+          .where('monthKey', '==', monthKey)
+          .get();
+
+        let premium = 0;
+
+        if (!monthlyReportQuery.empty) {
+          const report = monthlyReportQuery.docs[0].data();
+          premium = report.adjustedPremium || report.calculatedPremium || 0;
+        }
+
+        leaderboardData.push({
+          user: user,
+          userId: userDoc.id,
+          premium: premium
+        });
+      } catch (error) {
+        console.error(`Ошибка загрузки отчета для пользователя ${userDoc.id}:`, error);
+      }
+    }
+    
+    document.getElementById('current-period-leaderboard').style.display = 'none';
+    document.getElementById('last-month-leaderboard').style.display = 'block';
+    document.getElementById('records-leaderboard').style.display = 'none';
+    
+    updateLastMonthPremiumLeaderboard(leaderboardData);
+    hideLoader();
+    
+  } catch (error) {
+    console.error('Ошибка загрузки топа за прошлый месяц:', error);
+    hideLoader();
+    document.getElementById('last-month-premium-leaderboard').innerHTML = '<p>Ошибка загрузки данных</p>';
+  }
+}
+
+// Обновление топа по премии
+function updatePremiumLeaderboard(leaderboardData) {
+  const premiumSorted = [...leaderboardData].sort((a, b) => {
+    return (b.premium || 0) - (a.premium || 0);
+  });
+  
+  const premiumLeaderboard = document.getElementById('premium-leaderboard');
+  if (premiumSorted.length === 0) {
+    premiumLeaderboard.innerHTML = '<p>Нет данных для отображения</p>';
+    return;
+  }
+  
+  premiumLeaderboard.innerHTML = premiumSorted.slice(0, 10).map((item, index) => {
+    const premium = item.premium || 0;
+    const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+    return `
+      <div class="leaderboard-item">
+        <span class="rank">${index + 1}</span>
+        <span class="name">${displayName}</span>
+        <span class="value">${Math.round(premium).toLocaleString()} ₽</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Обновление топа по премии за прошлый месяц
+function updateLastMonthPremiumLeaderboard(leaderboardData) {
+  const premiumSorted = [...leaderboardData].sort((a, b) => {
+    return (b.premium || 0) - (a.premium || 0);
+  });
+  
+  const premiumLeaderboard = document.getElementById('last-month-premium-leaderboard');
+  if (premiumSorted.length === 0) {
+    premiumLeaderboard.innerHTML = '<p>Нет данных для отображения</p>';
+    return;
+  }
+  
+  premiumLeaderboard.innerHTML = premiumSorted.slice(0, 10).map((item, index) => {
+    const premium = item.premium || 0;
+    const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+    return `
+      <div class="leaderboard-item">
+        <span class="rank">${index + 1}</span>
+        <span class="name">${displayName}</span>
+        <span class="value">${Math.round(premium).toLocaleString()} ₽</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Расчет общей премии на основе статистики (старая версия для совместимости)
+function calculateTotalPremium(stats) {
+  const creditsPremium = stats.credits.reduce((sum, credit) => sum + (credit.premium || 0), 0);
+  const additionalPremium =
+    (stats.ompCount * 50) +
+    (stats.zpNerezCount * 300) +
+    (stats.stickerCount * 50) +
+    (stats.yearSubCount * 500) +
+    (stats.monthSubCount * 200) +
+    (stats.krhLimitCount * 100) +
+    (stats.zpCardCount * 100) +
+    Math.min(stats.cardTurnover * 0.03, 100000);
+    
+  return (stats.krh * 600) +
+    (stats.vkladCount * 200) +
+    creditsPremium +
+    additionalPremium;
+}
+
+// Обновление топа по кредитам
+function updateCreditsLeaderboard(leaderboardData) {
+  const creditsSorted = [...leaderboardData].sort((a, b) =>
+    (b.stats.dkCount || 0) - (a.stats.dkCount || 0)
+  );
+  
+  const creditsLeaderboard = document.getElementById('credits-leaderboard');
+  if (creditsSorted.length === 0) {
+    creditsLeaderboard.innerHTML = '<p>Нет данных для отображения</p>';
+    return;
+  }
+  
+  creditsLeaderboard.innerHTML = creditsSorted.slice(0, 10).map((item, index) => {
+    const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+    return `
+      <div class="leaderboard-item">
+        <span class="rank">${index + 1}</span>
+        <span class="name">${displayName}</span>
+        <span class="value">${item.stats.dkCount || 0} шт.</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Обновление топа по вкладам
+function updateDepositsLeaderboard(leaderboardData) {
+  const depositsSorted = [...leaderboardData].sort((a, b) =>
+    (b.stats.vkladCount || 0) - (a.stats.vkladCount || 0)
+  );
+  
+  const depositsLeaderboard = document.getElementById('deposits-leaderboard');
+  if (depositsSorted.length === 0) {
+    depositsLeaderboard.innerHTML = '<p>Нет данных для отображения</p>';
+    return;
+  }
+  
+  depositsLeaderboard.innerHTML = depositsSorted.slice(0, 10).map((item, index) => {
+    const displayName = `${item.user.firstName || ''} ${item.user.lastName || ''}`.trim() || 'Аноним';
+    return `
+      <div class="leaderboard-item">
+        <span class="rank">${index + 1}</span>
+        <span class="name">${displayName}</span>
+        <span class="value">${item.stats.vkladCount || 0} шт.</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Показать демо-данные для топа
+function showDemoLeaderboard(period) {
+  const premiumLeaderboard = document.getElementById('premium-leaderboard');
+  const creditsLeaderboard = document.getElementById('credits-leaderboard');
+  const depositsLeaderboard = document.getElementById('deposits-leaderboard');
+  
+  if (period === 'last-month') {
+    document.getElementById('last-month-premium-leaderboard').innerHTML = `
+      <div class="leaderboard-item">
+        <span class="rank">1</span>
+        <span class="name">Иванов Иван</span>
+        <span class="value">45,000 ₽</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">2</span>
+        <span class="name">Петров Петр</span>
+        <span class="value">42,500 ₽</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">3</span>
+        <span class="name">Сидоров Алексей</span>
+        <span class="value">40,000 ₽</span>
+      </div>
+    `;
+    
+    document.getElementById('current-period-leaderboard').style.display = 'none';
+    document.getElementById('last-month-leaderboard').style.display = 'block';
+    document.getElementById('records-leaderboard').style.display = 'none';
+  } else if (period === 'records') {
+    // Показываем демо-данные для рекордов
+    document.getElementById('current-period-leaderboard').style.display = 'none';
+    document.getElementById('last-month-leaderboard').style.display = 'none';
+    document.getElementById('records-leaderboard').style.display = 'block';
+    
+    document.getElementById('credits-record-value').textContent = '12';
+    document.getElementById('credits-record-user').textContent = 'Иванов Иван';
+    document.getElementById('deposits-record-value').textContent = '8';
+    document.getElementById('deposits-record-user').textContent = 'Петров Петр';
+    document.getElementById('krh-record-value').textContent = '24';
+    document.getElementById('krh-record-user').textContent = 'Сидоров Алексей';
+  } else {
+    premiumLeaderboard.innerHTML = `
+      <div class="leaderboard-item">
+        <span class="rank">1</span>
+        <span class="name">Иванов Иван</span>
+        <span class="value">25,000 ₽</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">2</span>
+        <span class="name">Петров Петр</span>
+        <span class="value">22,500 ₽</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">3</span>
+        <span class="name">Сидоров Алексей</span>
+        <span class="value">20,000 ₽</span>
+      </div>
+    `;
+    
+    creditsLeaderboard.innerHTML = `
+      <div class="leaderboard-item">
+        <span class="rank">1</span>
+        <span class="name">Иванов Иван</span>
+        <span class="value">8 шт.</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">2</span>
+        <span class="name">Петров Петр</span>
+        <span class="value">7 шт.</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">3</span>
+        <span class="name">Сидоров Алексей</span>
+        <span class="value">6 шт.</span>
+      </div>
+    `;
+    
+    depositsLeaderboard.innerHTML = `
+      <div class="leaderboard-item">
+        <span class="rank">1</span>
+        <span class="name">Иванов Иван</span>
+        <span class="value">12 шт.</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">2</span>
+        <span class="name">Петров Петр</span>
+        <span class="value">10 шт.</span>
+      </div>
+      <div class="leaderboard-item">
+        <span class="rank">3</span>
+        <span class="name">Сидоров Алексей</span>
+        <span class="value">9 шт.</span>
+      </div>
+    `;
+    
+    document.getElementById('current-period-leaderboard').style.display = 'block';
+    document.getElementById('last-month-leaderboard').style.display = 'none';
+    document.getElementById('records-leaderboard').style.display = 'none';
+  }
+}
+
+// 🔧 ФУНКЦИИ ДЛЯ ПРОФИЛЯ
+
+// Загрузка профиля
+async function loadProfile() {
+  await loadAchievements();
+  await loadPremiumHistory();
+  await loadProfileStats();
+}
+
+// Загрузка достижений
+async function loadAchievements() {
+  const badgeGrid = document.getElementById('badge-grid');
+  const achievements = [
+    { id: 1, name: 'Первый кредит', desc: 'Оформите первый кредит', icon: 'fas fa-award', unlocked: true },
+    { id: 2, name: 'Мастер продаж', desc: 'Выполните план на 100%', icon: 'fas fa-trophy', unlocked: false },
+    { id: 3, name: 'Эксперт по вкладам', desc: 'Оформите 10 вкладов', icon: 'fas fa-coins', unlocked: false },
+    { id: 4, name: 'Золотой стандарт', desc: 'Заработайте 50,000₽ премии', icon: 'fas fa-medal', unlocked: false },
+    { id: 5, name: 'Командный игрок', desc: 'Работайте в команде РГПП', icon: 'fas fa-users', unlocked: false },
+    { id: 6, name: 'Стратег', desc: 'Достигните страты 1', icon: 'fas fa-chess-queen', unlocked: false }
+  ];
+  
+  badgeGrid.innerHTML = achievements.map(achievement => `
+    <div class="badge ${achievement.unlocked ? 'unlocked' : 'locked'}">
+      <div class="badge-icon">
+        <i class="${achievement.icon}"></i>
+      </div>
+      <div class="badge-name">${achievement.name}</div>
+      <div class="badge-desc">${achievement.desc}</div>
+    </div>
+  `).join('');
+}
+
+// Загрузка истории премий - ИСПРАВЛЕННАЯ ВЕРСИЯ
+async function loadPremiumHistory() {
+  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
+    showDemoPremiumHistory();
+    return;
+  }
+  
+  try {
+    showLoader("Загрузка истории премий...");
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    // Генерируем список месяцев для отображения (12 месяцев)
+    const monthsToShow = [];
+    for (let i = 0; i < 12; i++) {
+      let year = currentYear;
+      let month = currentMonth - i;
+      
+      if (month < 1) {
+        month += 12;
+        year -= 1;
+      }
+      
+      monthsToShow.push({
+        year: year,
+        month: month,
+        monthKey: `${year}-${month.toString().padStart(2, '0')}`,
+        monthName: `${MONTHS_GENITIVE[month-1]} ${year}`
+      });
+    }
+    
+    // Получаем все отчеты пользователя за последние 12 месяцев
+    const monthlyReportsSnapshot = await db.collection('monthlyReports')
+      .where('userId', '==', String(currentUser.id))
+      .where('monthKey', 'in', monthsToShow.map(m => m.monthKey))
+      .get();
+    
+    // Создаем карту отчетов для быстрого доступа
+    const reportsMap = new Map();
+    monthlyReportsSnapshot.forEach(doc => {
+      const report = doc.data();
+      reportsMap.set(report.monthKey, { ...report, id: doc.id });
+    });
+    
+    // Создаем историю премий для всех 12 месяцев
+    const premiumHistoryList = document.getElementById('premium-history-list');
+    
+    if (monthsToShow.length === 0) {
+      premiumHistoryList.innerHTML = '<p>Нет данных для отображения</p>';
+      hideLoader();
+      return;
+    }
+    
+    premiumHistoryList.innerHTML = monthsToShow.map(monthInfo => {
+      const reportData = reportsMap.get(monthInfo.monthKey);
+      const premium = reportData ? (reportData.adjustedPremium || reportData.calculatedPremium || 0) : 0;
+      const hasReport = !!reportData;
+      
+      return `
+        <div class="history-item">
+          <span class="history-month">${monthInfo.monthName} ${!hasReport ? '<span class="no-report">(нет отчета)</span>' : ''}</span>
+          <span class="history-premium">${Math.round(premium).toLocaleString()} ₽</span>
+          ${hasReport ? `
+            <button class="edit-premium-btn" data-report-id="${reportData.id}" data-month="${monthInfo.monthName}">
+              <i class="fas fa-edit"></i>
+            </button>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+    
+    // Добавляем обработчики для кнопок редактирования
+    document.querySelectorAll('.edit-premium-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const reportId = this.getAttribute('data-report-id');
+        const monthName = this.getAttribute('data-month');
+        if (reportId) {
+          editMonthlyPremium(reportId, monthName);
+        }
+      });
+    });
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка загрузки истории премий:', error);
+    hideLoader();
+    showDemoPremiumHistory();
+  }
+}
+
+// Редактирование премии за месяц
+async function editMonthlyPremium(reportId, monthName) {
+  if (!reportId || !firebaseInitialized) {
+    showError('В демо-режиме редактирование невозможно');
+    return;
+  }
+  
+  try {
+    const reportDoc = await db.collection('monthlyReports').doc(reportId).get();
+    if (!reportDoc.exists) {
+      showError('Отчет не найден');
+      return;
+    }
+    
+    const report = reportDoc.data();
+    const currentPremium = report.adjustedPremium || report.calculatedPremium || 0;
+    
+    const newPremium = prompt(`Введите фактическую премию за ${monthName}:`, currentPremium);
+    
+    if (newPremium === null) return;
+    
+    const premiumValue = validateInput(newPremium, 0, 1000000);
+    
+    await db.collection('monthlyReports').doc(reportId).update({
+      adjustedPremium: premiumValue
+    });
+    
+    showSuccess('Премия успешно обновлена!');
+    await loadProfile();
+  } catch (error) {
+    console.error('Ошибка обновления премии:', error);
+    showError('Ошибка при обновлении премии');
+  }
+}
+
+// Загрузка статистики профиля - ИСПРАВЛЕННАЯ ВЕРСИЯ
+async function loadProfileStats() {
+  if (!currentUser || currentUser.id === 'demo' || !firebaseInitialized) {
+    showDemoProfileStats();
+    return;
+  }
+  
+  try {
+    showLoader("Загрузка статистики...");
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    // Генерируем список месяцев для анализа (12 месяцев)
+    const monthsToAnalyze = [];
+    for (let i = 0; i < 12; i++) {
+      let year = currentYear;
+      let month = currentMonth - i;
+      
+      if (month < 1) {
+        month += 12;
+        year -= 1;
+      }
+      
+      monthsToAnalyze.push(`${year}-${month.toString().padStart(2, '0')}`);
+    }
+    
+    // Получаем все отчеты пользователя за последние 12 месяцев
+    const monthlyReportsSnapshot = await db.collection('monthlyReports')
+      .where('userId', '==', String(currentUser.id))
+      .where('monthKey', 'in', monthsToAnalyze)
+      .get();
+    
+    let totalPremium = 0;
+    let totalCredits = 0;
+    let totalDeposits = 0;
+    let reportCount = 0;
+    
+    monthlyReportsSnapshot.forEach(doc => {
+      const report = doc.data();
+      const premium = report.adjustedPremium || report.calculatedPremium || 0;
+      
+      totalPremium += premium;
+      totalCredits += report.dkCount || 0;
+      totalDeposits += report.vkladCount || 0;
+      reportCount++;
+    });
+    
+    const averagePremium = reportCount > 0 ? Math.round(totalPremium / reportCount) : 0;
+    
+    document.getElementById('total-premium').textContent = Math.round(totalPremium).toLocaleString() + ' ₽';
+    document.getElementById('average-premium').textContent = averagePremium.toLocaleString() + ' ₽';
+    document.getElementById('total-credits').textContent = totalCredits;
+    document.getElementById('total-deposits').textContent = totalDeposits;
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка загрузки статистики профиля:', error);
+    hideLoader();
+    showDemoProfileStats();
+  }
+}
+
+// Показать демо-данные для истории премий
+function showDemoPremiumHistory() {
+  const premiumHistoryList = document.getElementById('premium-history-list');
+  
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  
+  let demoHTML = '';
+  
+  // Показываем 12 месяцев (включая текущий)
+  for (let i = 0; i < 12; i++) {
+    const monthDate = new Date(currentYear, currentMonth - i, 1);
+    const monthName = `${MONTHS_GENITIVE[monthDate.getMonth()]} ${monthDate.getFullYear()}`;
+    const hasReport = i < 8; // Демо: показываем отчеты за 8 месяцев
+    const premium = hasReport ? Math.floor(Math.random() * 40000) + 10000 : 0;
+    
+    demoHTML += `
+      <div class="history-item">
+        <span class="history-month">${monthName} ${!hasReport ? '<span class="no-report">(нет отчета)</span>' : ''}</span>
+        <span class="history-premium">${premium.toLocaleString()} ₽</span>
+        ${hasReport ? `
+          <button class="edit-premium-btn" data-report-id="demo-${i}" data-month="${monthName}">
+            <i class="fas fa-edit"></i>
+          </button>
+        ` : ''}
+      </div>
+    `;
+  }
+  
+  premiumHistoryList.innerHTML = demoHTML;
+  
+  // Добавляем обработчики для демо-кнопок редактирования
+  document.querySelectorAll('.edit-premium-btn[data-report-id^="demo-"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      showError('В демо-режиме редактирование невозможно');
+    });
+  });
+}
+
+// Показать демо-данные для статистики профиля
+function showDemoProfileStats() {
+  const totalPremium = 350000;
+  const averagePremium = 29167;
+  const totalCredits = 45;
+  const totalDeposits = 60;
+  
+  document.getElementById('total-premium').textContent = totalPremium.toLocaleString() + ' ₽';
+  document.getElementById('average-premium').textContent = averagePremium.toLocaleString() + ' ₽';
+  document.getElementById('total-credits').textContent = totalCredits;
+  document.getElementById('total-deposits').textContent = totalDeposits;
+}
+
+// 🔧 НОВАЯ АДМИН-ПАНЕЛЬ
+
+// Инициализация админ-панели
+async function initializeAdminPanel() {
+  if (!checkAdminRights()) return;
+  
+  // Загружаем данные для админ-панели
+  await loadAdminPlans();
+  await loadAdminMotivationChanges();
+  await loadAdminRecords();
+  
+  // Настраиваем обработчики для админ-вкладок
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+      
+      this.classList.add('active');
+      const tabId = this.getAttribute('data-tab');
+      document.getElementById(tabId).classList.add('active');
+      
+      if (tabId === 'admin-plans') {
+        loadAdminPlans();
+      } else if (tabId === 'admin-changes') {
+        loadAdminMotivationChanges();
+      } else if (tabId === 'admin-records') {
+        loadAdminRecords();
+      }
+    });
+  });
+  
+  // Обработчик для сохранения планов
+  document.getElementById('save-plans-btn').addEventListener('click', saveAdminPlans);
+  
+  // Обработчик для сохранения изменений
+  document.getElementById('save-changes-btn').addEventListener('click', saveMotivationChanges);
+  
+  // Обработчик для сохранения рекордов в админ-панели
+  document.getElementById('admin-save-record-btn').addEventListener('click', saveAdminRecord);
+  
+  // Инициализация поиска сотрудников в админ-панели
+  initializeUserSearch('admin-user-search', 'admin-user-search-results', 'admin-selected-user', 'admin-selected-user-name', 'admin-selected-user-id');
+}
+
+// Загрузка планов для админ-панели
+async function loadAdminPlans() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    // Загружаем опции месяцев для выбора
+    const planMonthSelect = document.getElementById('admin-plan-month');
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    
+    planMonthSelect.innerHTML = '';
+    
+    // Генерируем 12 месяцев (текущий и следующие 11)
+    for (let i = 0; i < 12; i++) {
+      let year = currentYear;
+      let month = currentMonth + i;
+      
+      // Корректируем год и месяц если месяц больше 12
+      if (month > 12) {
+        month -= 12;
+        year += 1;
+      }
+      
+      const monthDate = new Date(year, month - 1, 1);
+      const option = document.createElement('option');
+      option.value = `${year}-${month.toString().padStart(2, '0')}`;
+      option.textContent = `${MONTHS_GENITIVE[month - 1]} ${year}`;
+      
+      // Если это текущий месяц, помечаем его как выбранный
+      if (i === 0) {
+        option.selected = true;
+      }
+      
+      planMonthSelect.appendChild(option);
+    }
+    
+    // Загружаем текущие планы для выбранного месяца
+    await loadCurrentPlans();
+    
+  } catch (error) {
+    console.error('Ошибка загрузки планов:', error);
+  }
+}
+
+// Загрузка текущих планов
+async function loadCurrentPlans() {
+  if (!firebaseInitialized) return;
+  
+  try {
+    const planMonthSelect = document.getElementById('admin-plan-month');
+    const selectedMonth = planMonthSelect.value;
+    
+    const plansDoc = await db.collection('plans').doc(selectedMonth).get();
+    
+    if (plansDoc.exists) {
+      const plans = plansDoc.data();
+      document.getElementById('admin-krh-plan').value = plans.krh_plan || 14;
+      document.getElementById('admin-vklad-volume-plan').value = plans.vklad_volume_plan || 1920000;
+      document.getElementById('admin-vklad-count-plan').value = plans.vklad_count_plan || 4;
+      document.getElementById('admin-dk-count-plan').value = plans.dk_count_plan || 2;
+      document.getElementById('admin-dk-volume-plan').value = plans.dk_volume_plan || 960000;
+      document.getElementById('admin-kvc-plan').value = plans.kvc_plan || 30;
+    } else {
+      // Устанавливаем значения по умолчанию
+      document.getElementById('admin-krh-plan').value = 14;
+      document.getElementById('admin-vklad-volume-plan').value = 1920000;
+      document.getElementById('admin-vklad-count-plan').value = 4;
+      document.getElementById('admin-dk-count-plan').value = 2;
+      document.getElementById('admin-dk-volume-plan').value = 960000;
+      document.getElementById('admin-kvc-plan').value = 30;
+    }
+  } catch (error) {
+    console.error('Ошибка загрузки текущих планов:', error);
+  }
+}
+
+// Сохранение планов админом
+async function saveAdminPlans() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  if (!firebaseInitialized) return;
+  
+  try {
+    showLoader("Сохранение планов...");
+    
+    const planMonthSelect = document.getElementById('admin-plan-month');
+    const selectedMonth = planMonthSelect.value;
+    
+    const krhPlan = validateInput(document.getElementById('admin-krh-plan').value, 0, 1000);
+    const vkladVolumePlan = validateInput(document.getElementById('admin-vklad-volume-plan').value, 0, 100000000);
+    const vkladCountPlan = validateInput(document.getElementById('admin-vklad-count-plan').value, 0, 1000);
+    const dkCountPlan = validateInput(document.getElementById('admin-dk-count-plan').value, 0, 1000);
+    const dkVolumePlan = validateInput(document.getElementById('admin-dk-volume-plan').value, 0, 100000000);
+    const kvcPlan = validateInput(document.getElementById('admin-kvc-plan').value, 0, 1000);
+    
+    await db.collection('plans').doc(selectedMonth).set({
+      krh_plan: krhPlan,
+      vklad_volume_plan: vkladVolumePlan,
+      vklad_count_plan: vkladCountPlan,
+      dk_count_plan: dkCountPlan,
+      dk_volume_plan: dkVolumePlan,
+      kvc_plan: kvcPlan,
+      updatedBy: currentUser.id,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    hideLoader();
+    showSuccess('Плановые показатели успешно сохранены!');
+    
+    // Обновляем планы в калькуляторе, если сохранен план на текущий месяц
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    if (selectedMonth === currentMonthKey) {
+      await loadPlansIntoCalculator();
+    }
+  } catch (error) {
+    console.error('Ошибка сохранения планов:', error);
+    hideLoader();
+    showError('Ошибка при сохранении планов');
+  }
+}
+
+// 🔧 НОВЫЕ ФУНКЦИИ ДЛЯ РЕКОРДОВ ПРОДАЖ
+
+// Инициализация поиска пользователей
+function initializeUserSearch(searchInputId, resultsContainerId, selectedUserContainerId, selectedUserNameId, selectedUserIdId) {
+  const searchInput = document.getElementById(searchInputId);
+  const resultsContainer = document.getElementById(resultsContainerId);
+  const selectedUserContainer = document.getElementById(selectedUserContainerId);
+  const selectedUserName = document.getElementById(selectedUserNameId);
+  const selectedUserId = document.getElementById(selectedUserIdId);
+  
+  if (!searchInput) return;
+  
+  let searchTimeout = null;
+  
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const searchTerm = this.value.trim();
+    
+    if (searchTerm.length < 2) {
+      resultsContainer.style.display = 'none';
+      return;
+    }
+    
+    searchTimeout = setTimeout(async () => {
+      await searchUsers(searchTerm, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId);
+    }, 300);
+  });
+  
+  // Скрываем результаты при клике вне поля поиска
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.custom-select-wrapper')) {
+      resultsContainer.style.display = 'none';
+    }
+  });
+}
+
+// Поиск пользователей
+async function searchUsers(searchTerm, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId) {
+  if (!firebaseInitialized) {
+    showDemoSearchResults(searchTerm, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId);
+    return;
+  }
+  
+  try {
+    const usersSnapshot = await db.collection('users')
+      .where('role', '==', 'mpp')
+      .get();
+    
+    const results = [];
+    
+    usersSnapshot.forEach(doc => {
+      const user = doc.data();
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      const username = user.username || '';
+      
+      if (fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          username.toLowerCase().includes(searchTerm.toLowerCase())) {
+        results.push({
+          id: doc.id,
+          name: fullName || 'Аноним',
+          username: username
+        });
+      }
+    });
+    
+    displaySearchResults(results, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId);
+  } catch (error) {
+    console.error('Ошибка поиска пользователей:', error);
+    showDemoSearchResults(searchTerm, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId);
+  }
+}
+
+// Отображение результатов поиска
+function displaySearchResults(results, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId) {
+  resultsContainer.innerHTML = '';
+  
+  if (results.length === 0) {
+    resultsContainer.innerHTML = '<div class="no-results">Сотрудники не найдены</div>';
+    resultsContainer.style.display = 'block';
+    return;
+  }
+  
+  results.slice(0, 10).forEach(user => {
+    const resultItem = document.createElement('div');
+    resultItem.className = 'search-result-item';
+    resultItem.textContent = user.name + (user.username ? ` (@${user.username})` : '');
+    
+    resultItem.addEventListener('click', function() {
+      selectedUserName.textContent = user.name;
+      selectedUserId.value = user.id;
+      selectedUserContainer.style.display = 'block';
+      resultsContainer.style.display = 'none';
+    });
+    
+    resultsContainer.appendChild(resultItem);
+  });
+  
+  resultsContainer.style.display = 'block';
+}
+
+// Демо-результаты поиска
+function showDemoSearchResults(searchTerm, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId) {
+  const demoUsers = [
+    { id: 'demo-1', name: 'Иванов Иван', username: 'ivanov' },
+    { id: 'demo-2', name: 'Петров Петр', username: 'petrov' },
+    { id: 'demo-3', name: 'Сидоров Алексей', username: 'sidorov' }
+  ];
+  
+  const filteredUsers = demoUsers.filter(user => 
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  displaySearchResults(filteredUsers, resultsContainer, selectedUserContainer, selectedUserName, selectedUserId);
+}
+
+// Загрузка рекордов продаж
+async function loadSalesRecords() {
+  document.getElementById('current-period-leaderboard').style.display = 'none';
+  document.getElementById('last-month-leaderboard').style.display = 'none';
+  document.getElementById('records-leaderboard').style.display = 'block';
+  
+  // Показываем или скрываем форму для админа
+  const isAdmin = checkAdminRights();
+  document.getElementById('record-form').style.display = isAdmin ? 'block' : 'none';
+  
+  // Инициализация поиска сотрудников для админа
+  if (isAdmin) {
+    initializeUserSearch('user-search', 'user-search-results', 'selected-user', 'selected-user-name', 'selected-user-id');
+  }
+  
+  if (!firebaseInitialized) {
+    showDemoLeaderboard('records');
+    return;
+  }
+  
+  try {
+    showLoader("Загрузка рекордов...");
+    
+    // Загружаем рекорды из базы данных
+    const recordsSnapshot = await db.collection('salesRecords').get();
+    
+    // Инициализируем значения рекордов по умолчанию
+    const records = {
+      credits: { value: 0, userName: 'Рекорд еще не установлен', userId: null },
+      deposits: { value: 0, userName: 'Рекорд еще не установлен', userId: null },
+      krh: { value: 0, userName: 'Рекорд еще не установлен', userId: null }
+    };
+    
+    // Заполняем данные из базы
+    recordsSnapshot.forEach(doc => {
+      const record = doc.data();
+      const recordType = record.type;
+      
+      if (records[recordType] && record.value > records[recordType].value) {
+        records[recordType] = {
+          value: record.value,
+          userName: record.userName || 'Неизвестный сотрудник',
+          userId: record.userId
+        };
+      }
+    });
+    
+    // Обновляем интерфейс
+    document.getElementById('credits-record-value').textContent = records.credits.value;
+    document.getElementById('credits-record-user').textContent = records.credits.userName;
+    
+    document.getElementById('deposits-record-value').textContent = records.deposits.value;
+    document.getElementById('deposits-record-user').textContent = records.deposits.userName;
+    
+    document.getElementById('krh-record-value').textContent = records.krh.value;
+    document.getElementById('krh-record-user').textContent = records.krh.userName;
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка загрузки рекордов:', error);
+    hideLoader();
+    showDemoLeaderboard('records');
+  }
+}
+
+// Сохранение рекорда (для админа)
+async function saveRecord() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  if (!firebaseInitialized) return;
+  
+  try {
+    showLoader("Сохранение рекорда...");
+    
+    const userId = document.getElementById('selected-user-id').value;
+    const recordType = document.getElementById('record-type').value;
+    const recordValue = validateInput(document.getElementById('record-value').value, 0, 1000);
+    
+    if (!userId) {
+      hideLoader();
+      showError('Выберите сотрудника');
+      return;
+    }
+    
+    // Получаем информацию о пользователе
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      hideLoader();
+      showError('Пользователь не найден');
+      return;
+    }
+    
+    const user = userDoc.data();
+    const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Аноним';
+    
+    // Сохраняем рекорд в базу данных
+    await db.collection('salesRecords').add({
+      userId: userId,
+      userName: userName,
+      type: recordType,
+      value: recordValue,
+      updatedBy: currentUser.id,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    hideLoader();
+    showSuccess('Рекорд успешно сохранен!');
+    
+    // Обновляем отображение рекордов
+    await loadSalesRecords();
+    
+    // Очищаем форму
+    document.getElementById('record-value').value = '0';
+    document.getElementById('selected-user').style.display = 'none';
+    document.getElementById('user-search').value = '';
+  } catch (error) {
+    console.error('Ошибка сохранения рекорда:', error);
+    hideLoader();
+    showError('Ошибка при сохранении рекорда');
+  }
+}
+
+// Загрузка рекордов для админ-панели
+async function loadAdminRecords() {
+  if (!firebaseInitialized) {
+    showDemoAdminRecords();
+    return;
+  }
+  
+  try {
+    showLoader("Загрузка рекордов...");
+    
+    // Загружаем рекорды из базы данных
+    const recordsSnapshot = await db.collection('salesRecords').get();
+    
+    // Инициализируем значения рекордов по умолчанию
+    const records = {
+      credits: { value: 0, userName: 'Рекорд еще не установлен', userId: null, id: null },
+      deposits: { value: 0, userName: 'Рекорд еще не установлен', userId: null, id: null },
+      krh: { value: 0, userName: 'Рекорд еще не установлен', userId: null, id: null }
+    };
+    
+    // Заполняем данные из базы
+    recordsSnapshot.forEach(doc => {
+      const record = doc.data();
+      const recordType = record.type;
+      
+      if (records[recordType] && record.value > records[recordType].value) {
+        records[recordType] = {
+          value: record.value,
+          userName: record.userName || 'Неизвестный сотрудник',
+          userId: record.userId,
+          id: doc.id
+        };
+      }
+    });
+    
+    // Обновляем интерфейс админ-панели
+    document.getElementById('admin-credits-record-value').textContent = records.credits.value;
+    document.getElementById('admin-credits-record-user').textContent = records.credits.userName;
+    
+    document.getElementById('admin-deposits-record-value').textContent = records.deposits.value;
+    document.getElementById('admin-deposits-record-user').textContent = records.deposits.userName;
+    
+    document.getElementById('admin-krh-record-value').textContent = records.krh.value;
+    document.getElementById('admin-krh-record-user').textContent = records.krh.userName;
+    
+    hideLoader();
+  } catch (error) {
+    console.error('Ошибка загрузки рекордов для админ-панели:', error);
+    hideLoader();
+    showDemoAdminRecords();
+  }
+}
+
+// Сохранение рекорда из админ-панели
+async function saveAdminRecord() {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  if (!firebaseInitialized) return;
+  
+  try {
+    showLoader("Сохранение рекорда...");
+    
+    const userId = document.getElementById('admin-selected-user-id').value;
+    const recordType = document.getElementById('admin-record-type').value;
+    const recordValue = validateInput(document.getElementById('admin-record-value').value, 0, 1000);
+    
+    if (!userId) {
+      hideLoader();
+      showError('Выберите сотрудника');
+      return;
+    }
+    
+    // Получаем информацию о пользователе
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      hideLoader();
+      showError('Пользователь не найден');
+      return;
+    }
+    
+    const user = userDoc.data();
+    const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Аноним';
+    
+    // Сохраняем рекорд в базу данных
+    await db.collection('salesRecords').add({
+      userId: userId,
+      userName: userName,
+      type: recordType,
+      value: recordValue,
+      updatedBy: currentUser.id,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    hideLoader();
+    showSuccess('Рекорд успешно сохранен!');
+    
+    // Обновляем отображение рекордов
+    await loadAdminRecords();
+    
+    // Очищаем форму
+    document.getElementById('admin-record-value').value = '0';
+    document.getElementById('admin-selected-user').style.display = 'none';
+    document.getElementById('admin-user-search').value = '';
+  } catch (error) {
+    console.error('Ошибка сохранения рекорда:', error);
+    hideLoader();
+    showError('Ошибка при сохранении рекорда');
+  }
+}
+
+// Редактирование рекорда
+async function editRecord(recordType) {
+  if (!checkAdminRights()) {
+    showError('Недостаточно прав для выполнения этой операции');
+    return;
+  }
+  
+  const newValue = prompt(`Введите новое значение для рекорда "${recordType}":`);
+  if (newValue === null) return;
+  
+  const recordValue = validateInput(newValue, 0, 1000);
+  
+  try {
+    showLoader("Обновление рекорда...");
+    
+    // Находим текущий рекорд этого типа
+    const recordsSnapshot = await db.collection('salesRecords')
+      .where('type', '==', recordType)
+      .orderBy('value', 'desc')
+      .limit(1)
+      .get();
+    
+    if (!recordsSnapshot.empty) {
+      const recordDoc = recordsSnapshot.docs[0];
+      await db.collection('salesRecords').doc(recordDoc.id).update({
+        value: recordValue,
+        updatedBy: currentUser.id,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    
+    hideLoader();
+    showSuccess('Рекорд успешно обновлен!');
+    await loadAdminRecords();
+  } catch (error) {
+    console.error('Ошибка обновления рекорда:', error);
+    hideLoader();
+    showError('Ошибка при обновлении рекорда');
+  }
+}
+
+// Демо-данные для админ-рекордов
+function showDemoAdminRecords() {
+  document.getElementById('admin-credits-record-value').textContent = '12';
+  document.getElementById('admin-credits-record-user').textContent = 'Иванов Иван';
+  
+  document.getElementById('admin-deposits-record-value').textContent = '8';
+  document.getElementById('admin-deposits-record-user').textContent = 'Петров Петр';
+  
+  document.getElementById('admin-krh-record-value').textContent = '24';
+  document.getElementById('admin-krh-record-user').textContent = 'Сидоров Алексей';
+}
+
 // 🔧 ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -4808,14 +5298,39 @@ document.addEventListener('DOMContentLoaded', async function() {
   await initializeFirebase();
   
   initTelegram();
-  
-  // Установка начальной темы
-  currentTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', currentTheme);
-  updateThemeToggle();
-  updateThemeIcon();
+  initTheme();
 
-  // Обработчики для переключения периода в топе
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      this.classList.add('active');
+      const tabId = this.getAttribute('data-tab');
+      document.getElementById(tabId).classList.add('active');
+      
+      if (tabId === 'leaderboard-tab') {
+        loadLeaderboard('week');
+      } else if (tabId === 'reports-tab') {
+        loadWeekOptions();
+        loadMonthOptions();
+      } else if (tabId === 'profile-tab') {
+        loadProfile();
+      } else if (tabId === 'admin-tab') {
+        // Для админа активируем вкладку планы по умолчанию
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+        document.querySelector('.admin-tab[data-tab="admin-plans"]').classList.add('active');
+        document.getElementById('admin-plans').classList.add('active');
+        
+        loadAdminPlans();
+      }
+    });
+  });
+
   document.querySelectorAll('.period-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
@@ -4830,154 +5345,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   console.log("Все обработчики событий установлены");
 });
-
-// 🔧 ОСТАЛЬНЫЕ ФУНКЦИИ (ВЫРЕЗАНО ДЛЯ КОМПАКТНОСТИ)
-// Здесь должны быть все остальные функции из предыдущего кода:
-// - initializeMPPCalculator, initializeReports, addCredit, updateCreditPremium и т.д.
-// - saveWeeklyReport, saveMonthlyReport, loadLeaderboard и другие
-// - loadProfile, loadAchievements, loadPremiumHistory, loadProfileStats
-// - initializeAdminPanel, loadAdminPlans, saveAdminPlans
-// - initializeUserSearch, searchUsers, loadSalesRecords, saveRecord
-// - И другие вспомогательные функции
-
-// Поскольку код очень большой, я вырезал повторяющиеся функции для компактности.
-// Все функции из предыдущего ответа должны быть добавлены сюда.
-
-// Для простоты, здесь я добавляю заглушки для функций, которые уже были в предыдущем коде:
-
-// Заглушки для функций (в реальном коде здесь должны быть полные реализации)
-function initializeMPPCalculator() {
-  document.getElementById('add-credit-btn').addEventListener('click', addCredit);
-  document.getElementById('calculate-btn').addEventListener('click', calculatePremium);
-}
-
-function initializeReports() {
-  // Инициализация отчетов
-}
-
-function addCredit() {
-  // Добавление кредита
-}
-
-function updateCreditPremium(id) {
-  // Обновление премии за кредит
-}
-
-async function saveWeeklyReport() {
-  // Сохранение недельного отчета
-}
-
-async function saveMonthlyReport() {
-  // Сохранение месячного отчета
-}
-
-async function loadLeaderboard(period) {
-  // Загрузка топа
-}
-
-async function loadProfile() {
-  await loadAchievements();
-  await loadPremiumHistory();
-  await loadProfileStats();
-}
-
-async function loadAchievements() {
-  // Загрузка достижений
-}
-
-async function loadPremiumHistory() {
-  // Загрузка истории премий
-}
-
-async function loadProfileStats() {
-  // Загрузка статистики профиля
-}
-
-async function initializeAdminPanel() {
-  // Инициализация админ-панели
-}
-
-async function loadAdminPlans() {
-  // Загрузка планов для админа
-}
-
-async function saveAdminPlans() {
-  // Сохранение планов админом
-}
-
-function initializeUserSearch() {
-  // Инициализация поиска пользователей
-}
-
-async function searchUsers() {
-  // Поиск пользователей
-}
-
-async function loadSalesRecords() {
-  // Загрузка рекордов продаж
-}
-
-async function saveRecord() {
-  // Сохранение рекорда
-}
-
-// 🔧 ФУНКЦИИ ДЛЯ ПОЛУЧЕНИЯ РАБОЧИХ НЕДЕЛЬ
-function getWorkWeeks(year, month) {
-  const weeks = [];
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  
-  let currentDate = new Date(firstDay);
-  while (currentDate.getDay() !== 1 && currentDate <= lastDay) {
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-  
-  if (currentDate > lastDay) {
-    currentDate = new Date(firstDay);
-  }
-  
-  while (currentDate <= lastDay) {
-    const weekStart = new Date(currentDate);
-    let weekEnd = new Date(currentDate);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    
-    if (weekEnd > lastDay) {
-      weekEnd = new Date(lastDay);
-    }
-    
-    weeks.push({
-      start: new Date(weekStart),
-      end: new Date(weekEnd)
-    });
-    
-    currentDate.setDate(currentDate.getDate() + 7);
-  }
-  return weeks;
-}
-
-function loadWeekOptions() {
-  // Загрузка опций недель
-}
-
-function loadMonthOptions() {
-  // Загрузка опций месяцев
-}
-
-function formatDate(date) {
-  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
-}
-
-function getWeekDays(start, end) {
-  const days = [];
-  const current = new Date(start);
-  while (current <= end) {
-    days.push(current.toLocaleDateString('ru-RU', { weekday: 'short' }));
-    current.setDate(current.getDate() + 1);
-  }
-  return days.join(', ');
-}
-
-// 🔧 ЗАВЕРШЕНИЕ СКРИПТА
 </script>
 </body>
 </html>
